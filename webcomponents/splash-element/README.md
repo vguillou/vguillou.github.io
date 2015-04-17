@@ -15,9 +15,8 @@ You can also rewind it, and listen to the end of the transition.
 
 ## How can you do it ?
 
-Use a &lt;splash-element&gt; component and give it two child :
-* Your splash (it should be standard HTML5 markup), with the 'splash' class
-* Your Web-Component to prepare, with the 'element' class
+Use a &lt;splash-element&gt; component and put your Web-Component in its light DOM. Give an id to your splash,
+and pass it to &lt;splash-element&gt; via its 'splashId' attribute.
 
 ###Customize the transition
 
@@ -31,11 +30,12 @@ Simply set the 'transition' attribute to your splash and Web-Component with one 
 
 [Please check core-transition for more details.](https://github.com/Polymer/core-transition/blob/master/core-transition-css.html)
 
-Note that you cannot change it during runtime.
+Note that you cannot change it during runtime. If you add multiple Web-Components to &lt;splash-element&gt;'s light DOM,
+only the first one's 'transition' attribute will be accounted for.
 
 ###Play the transition as soon my Web-Component is fully ready
 
-That's the default behaviour, you don't need to change any of the &lt;splash-element&gt;'s attributes.
+That's the default behaviour, you don't need to change any of the &lt;splash-element&gt;'s attributes (except 'splashId' of course).
 
 ###Play the transition after a given time
 
@@ -67,7 +67,7 @@ Simply listen to the 'transitionend' event that &lt;splash-element&gt; fires.
 
 ```html
 <style>
-	.splash {
+	#splash {
 		position: absolute;
 		width: 100%;
 		height: 100%;
@@ -76,25 +76,25 @@ Simply listen to the 'transitionend' event that &lt;splash-element&gt; fires.
 		background-repeat: no-repeat;
 		background-position: 50%;
 		background-size: 300px;
-		background-image: url(res/your_splash_image.png);
+		background-image: url(res/your-splash.svg);
 		background-color: #eee;
 	}
 </style>
 
-<splash-element minSplashDuration="2000" fit>
-	<div class="splash" transition="core-transition-center"></div>
+<splash-element splashId="splash" minSplashDuration="2000" fit>
 	<your-element class="element" transition="core-transition-bottom" fit></your-element>
 </splash-element>
+<div id="splash" transition="core-transition-center"></div>
 ```
 
 What it does :
 
-When the **&lt;splash-element&gt;** is added to the DOM, it will display the **&lt;div class="splash"&gt;** for 2000ms before transitioning to **&lt;your-element&gt;** (or wait for &lt;your-element&gt; to be ready if it takes more than 2000ms).
-The **&lt;div class="splash"&gt;** will slide down the page, will &lt;your-element&gt; will 'zoom-in' the page.
+When the **&lt;splash-element&gt;** is added to the DOM, it will display the **&lt;div id="splash"&gt;** for 2000ms before transitioning to **&lt;your-element&gt;** (or wait for &lt;your-element&gt; to be ready if it takes more than 2000ms).
+The **&lt;div id="splash"&gt;** will slide down the page, will &lt;your-element&gt; will 'zoom-in' the page.
 
 ## Demo!
 
-Soon.
+[This way.](http://vguillou.github.io/webcomponents/splash-element/demo.html)
 
 ## License
 

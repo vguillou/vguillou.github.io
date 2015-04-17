@@ -6,8 +6,6 @@
 Simple element allowing to display a splash while web components are getting
 polyfilled and your main web component is getting fully ready. Then plays
 a sleek and customizable transition from your splash to your web component.
-The splash needs to be standard HTML5 and MUST have the 'splash' class
-and your main web component MUST have the 'element' class.
 
 They can both specify what transition effect should be applied via
 a 'transition' attribute, having one of these (self-explanatory) values :
@@ -15,11 +13,11 @@ a 'transition' attribute, having one of these (self-explanatory) values :
 'core-transition-bottom', 'core-transition-left' or 'core-transition-right'
 (default is 'core-transition-fade'). See <core-transition> for more information.
 
-After the transition is played, this element fires a 'transitionend' event.
+After the transition is played, splash-element fires a 'transitionend' event.
 
 Usage :
 	<style>
-		.splash {
+		#splash {
 			position: absolute;
 			width: 100%;
 			height: 100%;
@@ -33,26 +31,29 @@ Usage :
 		}
 	</style>
 	
-	<splash-element minSplashDuration="2000" fit>
-		<div class="splash" transition="core-transition-center"></div>
+	<splash-element splashId="splash" minSplashDuration="2000" fit>
 		<your-element class="element" transition="core-transition-bottom" fit></your-element>
 	</splash-element>
-
-Note : Do not use Polymer's 'unresolved' attribute on the
-splash-element or any of it's parents (including the body).
+	<div id="splash" transition="core-transition-center"></div>
 -->
 <polymer-element name="splash-element">
 	<template>
-		<div id="splashContainer" fit>
-			<content select=".splash"></content>
-		</div>
 		<div id="elementContainer" style="display: none;" fit>
-			<content select=".element"></content>
+			<content id="elements" select="*"></content>
 		</div>
 	</template>
 	<script>
 		Polymer('splash-element', {
 			publish: {
+				/**
+				 * Id of your splash in the DOM.
+				 *
+				 * @attribute splashId
+				 * @type string
+				 * @default null
+				 */
+				splashId: {value: null, reflect: false},
+				
 				/**
 				 * The minimum splash duration in milliseconds.
 				 * Note that this attribute will be ignored
@@ -112,8 +113,7 @@ splash-element or any of it's parents (including the body).
 			 */
 			initiate: function() {
 				this.initTimestamp = Date.now();
-				var element = this.querySelector('.element');
-				this.checkIfShouldPlay(element);
+				this.checkIfShouldPlay();
 			},
 			
 			/**
@@ -127,12 +127,21 @@ splash-element or any of it's parents (including the body).
 					this.playTransition(0, false);
 			},
 			
+			get splash() {
+				return this.splashId ? document.querySelector('#' + this.splashId) : null;
+			},
+			
+			get elements() {
+				return this.$.elements.getDistributedNodes() ? this.$.elements.getDistributedNodes()[0] :
+					(this.children ? this.children[0] : null);
+			},
+			
 			domReady: function() {
 				var elementContainer = this.$.elementContainer;
-				var splash = this.querySelector('.splash');
-				var element = this.querySelector('.element');
-			    var splType = splash && splash.hasAttribute('transition') ? splash.getAttribute('transition') : this.defaultTransitionType;
-			    var elmType = element && element.hasAttribute('transition') ? element.getAttribute('transition') : this.defaultTransitionType;
+				var spl = this.splash;
+				var elm = this.elements;
+			    var splType = spl && spl.hasAttribute('transition') ? spl.getAttribute('transition') : this.defaultTransitionType;
+			    var elmType = elm && elm.hasAttribute('transition') ? elm.getAttribute('transition') : this.defaultTransitionType;
 				
 			    var meta = document.createElement('core-meta');
 			    meta.type = 'transition';
@@ -140,21 +149,21 @@ splash-element or any of it's parents (including the body).
 			    this.elementTransition = meta.byId(elmType);
 				
 				if (this.elementTransition) {
-					// Setup plays the transition once, so we can
-					// play it backwards after ('out' effect for
-					// the splash, 'in' for the element)
+					// Setup plays the transition once, so we can play it backwards
+					// after ('out' effect for the splash, 'in' for the element)
 					this.elementTransition.setup(elementContainer);
 				}
 				
 				this.addEventListener('core-transitionend', this.end.bind(this));
 				if (!this.manual) {
-					this.checkIfShouldPlay(element);
+					this.checkIfShouldPlay();
 				}
 			},
 			
-			checkIfShouldPlay: function(element) {
-				if (element && this.waitFor)
-					element.addEventListener(this.waitFor, this.waitForHandler.bind(this));
+			checkIfShouldPlay: function() {
+				var elm = this.elements;
+				if (elm && this.waitFor)
+					elm.addEventListener(this.waitFor, this.waitForHandler.bind(this));
 				
 				if (!this.waitFor) {
 					var delta = Math.max(this.initTimestamp - Date.now() + this.minSplashDuration, 0);
@@ -167,22 +176,22 @@ splash-element or any of it's parents (including the body).
 			},
 			
 			playTransition: function(delay, forward) {
-				var splashContainer = this.$.splashContainer;
+				var spl = this.splash;
+				var elm = this.elements;
 				var elementContainer = this.$.elementContainer;
 				
-				this.changeDisplay(splashContainer, 'block');
+				this.changeDisplay(spl, 'block');
 				this.changeDisplay(elementContainer, 'block');
 				
-				var element = this.querySelector('.element');
-				if (element)
-					element.removeEventListener(this.waitFor, this.waitForHandler);
+				if (elm)
+					elm.removeEventListener(this.waitFor, this.waitForHandler);
 				
 				this.async(function() {
 					if (this.splashTransition) {
 						if (!this.intialized) {
-							this.splashTransition.setup(splashContainer);
+							this.splashTransition.setup(spl);
 						}
-						this.splashTransition.go(splashContainer, {opened: !forward});
+						this.splashTransition.go(spl, {opened: !forward});
 					}
 					if (this.elementTransition) {
 						this.elementTransition.go(elementContainer, {opened: forward});
@@ -194,7 +203,7 @@ splash-element or any of it's parents (including the body).
 			
 			end: function(e) {
 				this.async(function() {
-					this.changeDisplay(this.$.splashContainer, this.played ? 'none' : 'block');
+					this.changeDisplay(this.splash, this.played ? 'none' : 'block');
 					this.changeDisplay(this.$.elementContainer, this.played ? 'block' : 'none');
 					this.fire('transitionend', null, this, false);
 				}, null, 50);

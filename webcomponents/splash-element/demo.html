@@ -49,7 +49,7 @@
 			top: 0;
 			left: 0;
 			right: 0;
-			bottom: 0;
+			bottom: 50px;
 			margin: 0;
 			padding: 0;
 			background-repeat: no-repeat;
@@ -99,39 +99,40 @@
 	
 	<!-- Actual demo -->
 	<div id="demo1">
-		<splash-element>
-			<div class="splash"></div>
-			<my-element class="element" fit>
-				Transition as soon as .element is ready
+		<splash-element splashid="splash1">
+			<my-element fit>
+				Transition as soon as &lt;my-element&gt; is ready
 			</my-element>
 		</splash-element>
+		<div id="splash1" class="splash"></div>
 	</div>
 	
 	<div id="demo2">
-		<splash-element minSplashDuration="1500">
-			<div class="splash" transition="core-transition-center"></div>
-			<my-element class="element" fit transition="core-transition-bottom">
-				Transition after 1500ms minimum (or whenever .element is ready)
+		<splash-element splashid="splash2" minSplashDuration="1500">
+			<my-element fit transition="core-transition-bottom">
+				Transition after 1500ms minimum (or whenever &lt;my-element&gt; is ready)
 			</my-element>
 		</splash-element>
+		<div id="splash2" class="splash" transition="core-transition-center"></div>
 	</div>
 	
 	<div id="demo3">
-		<splash-element waitFor="my-event">
-			<div class="splash" transition="core-transition-bottom"></div>
-			<my-element class="element" fit transition="core-transition-top">
-				Transition waiting for an event to be fired by .element
+		<splash-element splashid="splash3" waitFor="my-event">
+			<my-element fit transition="core-transition-top">
+				Transition waiting for an event to be fired by &lt;my-element&gt;
 			</my-element>
 		</splash-element>
+		<div id="splash3" class="splash" transition="core-transition-bottom"></div>
 	</div>
 	
 	<div id="demo4">
-		<splash-element id="manualSplashElement" minSplashDuration="0" manual>
-			<div class="splash" transition="core-transition-bottom"></div>
-			<my-element id="manualElement" class="element" fit transition="core-transition-center">
-				Transition waiting for an event to be fired by .element
+		<splash-element id="manualSplashElement" splashId="splash4" minSplashDuration="0" manual>
+			<my-element fit transition="core-transition-center">
+				Manuel trigger
 			</my-element>
 		</splash-element>
+		<div id="splash4" class="splash" transition="core-transition-bottom"></div>
+		
 		<button onclick="initiate()" style="left: 50px;">Initiate</button>
 		<button onclick="rewind()" style="right: 50px;">Rewind</button>
 	</div>
@@ -143,7 +144,6 @@
 	<script>
 		function initiate() {
 			var splashElement = document.querySelector('#manualSplashElement');
-			var element = document.querySelector('#manualElement');
 			splashElement.initiate();
 		}
 		
