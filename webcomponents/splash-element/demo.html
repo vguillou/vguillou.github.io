@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>splash-element demo</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="theme-color" content="#7986cb">
+
+	<!-- Conditionally load WC polyfills -->
+	<!-- Thanks to https://github.com/geelen/x-gif for the snippet -->
+	<script>
+		if ('registerElement' in document
+			&& 'createShadowRoot' in HTMLElement.prototype
+			&& 'import' in document.createElement('link')
+			&& 'content' in document.createElement('template')) {
+			// We're using a browser with native WC support!
+		} else {
+			document.write('<script src="../webcomponentsjs/webcomponents.js"><\/script>');
+		}
+	</script>
+
+	<!-- Html imports -->
+	<link rel="import" href="../polymer/polymer.html">
+	<link rel="import" href="splash-element.html">
+	
+	<style>
+		html, body {
+			font-family: sans-serif;
+		}
+		
+		div[id*='demo'] {
+			position: relative;
+			float: left;
+			width: 300px;
+			height: 350px;
+			margin: 20px;
+		}
+		
+		splash-element {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 50px;
+		}
+		
+		.splash {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			margin: 0;
+			padding: 0;
+			background-repeat: no-repeat;
+			background-position: 50%;
+			background-size: 224px;
+			background-image: url(res/logo.svg);
+			background-color: #eee;
+		}
+		
+		button {
+			position: absolute;
+			bottom: 20px;
+		}
+	</style>
+</head>
+
+<body>
+	<!-- Necessary dummy element - Don't mind this -->
+	<polymer-element name="my-element">
+		<template>
+			<style>
+				:host {
+					display: block;
+					padding: 130px 20px 0 20px;
+					color: #fff;
+					background-color: #7986cb;
+					text-align: center;
+					vertical-align: middle;
+				}
+			</style>
+			<content></content>
+		</template>
+		<script>
+		Polymer('my-element', {
+			domReady: function() {
+				this.fireEvent('my-event');
+			},
+			
+			fireEvent: function(e) {
+				this.async(function() {
+					this.fire(e, null, this, false);
+				}, null, 3000);
+			}
+		});
+	</script>
+	</polymer-element>
+	
+	<!-- Actual demo -->
+	<div id="demo1">
+		<splash-element>
+			<div class="splash"></div>
+			<my-element class="element" fit>
+				Transition as soon as .element is ready
+			</my-element>
+		</splash-element>
+	</div>
+	
+	<div id="demo2">
+		<splash-element minSplashDuration="1500">
+			<div class="splash" transition="core-transition-center"></div>
+			<my-element class="element" fit transition="core-transition-bottom">
+				Transition after 1500ms minimum (or whenever .element is ready)
+			</my-element>
+		</splash-element>
+	</div>
+	
+	<div id="demo3">
+		<splash-element waitFor="my-event">
+			<div class="splash" transition="core-transition-bottom"></div>
+			<my-element class="element" fit transition="core-transition-top">
+				Transition waiting for an event to be fired by .element
+			</my-element>
+		</splash-element>
+	</div>
+	
+	<div id="demo4">
+		<splash-element id="manualSplashElement" minSplashDuration="0" manual>
+			<div class="splash" transition="core-transition-bottom"></div>
+			<my-element id="manualElement" class="element" fit transition="core-transition-center">
+				Transition waiting for an event to be fired by .element
+			</my-element>
+		</splash-element>
+		<button onclick="initiate()" style="left: 50px;">Initiate</button>
+		<button onclick="rewind()" style="right: 50px;">Rewind</button>
+	</div>
+	
+	<div id="demo5">
+		
+	</div>
+	
+	<script>
+		function initiate() {
+			var splashElement = document.querySelector('#manualSplashElement');
+			var element = document.querySelector('#manualElement');
+			splashElement.initiate();
+		}
+		
+		function rewind() {
+			var splashElement = document.querySelector('#manualSplashElement');
+			splashElement.rewind();
+		}
+	</script>
+</body>
+</html>

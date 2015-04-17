@@ -1,0 +1,43 @@
+{
+  "name": "splash-element",
+  "authors": [
+    "Vincent Guillou <vin.guillou@gmail.com>"
+  ],
+  "description": "A Polymer based Web Component helping you to display a splash screen while your app is getting ready",
+  "keywords": [
+    "splash",
+    "polymer",
+    "web-components",
+    "web-component",
+    "web components",
+    "web component",
+    "load",
+    "loading",
+    "wait"
+  ],
+  "main": "splash-element.html",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "webcomponentsjs": "^0.5",
+    "core-transition": "Polymer/core-transition#^0.5",
+    "core-meta": "Polymer/core-meta#^0.5"
+  },
+  "homepage": "https://github.com/vguillou/splash-element",
+  "_release": "49bed266c9",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "49bed266c968f803627513ffec91d123e1febaba"
+  },
+  "_source": "git://github.com/vguillou/splash-element.git",
+  "_target": "*",
+  "_originalSource": "splash-element",
+  "_direct": true
+}
