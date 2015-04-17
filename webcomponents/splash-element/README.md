@@ -82,7 +82,7 @@ Simply listen to the 'transitionend' event that &lt;splash-element&gt; fires.
 </style>
 
 <splash-element splashId="splash" minSplashDuration="2000" fit>
-	<your-element class="element" transition="core-transition-bottom" fit></your-element>
+	<your-element transition="core-transition-bottom" fit></your-element>
 </splash-element>
 <div id="splash" transition="core-transition-center"></div>
 ```
