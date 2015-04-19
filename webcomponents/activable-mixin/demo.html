@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+<head>
+	<title>activable-mixin demo</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="theme-color" content="#7986cb">
+	
+	<!-- Conditionally load WC polyfills -->
+	<!-- Thanks to https://github.com/geelen/x-gif for the snippet -->
+	<script>
+		if ('registerElement' in document
+			&& 'createShadowRoot' in HTMLElement.prototype
+			&& 'import' in document.createElement('link')
+			&& 'content' in document.createElement('template')) {
+			// We're using a browser with native WC support!
+		} else {
+			document.write('<script src="../webcomponentsjs/webcomponents.js"><\/script>');
+		}
+	</script>
+	
+	<!-- Html imports -->
+	<link rel="import" href="../polymer/polymer.html">
+	<link rel="import" href="../core-animated-pages/core-animated-pages.html">
+	<link rel="import" href="../core-animated-pages/transitions/slide-from-bottom.html">
+	<link rel="import" href="activable-mixin.html">
+	
+	<style>
+		body {
+			font-family: Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+			margin: 0;
+		}
+
+		core-animated-pages {
+			position: absolute;
+			top: 0;
+			right: 220px;
+			bottom: 0;
+			left: 0;
+			font-size: 46px;
+			color: white;
+			overflow: hidden;
+		}
+		
+		#logger {
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			padding: 10px;
+			width: 200px;
+		}
+	</style>
+
+</head>
+<body unresolved onclick="change();" >
+	<!-- Element with activable-mixin -->
+	<polymer-element name="activable-element">
+		<template>
+			<content></content>
+		</template>
+		<script>
+		Polymer('activable-element', Polymer.mixin({
+			publish: {
+				log: 'unnamed',
+				color: 'black'
+			},
+			created: function() {
+				// Making transitions very long
+				CoreStyle.g.transitions.duration = "2000ms";
+			},
+			attributeChanged: function(attrName, oldVal, newVal) {
+				// Necessary call
+				this.activableAttributeChangedHandler(attrName, oldVal, newVal);
+			},
+			detached: function() {
+				// Necessary call when used inside a `core-animated-pages`
+				this.activableDetachedHandler();
+			},
+			willActivate: function() {
+				this.addLog(this.log + " willActivate");
+			},
+			activated: function() {
+				this.addLog(this.log + " activated");
+			},
+			willDeactivate: function() {
+				this.addLog(this.log + " willDeactivate");
+			},
+			deactivated: function() {
+				this.addLog(this.log + " deactivated");
+			},
+			addLog: function(msg) {
+				var p = document.createElement("P");
+				var t = document.createTextNode(msg);
+				p.appendChild(t);
+				p.style.color = this.color;
+				document.querySelector('#logger').appendChild(p);
+			}
+		}, Polymer.ActivableMixin));
+	</script>
+	</polymer-element>
+	
+	<template is="auto-binding">
+		<core-animated-pages transitions="slide-from-bottom">
+			<activable-element log="page 1" color="red" >
+				<div style="background:red;" fit layout vertical center center-justified>page 1</div>
+			</activable-element>
+			<activable-element log="page 2" color="green" >
+				<div style="background:green;" fit layout vertical center center-justified>page 2</div>
+			</activable-element>
+			<activable-element log="page 3" color="blue" >
+				<div style="background:blue;" fit layout vertical center center-justified>page 3</div>
+			</activable-element>
+		</core-animated-pages>
+		
+		<div id="logger"><h3>Click to change page</h3></div>
+	</template>
+
+	<script>
+		var up = true;
+		var max = 2;
+		function change() {
+			var p = document.querySelector('core-animated-pages');
+			if (up && p.selected === max || !up && p.selected === 0) {
+				up = !up;
+			}
+			if (up) {
+				p.selected += 1;
+			} else {
+				p.selected -= 1;
+			}
+		}
+	</script>
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+		ga('create', 'UA-60552830-3', 'auto');
+		ga('send', 'pageview');
+	</script>
+</body>
+</html>
