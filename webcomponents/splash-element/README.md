@@ -5,13 +5,13 @@ _A Polymer based Web-Component helping you to display a splash screen while your
 
 ## What can you do with it ?
 
-**&lt;splash-element&gt;** allows you to customize the transition with a Polymer's built-in effects, and lets you decide when it should be played :
+**&lt;splash-element&gt;** allows you to customize the transition with a Polymer's built-in effects (or your let you implement your own), and lets you decide when it should be played :
 * At once when your Web-Component is fully ready
 * After a given time (don't worry, if your Web-Component isn't ready yet, the transition will be delayed until it is)
 * When your own Web-Component fires an event of your choosing
 * Or simply manually, whenever you see fit
 
-You can also rewind it, and listen to the end of the transition.
+You can also rewind it, and listen for the end of the transition.
 
 ## How can you do it ?
 
@@ -28,7 +28,7 @@ Simply set the 'transition' attribute to your splash and Web-Component with one 
 * 'core-transition-left'
 * 'core-transition-right'
 
-[Please take a look at core-transition for more details and to learn how to create your own transitions.](https://github.com/Polymer/core-transition/blob/master/core-transition-css.html)
+[Please take a look at core-transition for more details and to learn how to create your own transitions.](https://www.polymer-project.org/0.5/docs/elements/core-transition.html)
 
 Note that you cannot change it during runtime. If you add multiple Web-Components to &lt;splash-element&gt;'s light DOM,
 only the first one's 'transition' attribute will be accounted for.
@@ -46,7 +46,7 @@ The 'minSplashDuration' is here for you. Set the time in milliseconds. Note that
 
 ###Play the transition when your element fires an event
 
-The 'waitFor' is here what you are looking for : set it with your event's name (just don't forget to fire it in your component!). Note that :
+The 'waitFor' is what you are looking for : set it with your event's name (just don't forget to fire it in your component!). Note that :
 * this attributes has priority over 'minSplashDuration'
 * if you set the 'manual' attribute, you will need to first call the 'initiate()' method. 
 

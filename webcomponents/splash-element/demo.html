@@ -21,6 +21,7 @@
 
 	<!-- Html imports -->
 	<link rel="import" href="../polymer/polymer.html">
+	<link rel="import" href="demo/custom-transition.html">
 	<link rel="import" href="splash-element.html">
 	
 	<style>
@@ -34,6 +35,7 @@
 			width: 300px;
 			height: 350px;
 			margin: 20px;
+			overflow: hidden;
 		}
 		
 		splash-element {
@@ -55,7 +57,7 @@
 			background-repeat: no-repeat;
 			background-position: 50%;
 			background-size: 224px;
-			background-image: url(res/logo.svg);
+			background-image: url(demo/logo.svg);
 			background-color: #eee;
 		}
 		
@@ -96,6 +98,7 @@
 		});
 	</script>
 	</polymer-element>
+
 	
 	<!-- Actual demo -->
 	<div id="demo1">
@@ -133,22 +136,30 @@
 		</splash-element>
 		<div id="splash4" class="splash" transition="core-transition-bottom"></div>
 		
-		<button onclick="initiate()" style="left: 50px;">Initiate</button>
-		<button onclick="rewind()" style="right: 50px;">Rewind</button>
+		<button onclick="initiate('manualSplashElement')" style="left: 50px;">Initiate</button>
+		<button onclick="rewind('manualSplashElement')" style="right: 50px;">Rewind</button>
 	</div>
 	
 	<div id="demo5">
+		<splash-element id="customTransitionSplashElement" splashId="splash5" minSplashDuration="0" manual>
+			<my-element fit transition="custom-transition-front">
+				Manuel trigger with custom transition
+			</my-element>
+		</splash-element>
+		<div id="splash5" class="splash" transition="custom-transition-back"></div>
 		
+		<button onclick="initiate('customTransitionSplashElement')" style="left: 50px;">Initiate</button>
+		<button onclick="rewind('customTransitionSplashElement')" style="right: 50px;">Rewind</button>
 	</div>
 	
 	<script>
-		function initiate() {
-			var splashElement = document.querySelector('#manualSplashElement');
+		function initiate(splashElement) {
+			var splashElement = document.querySelector('#' + splashElement);
 			splashElement.initiate();
 		}
 		
-		function rewind() {
-			var splashElement = document.querySelector('#manualSplashElement');
+		function rewind(splashElement) {
+			var splashElement = document.querySelector('#' + splashElement);
 			splashElement.rewind();
 		}
 	</script>
