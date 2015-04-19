@@ -35,6 +35,8 @@ Usage :
 		<your-element transition="core-transition-bottom" fit></your-element>
 	</splash-element>
 	<div id="splash" transition="core-transition-center"></div>
+	
+Learn more : https://github.com/vguillou/splash-element
 -->
 <polymer-element name="splash-element">
 	<template>
@@ -202,11 +204,13 @@ Usage :
 			},
 			
 			end: function(e) {
-				this.async(function() {
-					this.changeDisplay(this.splash, this.played ? 'none' : 'block');
-					this.changeDisplay(this.$.elementContainer, this.played ? 'block' : 'none');
-					this.fire('transitionend', null, this, false);
-				}, null, 50);
+				if (e && e.target === this) {
+					this.async(function() {
+						this.changeDisplay(this.splash, this.played ? 'none' : 'block');
+						this.changeDisplay(this.$.elementContainer, this.played ? 'block' : 'none');
+						this.fire('transitionend', null, this, false);
+					}, null, 50);
+				}
 			},
 			
 			changeDisplay: function(target, newValue) {

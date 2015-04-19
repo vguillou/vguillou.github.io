@@ -28,7 +28,7 @@ Simply set the 'transition' attribute to your splash and Web-Component with one 
 * 'core-transition-left'
 * 'core-transition-right'
 
-[Please check core-transition for more details.](https://github.com/Polymer/core-transition/blob/master/core-transition-css.html)
+[Please take a look at core-transition for more details and to learn how to create your own transitions.](https://github.com/Polymer/core-transition/blob/master/core-transition-css.html)
 
 Note that you cannot change it during runtime. If you add multiple Web-Components to &lt;splash-element&gt;'s light DOM,
 only the first one's 'transition' attribute will be accounted for.
