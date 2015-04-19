@@ -20,10 +20,9 @@
 	</script>
 	
 	<!-- Html imports -->
-	<link rel="import" href="../polymer/polymer.html">
 	<link rel="import" href="../core-animated-pages/core-animated-pages.html">
 	<link rel="import" href="../core-animated-pages/transitions/slide-from-bottom.html">
-	<link rel="import" href="activable-mixin.html">
+	<link rel="import" href="demo/demo-element.html">
 	
 	<style>
 		body {
@@ -53,68 +52,26 @@
 	</style>
 
 </head>
-<body unresolved onclick="change();" >
-	<!-- Element with activable-mixin -->
-	<polymer-element name="activable-element">
-		<template>
-			<content></content>
-		</template>
-		<script>
-		Polymer('activable-element', Polymer.mixin({
-			publish: {
-				log: 'unnamed',
-				color: 'black'
-			},
-			created: function() {
-				// Making transitions very long
-				CoreStyle.g.transitions.duration = "2000ms";
-			},
-			attributeChanged: function(attrName, oldVal, newVal) {
-				// Necessary call
-				this.activableAttributeChangedHandler(attrName, oldVal, newVal);
-			},
-			detached: function() {
-				// Necessary call when used inside a `core-animated-pages`
-				this.activableDetachedHandler();
-			},
-			willActivate: function() {
-				this.addLog(this.log + " willActivate");
-			},
-			activated: function() {
-				this.addLog(this.log + " activated");
-			},
-			willDeactivate: function() {
-				this.addLog(this.log + " willDeactivate");
-			},
-			deactivated: function() {
-				this.addLog(this.log + " deactivated");
-			},
-			addLog: function(msg) {
-				var p = document.createElement("P");
-				var t = document.createTextNode(msg);
-				p.appendChild(t);
-				p.style.color = this.color;
-				document.querySelector('#logger').appendChild(p);
-			}
-		}, Polymer.ActivableMixin));
-	</script>
-	</polymer-element>
+<body unresolved onclick="change();">
+
+	<!-- demo-element are all activable-mixin.
+		 Polymer seems not to support adding a mixin to an element declared in the body in polyfilled browsers,
+		 so I had create it's own html file. See demo/demo-element.html -->
+	<core-animated-pages transitions="slide-from-bottom">
+		<demo-element log="page 1" color="red">
+			<div style="background:red;" fit layout vertical center center-justified>page 1</div>
+		</demo-element>
+		<demo-element log="page 2" color="green" >
+			<div style="background:green;" fit layout vertical center center-justified>page 2</div>
+		</demo-element>
+		<demo-element log="page 3" color="blue">
+			<div style="background:blue;" fit layout vertical center center-justified>page 3</div>
+		</demo-element>
+	</core-animated-pages>
 	
-	<template is="auto-binding">
-		<core-animated-pages transitions="slide-from-bottom">
-			<activable-element log="page 1" color="red" >
-				<div style="background:red;" fit layout vertical center center-justified>page 1</div>
-			</activable-element>
-			<activable-element log="page 2" color="green" >
-				<div style="background:green;" fit layout vertical center center-justified>page 2</div>
-			</activable-element>
-			<activable-element log="page 3" color="blue" >
-				<div style="background:blue;" fit layout vertical center center-justified>page 3</div>
-			</activable-element>
-		</core-animated-pages>
-		
-		<div id="logger"><h3>Click to change page</h3></div>
-	</template>
+	<div id="logger">
+		<h3>Click to change page</h3>
+	</div>
 
 	<script>
 		var up = true;
@@ -131,6 +88,7 @@
 			}
 		}
 	</script>
+	
 	<script>
 		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

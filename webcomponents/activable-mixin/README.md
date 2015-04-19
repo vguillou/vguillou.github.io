@@ -37,26 +37,28 @@ Then fill free to implement the new callbacks in your element.
 First add the mixin and the necessary method calls in your element to setup the mixin:
 
 ```html
-polymer-element name="activable-element">
-<template>
-	<content></content>
-</template>
-<script>
-Polymer('activable-element', Polymer.mixin({
-	attributeChanged: function(attrName, oldVal, newVal) {
-		// Necessary call to setup the mixin
-		this.activableAttributeChangedHandler(attrName, oldVal, newVal);
-	},
-	detached: function() {
-		// Necessary call when used inside a `core-animated-pages`
-		this.activableDetachedHandler();
-	},
-	// New callbacks
-	willActivate: function() { ... },
-	activated: function() { ... },
-	willDeactivate: function() { ... },
-	deactivated: function() { ... }
-}, Polymer.ActivableMixin));
+<polymer-element name="activable-element">
+	<template>
+		<content></content>
+	</template>
+	<script>
+	Polymer('activable-element', Polymer.mixin({
+		attributeChanged: function(attrName, oldVal, newVal) {
+			// Necessary call to setup the mixin
+			this.activableAttributeChangedHandler(attrName, oldVal, newVal);
+		},
+		detached: function() {
+			// Necessary call when used inside a `core-animated-pages`
+			this.activableDetachedHandler();
+		},
+		// New callbacks
+		willActivate: function() { ... },
+		activated: function() { ... },
+		willDeactivate: function() { ... },
+		deactivated: function() { ... }
+	}, Polymer.ActivableMixin));
+	</script>
+</polymer-element>
 ```
 
 Then use your element as a direct child of `core-selector` implementation, such as `core-animated-pages`:

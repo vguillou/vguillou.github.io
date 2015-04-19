@@ -1,0 +1,49 @@
+<!-- Html imports -->
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../activable-mixin.html">
+
+<!-- Element with activable-mixin -->
+<polymer-element name="demo-element">
+	<template>
+		<content></content>
+	</template>
+	<script>
+		Polymer('demo-element', Polymer.mixin({
+			publish: {
+				log: 'unnamed',
+				color: 'black'
+			},
+			created: function() {
+				// Making transitions very long
+				CoreStyle.g.transitions.duration = "2000ms";
+			},
+			attributeChanged: function(attrName, oldVal, newVal) {
+				// Necessary call
+				this.activableAttributeChangedHandler(attrName, oldVal, newVal);
+			},
+			detached: function() {
+				// Necessary call when used inside a `core-animated-pages`
+				this.activableDetachedHandler();
+			},
+			willActivate: function() {
+				this.addLog(this.log + " willActivate");
+			},
+			activated: function() {
+				this.addLog(this.log + " activated");
+			},
+			willDeactivate: function() {
+				this.addLog(this.log + " willDeactivate");
+			},
+			deactivated: function() {
+				this.addLog(this.log + " deactivated");
+			},
+			addLog: function(msg) {
+				var p = document.createElement("P");
+				var t = document.createTextNode(msg);
+				p.appendChild(t);
+				p.style.color = this.color;
+				document.querySelector('#logger').appendChild(p);
+			}
+		}, Polymer.ActivableMixin));
+	</script>
+</polymer-element>
