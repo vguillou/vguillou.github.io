@@ -1,0 +1,150 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-animated-pages/core-animated-pages.html">
+<link rel="import" href="../bower_components/core-menu/core-menu.html">
+<link rel="import" href="../bower_components/core-item/core-item.html">
+<link rel="import" href="../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../bower_components/paper-ripple/paper-ripple.html">
+<link rel="import" href="app-scaffold.html">
+
+<!-- Routing configuration -->
+<link rel="import" href="../routes.html">
+
+<!-- Web app pages -->
+<link rel="import" href="page-home.html">
+<link rel="import" href="page-a.html">
+<link rel="import" href="page-b.html">
+<link rel="import" href="page-b-subpage.html">
+
+<polymer-element name="app-element">
+	<template>
+		<style>
+			/**
+			 * Common styles that must pierce shadow dom
+			 */
+			:host /deep/ [not-selectable] {
+				-webkit-user-select: none;
+				-moz-user-select: none;
+				-ms-user-select: none;
+				user-select: none;
+			}
+			
+			:host /deep/ core-header-panel {
+				position: absolute;
+				-webkit-overflow-scrolling: touch; 
+			}
+			
+			:host /deep/ core-toolbar {
+				display: block;
+				height: 60px;
+				font-size: 20px;
+				font-weight: 600;
+				line-height: 60px;
+			}
+			
+			/**
+			 * Local styles
+			 */
+			img.menuHeader {
+				width: 224px;
+				margin: 16px 38px 16px 38px;
+			}
+
+			core-menu {
+				margin: 0;
+				padding: 0;
+			}
+			
+			core-menu .separator {
+				padding: 16px;
+				font-size: 14px;
+				border-top: 1px solid #e0e0e0;
+			}
+			
+			core-menu, core-menu * {
+				-webkit-user-select: none;
+				-moz-user-select: none;
+				-ms-user-select: none;
+				user-select: none;
+			}
+
+			core-item {
+				padding: 0.5em 1em 0.5em 1em;
+			}
+
+			core-item.core-selected {
+				color: #7986cb;
+				font-weight: bold;
+			}
+
+			core-item > a > paper-ripple {
+				color: #7986cb;
+			}
+		</style>
+
+		<app-scaffold id="layout" narrow="{{narrow}}" fit>
+			<div class="menu" vertical layout>
+				<img class="menuHeader" src="../res/logo.svg"></img>
+				<more-route-selector>
+					<core-menu excludedLocalNames="div" on-core-select="{{menuItemSelectedHandler}}">
+					
+						<!--<div class="separator">Simple routing</div>-->
+						
+						<core-item icon="home" label="Home" route="home">
+							<a href="{{urlFor('home')}}"><paper-ripple fit></paper-ripple></a>
+						</core-item>
+						<core-item icon="book" label="Page A" route="page-a">
+							<a href="{{urlFor('page-a')}}"><paper-ripple fit></paper-ripple></a>
+						</core-item>
+						
+						<!--<div class="separator">Nested page routing</div>-->
+						
+						<core-item icon="work" label="Page B" route="page-b">
+							<a href="{{urlFor('page-b')}}"><paper-ripple fit></paper-ripple></a>
+						</core-item>
+					</core-menu>
+				</more-route-selector>
+			</div>
+
+			<div class="content">
+				<more-route-selector selectedParams="{{params}}">
+					<core-animated-pages id="pages" transitions="cross-fade" selectedAttribute="test" fit>
+
+						<page-home route="home" narrow="{{narrow}}" on-toggle-panel="{{togglePanel}}" fit></page-home>
+						
+						<page-a route="page-a" narrow="{{narrow}}" on-toggle-panel="{{togglePanel}}" fit></page-a>
+						
+						<page-b route="page-b" narrow="{{narrow}}" on-toggle-panel="{{togglePanel}}" fit></page-b>
+						
+							<page-b-subpage route="page-b-subpage" narrow="{{narrow}}" params="{{params}}" on-go-back="{{goBack}}" fit></page-b-subpage>
+
+					</core-animated-pages>
+				</more-route-selector>
+			</div>
+		</app-scaffold>
+	</template>
+	
+	<script>
+		Polymer('app-element', {
+			menuItemSelectedHandler: function(e) {
+				if (e != null && e != undefined && e.detail != null
+					&& e.detail != undefined && e.detail.isSelected) {
+					this.async(function() {
+						this.closeDrawer();
+					}, null, 100);
+				}
+			},
+
+			togglePanel: function() {
+				this.$.layout.togglePanel();
+			},
+
+			closeDrawer: function() {
+				this.$.layout.closeDrawer();
+			},
+			
+			goBack: function() {
+				window.history.back();
+			}
+		});
+	</script>
+</polymer-element>

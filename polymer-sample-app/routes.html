@@ -1,0 +1,9 @@
+<link rel="import" href="bower_components/more-routing/more-routing.html">
+
+<more-routing-config driver="hash"></more-routing-config>
+
+<more-route name="home" path="/"></more-route>
+<more-route name="page-a" path="/page-a"></more-route>
+<more-route name="page-b" path="/page-b">
+	<more-route name="page-b-subpage" path="/:myparam"></more-route>
+</more-route>

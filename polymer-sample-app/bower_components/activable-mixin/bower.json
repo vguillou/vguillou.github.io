@@ -1,0 +1,27 @@
+{
+  "name": "activable-mixin",
+  "version": "0.5.0",
+  "authors": [
+    "Vincent Guillou <vin.guillou@gmail.com>"
+  ],
+  "description": "A Polymer mixin that gives you more control over the lifecycle of the children of your `core-selector`, and `core-animated-pages` in particular",
+  "keywords": [
+    "polymer", "lifecycle", "core-selector", "core-animated-pages", "active", "activable", "mixin"
+  ],
+  "main": "activable-mixin.html",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/vguillou/activable-mixin.git"
+  },
+  "dependencies": {
+	"polymer": "Polymer/polymer#^0.5"
+  }
+}
