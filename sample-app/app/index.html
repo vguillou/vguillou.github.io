@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+  <title>Single-page Web App with WebComponents and Polymer</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  
+  <!-- Chrome 42 and up -->
+  <link rel="manifest" href="./manifest.json">
+  
+  <!-- Fallback to homescreen for Chrome <39 on Android -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="Web App with Polymer">
+  <link rel="icon" sizes="192x192" href="images/icon-4x-192.png">
+
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Web App with Polymer">
+  <link rel="apple-touch-icon" href="images/icon-ios-60.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="images/icon-ios-76.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="images/icon-ios-120.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="images/icon-ios-152.png">
+
+  <!-- Tile icon for Win8 (144x144 + tile color) -->
+  <meta name="msapplication-TileImage" content="images/icon-3x-144.png">
+  <meta name="msapplication-TileColor" content="#7986cb">
+
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#7986cb">
+  <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+  <!-- build:css styles/main.css -->
+  <link rel="stylesheet" href="styles/main.css">
+  <!-- endbuild-->
+
+  <!-- Conditionally load WC polyfills -->
+  <!-- Thanks to https://github.com/geelen/x-gif for the snippet -->
+  <script>
+  if ('registerElement' in document
+    && 'createShadowRoot' in HTMLElement.prototype
+    && 'import' in document.createElement('link')
+    && 'content' in document.createElement('template')) {
+    // We're using a browser with native WC support!
+  } else {
+    document.write('<script src="bower_components/webcomponentsjs/webcomponents.min.js"><\/script>');
+  }
+  </script>
+
+  <!-- will be replaced with elements/elements.vulcanized.html -->
+  <link rel="import" href="elements/elements.html">
+  <!-- endreplace-->
+  
+  <!-- Service-worker  -->
+  <script>
+  window.addEventListener('load', function() {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./serviceworker.js', { scope: './' })
+        .then(function(r) {
+          console.log('Registered service worker with scope: ' + r.scope);
+        })
+        .catch(function(error) {
+          console.error('Error while registering the service worker');
+          console.error(error);
+        });
+    } else {
+      console.log('No service worker');
+    }
+  });
+  </script>
+</head>
+
+<body>
+  <splash-element splashId="splash" minSplashDuration="1500" fit>
+    <app-element id="app" transition="core-transition-center" fit></app-element>
+  </splash-element>
+  <div id="splash" transition="core-transition-bottom"></div>
+
+  <!-- build:js scripts/app.js -->
+  <script src="scripts/app.js"></script>
+  <!-- endbuild-->
+</body>
+
+</html>
