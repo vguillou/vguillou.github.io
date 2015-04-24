@@ -5,21 +5,8 @@
     && 'content' in document.createElement('template')) {
     // We're using a browser with native WC support!
   } else {
+    <!-- will be replaced with bower_components/webcomponentsjs/webcomponents.min.js -->
     document.write('<script src="bower_components/webcomponentsjs/webcomponents.min.js"><\/script>');
+	<!-- endreplace-->
   }
-  </script><link rel="import" href="elements/elements.vulcanized.html"><script>
-  window.addEventListener('load', function() {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./serviceworker.js', { scope: './' })
-        .then(function(r) {
-          console.log('Registered service worker with scope: ' + r.scope);
-        })
-        .catch(function(error) {
-          console.error('Error while registering the service worker');
-          console.error(error);
-        });
-    } else {
-      console.log('No service worker');
-    }
-  });
-  </script></head><body><splash-element splashid="splash" minsplashduration="1500" fit=""><app-element id="app" transition="core-transition-center" fit=""></app-element></splash-element><div id="splash" transition="core-transition-bottom"></div><script src="scripts/app.js"></script></body></html>
+  </script><link rel="import" href="elements/elements.vulcanized.html"></head><body><splash-element splashid="splash" minsplashduration="1500" fit=""><app-element id="app" transition="core-transition-center" fit=""></app-element></splash-element><div id="splash" transition="core-transition-bottom"></div><script src="scripts/app.js"></script></body></html>

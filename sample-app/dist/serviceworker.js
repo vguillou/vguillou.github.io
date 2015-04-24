@@ -77,7 +77,7 @@ self.addEventListener('fetch', function(event) {
       // to clone the response
       var fetchRequest = event.request.clone();
       
-	  console.log('SW fetching...');
+	  console.log('===> SW fetching...');
       return fetch(fetchRequest).then(function(response) {
         // Check if we received a valid response
         if (!response || response.status !== 200 || response.type !== 'basic') {

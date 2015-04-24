@@ -1,1 +1,1 @@
-!function(e){"use strict";var o=e.querySelector("#app");o.appName="Yo, Polymer App!",o.addEventListener("template-bound",function(){console.log("Our app is ready to rock!")})}(wrap(document));
+!function(){"use strict";"serviceWorker"in navigator?navigator.serviceWorker.register("./serviceworker.js",{scope:"./"}).then(function(e){console.log("Registered service worker with scope: "+e.scope)}).catch(function(e){console.error("Error while registering the service worker"),console.error(e)}):console.log("No service worker")}(window,document);

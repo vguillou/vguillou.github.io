@@ -44,31 +44,15 @@
     && 'content' in document.createElement('template')) {
     // We're using a browser with native WC support!
   } else {
-    document.write('<script src="bower_components/webcomponentsjs/webcomponents.min.js"><\/script>');
+    <!-- will be replaced with bower_components/webcomponentsjs/webcomponents.min.js -->
+    document.write('<script src="../bower_components/webcomponentsjs/webcomponents.js"><\/script>');
+	<!-- endreplace-->
   }
   </script>
 
   <!-- will be replaced with elements/elements.vulcanized.html -->
   <link rel="import" href="elements/elements.html">
   <!-- endreplace-->
-  
-  <!-- Service-worker  -->
-  <script>
-  window.addEventListener('load', function() {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./serviceworker.js', { scope: './' })
-        .then(function(r) {
-          console.log('Registered service worker with scope: ' + r.scope);
-        })
-        .catch(function(error) {
-          console.error('Error while registering the service worker');
-          console.error(error);
-        });
-    } else {
-      console.log('No service worker');
-    }
-  });
-  </script>
 </head>
 
 <body>

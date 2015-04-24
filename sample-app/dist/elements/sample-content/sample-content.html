@@ -29,6 +29,29 @@
       'Modus commodo minimum eum te, vero utinam assueverit per eu.',
       'No nam ipsum lorem aliquip, accumsan quaerendum ei usu.'
     ];
+	
+	var colors = [
+      '#f44336',
+      '#f44336',
+      '#9c27b0',
+      '#673ab7',
+      '#3f51b5',
+      '#2196f3',
+      '#03a9f4',
+      '#00bcd4',
+      '#009688',
+      '#4caf50',
+      '#8bc34a',
+      '#cddc39',
+      '#ffeb3b',
+      '#ffc107',
+	  '#ff9800',
+	  '#ff5722',
+	  '#795548',
+	  '#9e9e9e',
+	  '#607d8b',
+	  '#000000'
+    ];
 
     function randomString() {
       return strings[Math.floor(Math.random() * strings.length)];
@@ -36,6 +59,10 @@
 
     function randomLetter() {
       return String.fromCharCode(65 + Math.floor(Math.random() * 26));
+    }
+	
+	function randomColor() {
+      return colors[Math.floor(Math.random() * colors.length)];
     }
 
     Polymer('sample-content', {
@@ -46,8 +73,8 @@
         this.innerHTML = '';
         for (var i = 0; i < this.size; i++) {
           this.innerHTML +=
-            '<div style="border: 1px solid #bebebe; padding: 16px; margin: 16px; border-radius: 5px; background-color: #fff; color: #555;">' +
-            '<div style="display: inline-block; height: 64px; width: 64px; border-radius: 50%; background: #ddd; line-height: 64px; font-size: 30px; color: #666; text-align: center;">'+ randomLetter() + '</div>' +
+            '<div style="box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26); padding: 16px; margin: 16px; border-radius: 4px; background-color: #fff; color: #555;">' +
+            '<div style="display: inline-block; height: 64px; width: 64px; border-radius: 50%; background: ' + randomColor() + '; line-height: 64px; font-size: 30px; color: #eee; text-align: center;">'+ randomLetter() + '</div>' +
             '<div style="font-size: 22px; padding: 8px 0 16px; color: #888;">' + randomString() + '</div>' +
             '<div style="font-size: 16px; padding-bottom: 8px;">' + randomString() + '</div>' +
             '<div style="font-size: 12px;">' + randomString() + '</div>' +
