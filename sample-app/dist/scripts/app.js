@@ -1,0 +1,1 @@
+!function(e){"use strict";var o=e.querySelector("#app");o.appName="Yo, Polymer App!",o.addEventListener("template-bound",function(){console.log("Our app is ready to rock!")})}(wrap(document));
