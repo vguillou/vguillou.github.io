@@ -48,25 +48,20 @@
 			bottom: 0;
 			padding: 10px;
 			width: 200px;
+			overflow: scroll;
 		}
 	</style>
 
 </head>
 <body unresolved onclick="change();">
 
-	<!-- demo-element are all activable-mixin.
+	<!-- demo-element has 'activable-mixin'.
 		 Polymer seems not to support adding a mixin to an element declared in the body in polyfilled browsers,
 		 so I had create it's own html file. See demo/demo-element.html -->
 	<core-animated-pages transitions="slide-from-bottom">
-		<demo-element log="page 1" color="red">
-			<div style="background:red;" fit layout vertical center center-justified>page 1</div>
-		</demo-element>
-		<demo-element log="page 2" color="green" >
-			<div style="background:green;" fit layout vertical center center-justified>page 2</div>
-		</demo-element>
-		<demo-element log="page 3" color="blue">
-			<div style="background:blue;" fit layout vertical center center-justified>page 3</div>
-		</demo-element>
+		<demo-element log="page 1" color="red"></demo-element>
+		<demo-element log="page 2" color="green"></demo-element>
+		<demo-element log="page 3" color="blue"></demo-element>
 	</core-animated-pages>
 	
 	<div id="logger">

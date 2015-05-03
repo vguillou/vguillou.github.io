@@ -1,5 +1,6 @@
 {
   "name": "activable-mixin",
+  "version": "0.5.1",
   "authors": [
     "Vincent Guillou <vin.guillou@gmail.com>"
   ],
@@ -29,15 +30,17 @@
   "dependencies": {
     "polymer": "Polymer/polymer#^0.5"
   },
+  "devDependencies": {
+    "core-animated-pages": "Polymer/core-animated-pages#^0.5"
+  },
   "homepage": "https://github.com/vguillou/activable-mixin",
-  "_release": "9a3cf48a55",
+  "_release": "0.5.1",
   "_resolution": {
-    "type": "branch",
-    "branch": "master",
-    "commit": "9a3cf48a550fea7d11c3f40a1d7311e92a9c3f48"
+    "type": "version",
+    "tag": "0.5.1",
+    "commit": "8f5c978d8b9bccc0a65ac6ea0e1c2e3167131007"
   },
   "_source": "git://github.com/vguillou/activable-mixin.git",
-  "_target": "*",
-  "_originalSource": "activable-mixin",
-  "_direct": true
+  "_target": "^0.5",
+  "_originalSource": "vguillou/activable-mixin"
 }

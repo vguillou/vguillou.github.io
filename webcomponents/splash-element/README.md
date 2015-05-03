@@ -87,7 +87,7 @@ Simply listen to the 'transitionend' event that &lt;splash-element&gt; fires.
 <div id="splash" transition="core-transition-center"></div>
 ```
 
-What it does :
+What does this snippet do ?
 
 When the **&lt;splash-element&gt;** is added to the DOM, it will display the **&lt;div id="splash"&gt;** for 2000ms before transitioning to **&lt;your-element&gt;** (or wait for &lt;your-element&gt; to be ready if it takes more than 2000ms).
 The **&lt;div id="splash"&gt;** will slide down the page, will &lt;your-element&gt; will 'zoom-in' the page.

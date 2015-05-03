@@ -1,6 +1,6 @@
 {
   "name": "activable-mixin",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "authors": [
     "Vincent Guillou <vin.guillou@gmail.com>"
   ],
@@ -22,6 +22,9 @@
     "url": "git://github.com/vguillou/activable-mixin.git"
   },
   "dependencies": {
-	"polymer": "Polymer/polymer#^0.5"
+	  "polymer": "Polymer/polymer#^0.5"
+  },
+  "devDependencies": {
+    "core-animated-pages": "Polymer/core-animated-pages#^0.5"
   }
 }

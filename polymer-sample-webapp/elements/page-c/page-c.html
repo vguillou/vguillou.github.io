@@ -1,0 +1,80 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/core-header-panel/core-header-panel.html">
+<link rel="import" href="../../../bower_components/core-toolbar/core-toolbar.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/activable-mixin/activable-mixin.html">
+<link rel="import" href="../../../bower_components/core-list/core-list.html">
+<link rel="import" href="../../../bower_components/core-image/core-image.html">
+<link rel="import" href="../../../bower_components/paper-ripple/paper-ripple.html">
+<link rel="import" href="../../services/user-service.html">
+
+<polymer-element name="page-c">
+	<template>
+		<link rel="stylesheet" href="page-c.css">
+		
+		<user-service id="service" on-users-loaded="{{usersLoaded}}" on-users-error="{{usersError}}"></user-service>
+		
+		<core-header-panel id="headerpanel" mode="waterfall" fit cross-fade>
+			<core-toolbar not-selectable>
+				<paper-icon-button icon="menu" on-tap="{{togglePanel}}" hidden?="{{!narrow}}"></paper-icon-button>
+				<span flex>Page C</span>
+			</core-toolbar>
+			<div class="content" fit>
+				<core-list id="list" data="{{users}}" scrollTarget="{{$.headerpanel.scroller}}" on-core-activate="{{listItemTapped}}" flex>
+					<template>
+						<a href="{{model ? urlFor('page-c-subpage', {id: model.id}) : '#!'}}">
+							<paper-ripple fit></paper-ripple>
+							<div class="row" layout horizontal center>
+								<core-image src="{{model.picture}}" preload sizing="cover" style="background-color: {{model.color}};"></core-image>
+								<p flex>{{model.name.title}} {{model.name.first}} {{model.name.last}}</p>
+								<p>{{model.username}}</p>
+							</div>
+						</a>
+					</template>
+				</core-list>		
+			</div>
+		</core-header-panel>
+	</template>
+	<script>
+		Polymer('page-c', Polymer.mixin({
+			publish: {
+				narrow: false,
+				
+				/**
+				 * The selected user to be displayed.
+				 */
+				selected: {value: null, reflect: true},
+			},
+			attributeChanged: function(attrName, oldVal, newVal) {
+				// Necessary for ActivableMixin
+				this.activableAttributeChangedHandler(attrName, oldVal, newVal);
+			},
+			detached: function() {
+				// Necessary for ActivableMixin
+				this.activableDetachedHandler();
+			},
+			willActivate: function() {
+				// Load the users
+				if (!this.users) {
+					this.$.service.fetchUsers();
+				}
+			},
+			usersLoaded: function(e) {
+				// Grab the loaded users
+				this.users = e.detail.result;
+			},
+			usersError: function(e) {
+				// Show the error that happened while loading the users
+				console.log('page-c.usersError', e);
+			},
+			listItemTapped: function(e) {
+				// When a user is tapped, select it
+				this.selected = e.detail.data;
+			},
+			togglePanel: function(e) {
+				// Request the drawer panel
+				this.fire('toggle-panel', {srcEvent: e}, this, false);
+			}
+		}, Polymer.ActivableMixin));
+	</script>
+</polymer-element>

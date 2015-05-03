@@ -55,9 +55,12 @@
 			
 			if (attrName === this.activableSelectedAttribute && oldVal != newVal) {
 				if (newVal != null) {
-					var callbackA = (this.activableParentElementIsCAP && this.parentElement.lastSelected) ? this.willActivate : this.activated;
+					var callbackA = this.activableParentElementIsCAP ? this.willActivate : this.activated;
 					if (callbackA)
 						callbackA.apply(this, []);
+					// run 'activated' as well if no page selected before, as there won't be any transition
+					if (this.activated && this.activableParentElementIsCAP && this.parentElement.lastSelected === null)
+						this.activated.apply(this, []);
 				} else {
 					var callbackD = this.activableParentElementIsCAP ? this.willDeactivate : this.deactivated;
 					if (callbackD)

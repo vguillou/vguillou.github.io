@@ -1,0 +1,27 @@
+{
+  "name": "vguillou.github.io",
+  "version": "0.1",
+  "authors": [
+    "Vincent Guillou <vin.guillou@gmail.com>"
+  ],
+  "description": "As of now, only a simple container for various demos.",
+  "keywords": [
+    "polymer", "splash-element", "activable-mixin", "polymer-sample-webapp"
+  ],
+  "main": "index.html",
+  "license": "MIT",
+  "ignore": [
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/vguillou/vguillou.github.io.git"
+  },
+  "dependencies": {
+	  "polymer": "Polymer/polymer#^0.5",
+    "splash-element": "vguillou/splash-element#^0.5",
+    "activable-mixin": "vguillou/activable-mixin#^0.5"
+  },
+  "devDependencies": {
+    "core-animated-pages": "Polymer/core-animated-pages#^0.5"
+  }
+}

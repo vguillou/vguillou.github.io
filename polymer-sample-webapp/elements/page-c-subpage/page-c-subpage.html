@@ -1,0 +1,79 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/core-header-panel/core-header-panel.html">
+<link rel="import" href="../../../bower_components/core-toolbar/core-toolbar.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/activable-mixin/activable-mixin.html">
+<link rel="import" href="../../services/user-service.html">
+
+<polymer-element name="page-c-subpage">
+	<template>
+		<link rel="stylesheet" href="page-c-subpage.css">
+		
+		<user-service id="service" on-details-loaded="{{detailsLoaded}}" on-details-error="{{detailsError}}"></user-service>
+		
+		<core-header-panel id="headerpanel" mode="waterfall" fit cross-fade>
+			<core-toolbar not-selectable style="background-color: {{user.color}};">
+				<paper-icon-button icon="arrow-back" on-tap="{{onGoBack}}"></paper-icon-button>
+				<span flex>{{user.name.title | toUpperCase}} {{user.name.first | toUpperCase}} {{user.name.last | toUpperCase}}</span>
+			</core-toolbar>
+			<div class="content" flex>
+				<div class="page-content">
+					<p>{{user.location.street}}</p>
+					<p>{{user.location.city}} {{user.location.state}} {{user.location.zip}}</p>
+					<br></br>
+					<p>{{user.email}}</p>
+				</div>
+			</div>
+		</core-header-panel>
+	</template>
+	<script>
+		Polymer('page-c-subpage', Polymer.mixin({
+			publish: {
+				narrow: false,
+				params: null,
+				user: null,
+			},
+			attributeChanged: function(attrName, oldVal, newVal) {
+				// Necessary for ActivableMixin
+				this.activableAttributeChangedHandler(attrName, oldVal, newVal);
+			},
+			detached: function() {
+				// Necessary for ActivableMixin
+				this.activableDetachedHandler();
+			},
+			willActivate: function() {
+				// Before even displying the page, make sure the scroller is set to top
+				this.$.headerpanel.scroller.scrollTop = 0;
+			},
+			activated: function() {
+				// Get the details from the object's ID
+				this.$.service.fetchUserDetails(this.params.id);
+			},
+			deactivated: function() {
+				// Reset the page once the page is not displayed anymore
+				this.user = null;
+			},
+			detailsLoaded: function(e) {
+				// Once the details are availlable, replace the incomplete object with
+				// the complete one. Small trick to maintain the generated color.
+				var oldColor = this.user.color;
+				this.user = e.detail.result;
+				this.user.color = oldColor;
+			},
+			detailsError: function(e) {
+				// Show the error that happened while loading the details
+				console.log('page-c-subpage.detailsError', e);
+			},
+			toUpperCase: function(value) {
+			    // Filter to display a string in upper case only
+				if (value) {
+					return value.toUpperCase();
+				}
+			},
+			onGoBack: function(e) {
+				// Back handler
+				this.fire('go-back', {srcEvent: e}, this, false);
+			}
+		}, Polymer.ActivableMixin));
+	</script>
+</polymer-element>

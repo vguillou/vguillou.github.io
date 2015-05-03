@@ -5,7 +5,7 @@
 <!-- Element with activable-mixin -->
 <polymer-element name="demo-element">
 	<template>
-		<content></content>
+		<div style="background: {{color}};" fit layout vertical center center-justified>{{message}}</div>
 	</template>
 	<script>
 		Polymer('demo-element', Polymer.mixin({
@@ -38,6 +38,7 @@
 				this.addLog(this.log + " deactivated");
 			},
 			addLog: function(msg) {
+				this.message = msg;
 				var p = document.createElement("P");
 				var t = document.createTextNode(msg);
 				p.appendChild(t);
