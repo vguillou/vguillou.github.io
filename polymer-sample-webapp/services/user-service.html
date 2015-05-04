@@ -2,7 +2,7 @@
     :host {
       display: none;
     }
-    </style><core-ajax id="ajaxUsers" url="http://api.randomuser.me/0.4/?results=100" on-core-response="{{usersLoaded}}" on-core-error="{{usersError}}" handleas="json"></core-ajax><core-ajax id="ajaxDetails" url="http://api.randomuser.me/0.4/?seed={{seed}}" on-core-response="{{detailsLoaded}}" on-core-error="{{detailsError}}" handleas="json"></core-ajax></template><script>
+    </style><core-ajax id="ajaxUsers" url="../data/users.json" on-core-response="{{usersLoaded}}" on-core-error="{{usersError}}" handleas="json"></core-ajax><core-ajax id="ajaxDetails" url="../data/users.json" on-core-response="{{detailsLoaded}}" on-core-error="{{detailsError}}" handleas="json"></core-ajax></template><script>
   (function() {
     // this variable is shared by all instances of the service
     var users_ = [];
@@ -28,7 +28,6 @@
        */
       fetchUserDetails: function(seed) {
         this.seed = seed;
-		console.log("seed:", seed);
 		this.$.ajaxDetails.go();
       },
 	  
@@ -58,8 +57,14 @@
 	  
       detailsLoaded: function(e) {
 		if (this.$.ajaxDetails.response) {
-			details = this.$.ajaxDetails.response.results[0].user;
-			this.fire('details-loaded', {result: details}, this, false);
+			this.$.ajaxDetails.response.results.forEach(
+				function checkUser(u) {
+					if (u.seed === this.seed) {
+						this.fire('details-loaded', {result: u.user}, this, false);
+						return;
+					}
+				}.bind(this)
+			);
 		}
       },
 	  
