@@ -2,7 +2,7 @@ importScripts('serviceworker-cache-polyfill.js');
 
 // Cache version - To update everytime something cached resources
 // changes in order to clear up old cache and build new one.
-var CACHE_VERSION = 3;
+var CACHE_VERSION = 4;
 
 // Shorthand identifier mapped to specific versioned cache.
 var CURRENT_CACHES = {
