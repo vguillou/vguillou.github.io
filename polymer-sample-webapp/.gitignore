@@ -1,13 +1,3 @@
-node_modules
-temp
-.sass-cache
-.tmp
-TODO.txt
-bower_components
-
-# When time comes to push the project on git in its own repo, remove the uncommented and uncomment the commented!
-#dist
-
-!dist/bower_components
-dist/bower_components/*
-!dist/bower_components/webcomponentsjs
+!bower_components
+bower_components/*
+!bower_components/webcomponentsjs
