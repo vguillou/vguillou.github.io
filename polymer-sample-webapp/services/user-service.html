@@ -56,16 +56,20 @@
       },
 	  
       detailsLoaded: function(e) {
+      	var userDetails = null;
 		if (this.$.ajaxDetails.response) {
-			this.$.ajaxDetails.response.results.forEach(
+			this.$.ajaxDetails.response.results.some(
 				function checkUser(u) {
 					if (u.seed === this.seed) {
-						this.fire('details-loaded', {result: u.user}, this, false);
-						return;
+						userDetails = u.user;
+						userDetails.id = u.seed;
+						return true;
 					}
+					return false;
 				}.bind(this)
 			);
 		}
+		this.fire('details-loaded', {result: userDetails}, this, false);
       },
 	  
 	  detailsError: function(e) {

@@ -1,1 +1,1 @@
-core-toolbar{height:192px;background-color:#7986cb;color:#fff}
+core-toolbar{position:absolute;top:0;right:0;left:0;z-index:10;height:60px;line-height:60px;font-size:18px;font-weight:700;background-color:rgba(255,255,255,0)}.toolbarTitle{opacity:0;font-size:110%}#headerimage{width:100%;height:300px;background-size:contain;background-position:center center;background-repeat:no-repeat;background-color:transparent;border-radius:0}

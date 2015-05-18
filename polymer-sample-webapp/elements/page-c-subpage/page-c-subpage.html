@@ -1,41 +1,102 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../../bower_components/core-header-panel/core-header-panel.html">
+<link rel="import" href="../../../bower_components/core-scroll-header-panel/core-scroll-header-panel.html">
 <link rel="import" href="../../../bower_components/core-toolbar/core-toolbar.html">
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../../bower_components/activable-mixin/activable-mixin.html">
+<link rel="import" href="../../../bower_components/core-image/core-image.html">
+<link rel="import" href="../../../bower_components/core-icon/core-icon.html">
+<link rel="import" href="../../../bower_components/core-animated-pages/transitions/hero-transition.html">
+<link rel="import" href="../../../bower_components/core-animated-pages/transitions/cross-fade.html">
 <link rel="import" href="../../services/user-service.html">
+<link rel="import" href="../sample-content/sample-content.html">
 
-<polymer-element name="page-c-subpage">
+<polymer-element name="page-c-subpage" attributes="narrow params user transitionTo">
 	<template>
 		<link rel="stylesheet" href="page-c-subpage.css">
 		
 		<user-service id="service" on-details-loaded="{{detailsLoaded}}" on-details-error="{{detailsError}}"></user-service>
-		
-		<core-header-panel id="headerpanel" mode="waterfall" fit cross-fade>
-			<core-toolbar not-selectable style="background-color: {{user.color}};">
-				<paper-icon-button icon="arrow-back" on-tap="{{onGoBack}}"></paper-icon-button>
-				<span flex>{{user.name.title | toUpperCase}} {{user.name.first | toUpperCase}} {{user.name.last | toUpperCase}}</span>
-			</core-toolbar>
-			<div class="content" flex>
-				<div class="page-content">
-					<p>{{user.location.street}}</p>
-					<p>{{user.location.city}} {{user.location.state}} {{user.location.zip}}</p>
-					<br></br>
-					<p>{{user.email}}</p>
+			<!-- Only for the hero transition; to be hidden when the transition ends -->
+			<div id="herodiv" class="tall-header" hero-id="userImg" hero?="{{(parentElement.selected===transitionTo || parentElement.lastSelected===transitionTo) && user}}" cross-fade-delayed?="{{(parentElement.selected!=transitionTo && parentElement.lastSelected!=transitionTo) || !user}}"></div>
+			
+			<!-- Page content -->
+			<core-scroll-header-panel id="headerpanel" condenses on-core-header-transform="{{transformHeader}}" fit cross-fade-delayed>
+
+				<core-toolbar id="toolbar" class="tall tall-header" style="background-color: transparent;" not-selectable>
+					<paper-icon-button icon="arrow-back" on-tap="{{onGoBack}}"></paper-icon-button>
+					<div class="bottom indent title" flex>{{user.name.title | toUpperCase}} {{user.name.first | toUpperCase}} {{user.name.last | toUpperCase}}</div>
+				</core-toolbar>
+
+				<div class="content">
+					<!-- Phone -->
+			        <div class="group">
+			          <div class="item">
+			            <core-icon icon="perm-phone-msg"></core-icon>
+			            <div class="double-line-1">{{user.phone ? user.phone : '...'}}</div>
+			            <div class="double-line-2">Home</div>
+			          </div>
+			          <div class="item">
+			            <div class="double-line-1">{{user.cell ? user.cell : '...'}}</div>
+			            <div class="double-line-2">Cell</div>
+			          </div>
+			        </div>
+
+			        <!-- Email -->
+			        <div class="group">
+			          <div class="item">
+			          	<core-icon icon="mail"></core-icon>
+			            <div class="double-line-1">{{user.email ? user.email : '...'}}</div>
+			            <div class="double-line-2">Personal</div>
+			          </div>
+			        </div>
+
+			        <!-- Address -->
+			        <div class="group">
+			          <div class="item">
+			            <core-icon icon="room"></core-icon>
+			            <div class="double-line-1">{{user.location ? user.location.street : '...'}}</div>
+			            <div class="double-line-1">{{user.location ? user.location.city : '...'}} {{user.location.state}} {{user.location.zip}}</div>
+			            <div class="double-line-2">Home</div>
+			          </div>
+			        </div>
+
+					<sample-content size="5" ></sample-content>
 				</div>
-			</div>
-		</core-header-panel>
+			</core-scroll-header-panel>
+
+		</div>
 	</template>
 	<script>
 		Polymer('page-c-subpage', Polymer.mixin({
-			publish: {
-				narrow: false,
-				params: null,
-				user: null,
+			narrow: false,
+
+			/**
+			 * The route parameters.
+			 */
+			params: null,
+			
+			/**
+			 * The user to display.
+			 */
+			user: null,
+
+			/**
+			 * The identifier of the page to transition to when a user is clicked.
+			 */
+			transitionTo: -1,
+
+			/**
+			 * Color of the page's header.
+			 */
+			get headerColor() {
+				return this.user && this.user.color ? this.user.color : window.defaultColor;
 			},
 			attributeChanged: function(attrName, oldVal, newVal) {
 				// Necessary for ActivableMixin
 				this.activableAttributeChangedHandler(attrName, oldVal, newVal);
+			},
+			userChanged: function(oldVal, newVal) {
+				this.changeHeaderImage(newVal ? newVal.picture : null);
+				this.changeCondensedHeaderColor(this.headerColor);
 			},
 			detached: function() {
 				// Necessary for ActivableMixin
@@ -44,21 +105,34 @@
 			willActivate: function() {
 				// Before even displying the page, make sure the scroller is set to top
 				this.$.headerpanel.scroller.scrollTop = 0;
+
+				// Show the hero-transition's target
+				this.$.herodiv.style.visibility = 'visible';
 			},
 			activated: function() {
 				// Get the details from the object's ID
 				this.$.service.fetchUserDetails(this.params.id);
+
+				// Hide the now useless hero-transition's target
+				this.async(function() {
+					this.$.herodiv.style.visibility = 'hidden';
+				}, null, 300);
 			},
 			deactivated: function() {
 				// Reset the page once the page is not displayed anymore
 				this.user = null;
 			},
 			detailsLoaded: function(e) {
-				// Once the details are availlable, replace the incomplete object with
-				// the complete one. Small trick to maintain the generated color.
-				var oldColor = this.user.color;
-				this.user = e.detail.result;
-				this.user.color = oldColor;
+				var userDetails = e.detail.result;
+
+				if (userDetails) {
+					// Once the details are availlable, replace the incomplete object with
+					// the complete one. Small trick to maintain the generated color.
+					userDetails.color = this.user ? this.user.color : userDetails.color;
+					this.user = userDetails;
+				} else {
+					window.location = './404.html';
+				}
 			},
 			detailsError: function(e) {
 				// Show the error that happened while loading the details
@@ -70,9 +144,26 @@
 					return value.toUpperCase();
 				}
 			},
-			onGoBack: function(e) {
-				// Back handler
-				this.fire('go-back', {srcEvent: e}, this, false);
+			onGoBack: function() {
+				this.fire('navigate', {route: 'page-c', params: null}, this, false);
+			},
+			changeHeaderImage: function(newValue) {
+		  		// Background for toolbar when it is at its full size
+		  		var headerStyle = this.shadowRoot.querySelector('core-scroll-header-panel::shadow #headerBg').style;
+		  		headerStyle.backgroundImage = this.$.herodiv.style.backgroundImage = (newValue ? 'url(' + newValue + ')' : 'none');
+		  	},
+		    changeCondensedHeaderColor: function(newValue) {
+		    	// Background for the toolbar when it is condensed
+		  		var headerStyle = this.shadowRoot.querySelector('core-scroll-header-panel::shadow #condensedHeaderBg').style;
+		  		headerStyle.backgroundColor = this.$.herodiv.style.backgroundColor = (newValue ? newValue : window.defaultColor);
+		  	},
+			transformHeader: function(e) {
+				var titleStyle = this.shadowRoot.querySelector('.title').style;
+				var d = e.detail;
+				var m = d.height - d.condensedHeight;
+				var scale = Math.max(0.75, (m - d.y) / (m / 0.25)  + 0.75);
+				titleStyle.transform = titleStyle.webkitTransform =
+					'scale(' + scale + ') translateZ(0)';
 			}
 		}, Polymer.ActivableMixin));
 	</script>

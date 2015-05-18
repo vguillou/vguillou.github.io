@@ -1,5 +1,7 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../bower_components/core-animated-pages/core-animated-pages.html">
+<link rel="import" href="../../../bower_components/core-animated-pages/transitions/hero-transition.html">
+<link rel="import" href="../../../bower_components/core-animated-pages/transitions/cross-fade.html">
 <link rel="import" href="../../../bower_components/core-menu/core-menu.html">
 <link rel="import" href="../../../bower_components/core-item/core-item.html">
 <link rel="import" href="../../../bower_components/core-icons/core-icons.html">
@@ -49,20 +51,27 @@
 			</div>
 
 			<div class="content">
-				<more-route-selector selectedParams="{{params}}">
-					<core-animated-pages id="pages" transitions="cross-fade" selectedAttribute="test" fit>
+				<more-route-selector id="routeSelector" selectedParams="{{params}}">
+					<core-animated-pages id="pages" transitions="cross-fade cross-fade-delayed hero-transition" fit>
 
+						<!-- more-route forces the selector (core-animated-pages) to use index to track the selected child -->
+						<!-- 0 -->
 						<page-home route="home" narrow="{{narrow}}" on-toggle-panel="{{togglePanel}}" fit></page-home>
 						
+						<!-- 1 -->
 						<page-a route="page-a" narrow="{{narrow}}" on-toggle-panel="{{togglePanel}}" fit></page-a>
 						
+						<!-- 2 -->
 						<page-b route="page-b" narrow="{{narrow}}" on-toggle-panel="{{togglePanel}}" fit></page-b>
+							
+							<!-- 3 -->
+							<page-b-subpage route="page-b-subpage" narrow="{{narrow}}" params="{{params}}" on-navigate="{{navigate}}" fit></page-b-subpage>
 						
-							<page-b-subpage route="page-b-subpage" narrow="{{narrow}}" params="{{params}}" on-go-back="{{goBack}}" fit></page-b-subpage>
-						
-						<page-c route="page-c" selected="{{selectedUser}}" narrow="{{narrow}}" on-toggle-panel="{{togglePanel}}" fit></page-c>
-						
-							<page-c-subpage route="page-c-subpage" user="{{selectedUser}}" narrow="{{narrow}}" params="{{params}}" on-go-back="{{goBack}}" fit></page-c-subpage>
+						<!-- 4 -->
+						<page-c route="page-c" selectedUser="{{selectedUser}}" narrow="{{narrow}}" on-toggle-panel="{{togglePanel}}" params="{{params}}" transitionTo="5" fit></page-c>
+							
+							<!-- 5 -->
+							<page-c-subpage route="page-c-subpage" user="{{selectedUser}}" narrow="{{narrow}}" params="{{params}}" on-navigate="{{navigate}}" transitionTo="4" fit></page-c-subpage>
 
 					</core-animated-pages>
 				</more-route-selector>
@@ -71,25 +80,27 @@
 	</template>
 	
 	<script>
+		/*global MoreRouting */
+
 		Polymer('app-element', {
+			selectedUser: null,
 			menuItemSelectedHandler: function(e) {
-				if (e !== null && e !== undefined && e.detail !== null && e.detail !== undefined && e.detail.isSelected) {
+				if (e && e.detail && e.detail.isSelected) {
 					this.async(function() {
 						this.closeDrawer();
 					}, null, 100);
 				}
 			},
-
 			togglePanel: function() {
 				this.$.layout.togglePanel();
 			},
-
 			closeDrawer: function() {
 				this.$.layout.closeDrawer();
 			},
-			
-			goBack: function() {
-				window.history.back();
+			navigate: function(e) {
+				if (e && e.detail && e.detail.route) {
+					MoreRouting.navigateTo(e.detail.route, e.detail.params);
+				}
 			}
 		});
 	</script>
