@@ -12,15 +12,17 @@
 		<link rel="stylesheet" href="page-a.css">
 		
 		<core-header-panel id="headerpanel" mode="seamed" on-scroll="{{scroll}}" fit cross-fade>
-			<core-toolbar id="toolbar" not-selectable>
-				<paper-icon-button icon="menu" on-tap="{{togglePanel}}" hidden?="{{!narrow}}"></paper-icon-button>
-				<span id="title" class="toolbarTitle" flex>Page A</span>
-			</core-toolbar>
+			
 			<div class="content" fit>
 				<core-image id="headerimage" src="../../images/logo.svg" preload fade sizing="contain"></core-image>
 
 				<sample-content size="10" cross-fade-delayed></sample-content>
 			</div>
+
+			<core-toolbar id="toolbar" not-selectable>
+				<paper-icon-button icon="menu" on-tap="{{togglePanel}}" hidden?="{{!narrow}}"></paper-icon-button>
+				<span id="title" class="toolbarTitle" flex>Page A</span>
+			</core-toolbar>
 		</core-header-panel>
 	</template>
 	<script>

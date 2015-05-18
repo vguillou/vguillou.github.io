@@ -24,7 +24,7 @@
 		<link rel="stylesheet" href="app-element.css">
 		
 		<app-scaffold id="layout" narrow="{{narrow}}" fit>
-			<div class="menu" vertical layout>
+			<div class="menu" vertical layout not-selectable>
 				<img class="menuHeader" src="../../images/logo.svg"></img>
 				<more-route-selector>
 					<core-menu excludedLocalNames="div" on-core-select="{{menuItemSelectedHandler}}">
@@ -68,10 +68,10 @@
 							<page-b-subpage route="page-b-subpage" narrow="{{narrow}}" params="{{params}}" on-navigate="{{navigate}}" fit></page-b-subpage>
 						
 						<!-- 4 -->
-						<page-c route="page-c" selectedUser="{{selectedUser}}" narrow="{{narrow}}" on-toggle-panel="{{togglePanel}}" params="{{params}}" transitionTo="5" fit></page-c>
+						<page-c route="page-c" selectedUser="{{selectedUser}}" narrow="{{narrow}}" on-toggle-panel="{{togglePanel}}" params="{{params}}" on-change-theme-color="{{changeThemeColor}}" transitionTo="5" fit></page-c>
 							
 							<!-- 5 -->
-							<page-c-subpage route="page-c-subpage" user="{{selectedUser}}" narrow="{{narrow}}" params="{{params}}" on-navigate="{{navigate}}" transitionTo="4" fit></page-c-subpage>
+							<page-c-subpage route="page-c-subpage" user="{{selectedUser}}" narrow="{{narrow}}" params="{{params}}" on-navigate="{{navigate}}" on-change-theme-color="{{changeThemeColor}}" transitionTo="4" fit></page-c-subpage>
 
 					</core-animated-pages>
 				</more-route-selector>
@@ -100,6 +100,15 @@
 			navigate: function(e) {
 				if (e && e.detail && e.detail.route) {
 					MoreRouting.navigateTo(e.detail.route, e.detail.params);
+				}
+			},
+			changeThemeColor: function(e) {
+		  		var metas = document.getElementsByTagName('meta');
+				for (var i=0; i<metas.length; i++) {
+					if (metas[i].getAttribute('name') && metas[i].getAttribute('name') === 'theme-color') {
+						metas[i].setAttribute('content', (e && e.detail && e.detail.color) ? e.detail.color : window.defaultColor);
+						return;
+					}
 				}
 			}
 		});

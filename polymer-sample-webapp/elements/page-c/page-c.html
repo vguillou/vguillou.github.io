@@ -70,6 +70,11 @@
 				if (!this.users) {
 					this.$.service.fetchUsers();
 				}
+
+				// Reset theme color
+				this.async(function() {
+					this.fire('change-theme-color', {color: window.defaultColor}, this, false);
+				}, null, 100);
 			},
 			usersLoaded: function(e) {
 				// Grab the loaded users
