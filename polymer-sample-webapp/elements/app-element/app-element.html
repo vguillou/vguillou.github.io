@@ -52,14 +52,14 @@
 
 			<div class="content">
 				<more-route-selector id="routeSelector" selectedParams="{{params}}">
-					<core-animated-pages id="pages" transitions="cross-fade cross-fade-delayed hero-transition" fit>
+					<core-animated-pages id="pages" transitions="cross-fade cross-fade-delayed hero-transition" on-core-select="{{pageChanged}}" fit>
 
 						<!-- more-route forces the selector (core-animated-pages) to use index to track the selected child -->
 						<!-- 0 -->
 						<page-home route="home" narrow="{{narrow}}" on-toggle-panel="{{togglePanel}}" fit></page-home>
 						
 						<!-- 1 -->
-						<page-a route="page-a" narrow="{{narrow}}" on-toggle-panel="{{togglePanel}}" fit></page-a>
+						<page-a route="page-a" narrow="{{narrow}}" on-toggle-panel="{{togglePanel}}" themecolor="#00BCD4" fit></page-a>
 						
 						<!-- 2 -->
 						<page-b route="page-b" narrow="{{narrow}}" on-toggle-panel="{{togglePanel}}" fit></page-b>
@@ -68,7 +68,7 @@
 							<page-b-subpage route="page-b-subpage" narrow="{{narrow}}" params="{{params}}" on-navigate="{{navigate}}" fit></page-b-subpage>
 						
 						<!-- 4 -->
-						<page-c route="page-c" selectedUser="{{selectedUser}}" narrow="{{narrow}}" on-toggle-panel="{{togglePanel}}" params="{{params}}" on-change-theme-color="{{changeThemeColor}}" transitionTo="5" fit></page-c>
+						<page-c route="page-c" selectedUser="{{selectedUser}}" narrow="{{narrow}}" on-toggle-panel="{{togglePanel}}" params="{{params}}" transitionTo="5" fit></page-c>
 							
 							<!-- 5 -->
 							<page-c-subpage route="page-c-subpage" user="{{selectedUser}}" narrow="{{narrow}}" params="{{params}}" on-navigate="{{navigate}}" on-change-theme-color="{{changeThemeColor}}" transitionTo="4" fit></page-c-subpage>
@@ -100,6 +100,16 @@
 			navigate: function(e) {
 				if (e && e.detail && e.detail.route) {
 					MoreRouting.navigateTo(e.detail.route, e.detail.params);
+				}
+			},
+			pageChanged: function(e) {
+				// Change theme-color to match the page's
+				var color = null;
+				if (e && e.detail && e.detail.isSelected && e.detail.item) {
+					color = e.detail.item.getAttribute('themecolor');
+					this.async(function() {
+						this.changeThemeColor({detail: {color: (color ? color : window.defaultColor)}});
+					}, null, 250);
 				}
 			},
 			changeThemeColor: function(e) {

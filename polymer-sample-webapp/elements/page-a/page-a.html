@@ -14,7 +14,7 @@
 		<core-header-panel id="headerpanel" mode="seamed" on-scroll="{{scroll}}" fit cross-fade>
 			
 			<div class="content" fit>
-				<core-image id="headerimage" src="../../images/logo.svg" preload fade sizing="contain"></core-image>
+				<core-image id="headerimage" src="../../images/logo.svg" preload fade sizing="contain" _style="background-color: {{themecolor}};"></core-image>
 
 				<sample-content size="10" cross-fade-delayed></sample-content>
 			</div>
@@ -29,6 +29,7 @@
 		Polymer('page-a', Polymer.mixin({
 			publish: {
 				narrow: false,
+				themecolor: window.defaultColor,
 			},
 
 			/**
@@ -64,7 +65,7 @@
 				var newAlpha = 1 - Math.max(0, (headerHeight - scrollTop) / headerHeight);
 				if (newAlpha !== this.alpha) {
 					this.alpha = newAlpha;
-					var matches = window.defaultColor.match(/#([\da-f]{2})([\da-f]{2})([\da-f]{2})/i);
+					var matches = this.themecolor.match(/#([\da-f]{2})([\da-f]{2})([\da-f]{2})/i);
 					var rgba = 'rgba(' + matches.slice(1).map(function(m) {
 						return parseInt(m, 16);
 					}).concat(this.alpha) + ')';

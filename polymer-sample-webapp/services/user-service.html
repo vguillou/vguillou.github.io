@@ -36,14 +36,12 @@
 			//users_ = this.$.ajaxUsers.response.results.slice(0);
 			
 			// Trimming down user infos to a minimum for the purpose of this sample app
-			var randColor = null;
 			this.$.ajaxUsers.response.results.forEach(
 				function addUser(u) {
-					randColor = colors_[Math.floor(Math.random() * colors_.length)];
 					users_.push({id: u.seed,
 						username: u.user.username,
 						picture: u.user.picture,
-						color: randColor,
+						color: colors_[Math.floor(Math.random() * colors_.length)],
 						name: {title: u.user.name.title, first: u.user.name.first, last: u.user.name.last}});
 				}
 			);
@@ -63,6 +61,7 @@
 					if (u.seed === this.seed) {
 						userDetails = u.user;
 						userDetails.id = u.seed;
+						userDetails.color = colors_[Math.floor(Math.random() * colors_.length)];
 						return true;
 					}
 					return false;

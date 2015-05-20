@@ -12,11 +12,11 @@
 
 <polymer-element name="page-c-subpage" attributes="narrow params user transitionTo">
 	<template>
-		<link rel="stylesheet" href="page-c-subpage.css" shim-shadowdom>
+		<link rel="stylesheet" href="page-c-subpage.css">
 		
 		<user-service id="service" on-details-loaded="{{detailsLoaded}}" on-details-error="{{detailsError}}"></user-service>
 			<!-- Only for the hero transition; to be hidden when the transition ends -->
-			<div id="herodiv" class="tall-header" hero-id="userImg" hero?="{{(parentElement.selected===transitionTo || parentElement.lastSelected===transitionTo) && user}}" cross-fade-delayed?="{{(parentElement.selected!=transitionTo && parentElement.lastSelected!=transitionTo) || !user}}"></div>
+			<div id="herodiv" class="tall-header" hero-id="userImg" hero?="{{(parentElement.selected===transitionTo || parentElement.lastSelected===transitionTo) && user!=null}}" cross-fade-delayed?="{{(parentElement.selected!=transitionTo && parentElement.lastSelected!=transitionTo) || !user}}"></div>
 			
 			<!-- Page content -->
 			<core-scroll-header-panel id="headerpanel" condenses on-core-header-transform="{{transformHeader}}" fit cross-fade-delayed>
@@ -27,6 +27,7 @@
 				</core-toolbar>
 
 				<div class="content">
+
 					<!-- Phone -->
 			        <div class="group">
 			          <div class="item">
@@ -91,7 +92,9 @@
 				return this.user && this.user.color ? this.user.color : window.defaultColor;
 			},
 
-			herodivHidden: false,
+			herodivVisible: true,
+
+			titleStyle: null,
 
 			attributeChanged: function(attrName, oldVal, newVal) {
 				// Necessary for ActivableMixin
@@ -106,12 +109,14 @@
 				this.activableDetachedHandler();
 			},
 			willActivate: function() {
+				this.titleStyle = this.shadowRoot.querySelector('.title').style;
+
 				// Before even displying the page, make sure the scroller is set to top
 				this.$.headerpanel.scroller.scrollTop = 0;
 
 				// Show the hero-transition's target
 				this.$.herodiv.style.visibility = 'visible';
-				this.herodivHidden = false;
+				this.herodivVisible = true;
 			},
 			activated: function() {
 				// Get the details from the object's ID
@@ -120,10 +125,12 @@
 				// Hide the now useless hero-transition's target
 				this.async(function() {
 					this.$.herodiv.style.visibility = 'hidden';
-					this.herodivHidden = true;
-				}, null, 300);
+					this.herodivVisible = false;
+				}, null, 350);
 
 				// Request to change the theme color if possible
+				// No need to reset it when we leave the page,
+				// app-element takes care of that
 				this.requestThemeColorChange();
 			},
 			deactivated: function() {
@@ -172,18 +179,19 @@
 		  	},
 			transformHeader: function(e) {
 				// Hide the herodiv if it is not already
-				if (!this.herodivHidden || this.$.headerpanel.scroller.scrollTop > 0) {
+				if (this.herodivVisible && this.$.headerpanel.scroller.scrollTop > 0) {
 					this.$.herodiv.style.visibility = 'hidden';
-					this.herodivHidden = true;
+					this.herodivVisible = false;
 				}
 
 				// Calculating the scale of the title
-				var titleStyle = this.shadowRoot.querySelector('.title').style;
-				var d = e.detail;
-				var m = d.height - d.condensedHeight;
-				var scale = Math.max(0.75, (m - d.y) / (m / 0.25)  + 0.75);
-				titleStyle.transform = titleStyle.webkitTransform =
-					'scale(' + scale + ') translateZ(0)';
+				if (this.titleStyle) {
+					var d = e.detail;
+					var m = d.height - d.condensedHeight;
+					var scale = Math.max(0.75, (m - d.y) / (m / 0.25)  + 0.75);
+					this.titleStyle.transform = this.titleStyle.webkitTransform =
+						'scale(' + scale + ') translateZ(0)';
+				}
 			},
 			requestThemeColorChange: function() {
 				if (this.user && this.user.color) {
