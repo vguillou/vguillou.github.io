@@ -12,7 +12,6 @@
 
 <!-- Web app pages -->
 <link rel="import" href="../app-scaffold/app-scaffold.html">
-<link rel="import" href="../page-home/page-home.html">
 <link rel="import" href="../page-a/page-a.html">
 <link rel="import" href="../page-b/page-b.html">
 <link rel="import" href="../page-b-subpage/page-b-subpage.html">
@@ -26,14 +25,12 @@
 		<app-scaffold id="layout" narrow="{{narrow}}" fit>
 			<div class="menu" vertical layout not-selectable>
 				<img class="menuHeader" src="../../images/logo.svg"></img>
+				
 				<more-route-selector>
 					<core-menu excludedLocalNames="div" on-core-select="{{menuItemSelectedHandler}}">
 					
 						<!--<div class="separator">Simple routing</div>-->
 						
-						<core-item icon="home" label="Home" route="home">
-							<a href="{{urlFor('home')}}"><paper-ripple fit></paper-ripple></a>
-						</core-item>
 						<core-item icon="book" label="Page A" route="page-a">
 							<a href="{{urlFor('page-a')}}"><paper-ripple fit></paper-ripple></a>
 						</core-item>
@@ -55,23 +52,21 @@
 					<core-animated-pages id="pages" transitions="cross-fade cross-fade-delayed hero-transition" on-core-select="{{pageChanged}}" fit>
 
 						<!-- more-route forces the selector (core-animated-pages) to use index to track the selected child -->
+
 						<!-- 0 -->
-						<page-home route="home" narrow="{{narrow}}" on-toggle-panel="{{togglePanel}}" fit></page-home>
-						
-						<!-- 1 -->
 						<page-a route="page-a" narrow="{{narrow}}" on-toggle-panel="{{togglePanel}}" themecolor="#00BCD4" fit></page-a>
 						
-						<!-- 2 -->
+						<!-- 1 -->
 						<page-b route="page-b" narrow="{{narrow}}" on-toggle-panel="{{togglePanel}}" fit></page-b>
 							
-							<!-- 3 -->
+							<!-- 2 -->
 							<page-b-subpage route="page-b-subpage" narrow="{{narrow}}" params="{{params}}" on-navigate="{{navigate}}" fit></page-b-subpage>
 						
-						<!-- 4 -->
-						<page-c route="page-c" selectedUser="{{selectedUser}}" narrow="{{narrow}}" on-toggle-panel="{{togglePanel}}" params="{{params}}" transitionTo="5" fit></page-c>
+						<!-- 3 -->
+						<page-c route="page-c" selectedUser="{{selectedUser}}" narrow="{{narrow}}" on-toggle-panel="{{togglePanel}}" params="{{params}}" transitionTo="4" fit></page-c>
 							
-							<!-- 5 -->
-							<page-c-subpage route="page-c-subpage" user="{{selectedUser}}" narrow="{{narrow}}" params="{{params}}" on-navigate="{{navigate}}" on-change-theme-color="{{changeThemeColor}}" transitionTo="4" fit></page-c-subpage>
+							<!-- 4 -->
+							<page-c-subpage route="page-c-subpage" user="{{selectedUser}}" narrow="{{narrow}}" params="{{params}}" on-navigate="{{navigate}}" on-change-theme-color="{{changeThemeColor}}" transitionTo="3" fit></page-c-subpage>
 
 					</core-animated-pages>
 				</more-route-selector>
@@ -84,6 +79,7 @@
 
 		Polymer('app-element', {
 			selectedUser: null,
+			
 			menuItemSelectedHandler: function(e) {
 				if (e && e.detail && e.detail.isSelected) {
 					this.async(function() {

@@ -4,6 +4,7 @@
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../../bower_components/activable-mixin/activable-mixin.html">
 <link rel="import" href="../../../bower_components/core-image/core-image.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../../bower_components/core-animated-pages/transitions/cross-fade.html">
 <link rel="import" href="../sample-content/sample-content.html">
 
@@ -22,10 +23,55 @@
 			<core-toolbar id="toolbar" not-selectable>
 				<paper-icon-button icon="menu" on-tap="{{togglePanel}}" hidden?="{{!narrow}}"></paper-icon-button>
 				<span id="title" class="toolbarTitle" flex>Page A</span>
+				<paper-icon-button icon="account-circle" title="Do something" on-tap="{{doSomething}}"></paper-icon-button>
+				<paper-icon-button id="fullscreenBtn" icon="{{fullscreen ? 'fullscreen-exit' : 'fullscreen'}}" title="{{(fullscreen ? 'Exit' : 'Go') + ' full screen'}}" onclick="toggleFullscreen()"></paper-icon-button>
 			</core-toolbar>
 		</core-header-panel>
 	</template>
 	<script>
+		/*exported toggleFullscreen */
+
+		// Full screen API
+		function isFullscreenEnabled() {
+			return (document.fullscreenEnabled || 
+			    document.webkitFullscreenEnabled || 
+			    document.mozFullScreenEnabled ||
+			    document.msFullscreenEnabled) ? true : false;
+		}
+		function isFullscreenToggled() {
+			return (document.fullscreenElement ||
+			    document.webkitFullscreenElement ||
+			    document.mozFullScreenElement ||
+			    document.msFullscreenElement) ? true : false;
+		}
+		function toggleFullscreen() {
+			if (isFullscreenEnabled()) {
+				if (!isFullscreenToggled()) {
+					var d = document.documentElement;
+					if (d.requestFullscreen) {
+					    d.requestFullscreen();
+					} else if (d.webkitRequestFullscreen) {
+					    d.webkitRequestFullscreen();
+					} else if (d.mozRequestFullScreen) {
+					    d.mozRequestFullScreen();
+					} else if (d.msRequestFullscreen) {
+					    d.msRequestFullscreen();
+					}
+				} else {
+					if (document.exitFullscreen) {
+					    document.exitFullscreen();
+					} else if (document.webkitExitFullscreen) {
+					    document.webkitExitFullscreen();
+					} else if (document.mozCancelFullScreen) {
+					    document.mozCancelFullScreen();
+					} else if (document.msExitFullscreen) {
+					    document.msExitFullscreen();
+					}
+				}
+			}
+		}
+
+		// Element
 		Polymer('page-a', Polymer.mixin({
 			publish: {
 				narrow: false,
@@ -37,11 +83,35 @@
 			 */
 			alpha: 0,
 
+			/**
+			 * Tracks if the web-app is displayed in fullscreen mode.
+			 */
+			fullscreen: false,
+
 			attributeChanged: function(attrName, oldVal, newVal) {
 				this.activableAttributeChangedHandler(attrName, oldVal, newVal);
 			},
+			attached: function() {
+				// Add fullscreen change listener
+				if (isFullscreenEnabled()) {
+					document.addEventListener('fullscreenchange', this.changeFullscreen.bind(this));
+					document.addEventListener('webkitfullscreenchange', this.changeFullscreen.bind(this));
+					document.addEventListener('mozfullscreenchange', this.changeFullscreen.bind(this));
+					document.addEventListener('MSFullscreenChange', this.changeFullscreen.bind(this));
+				} else {
+					this.$.fullscreenBtn.style.display = 'none';
+				}
+				this.changeFullscreen();
+			},
 			detached: function() {
 				this.activableDetachedHandler();
+
+				if (isFullscreenEnabled()) {
+					document.removeEventListener('fullscreenchange', this.changeFullscreen);
+					document.removeEventListener('webkitfullscreenchange', this.changeFullscreen);
+					document.removeEventListener('mozfullscreenchange', this.changeFullscreen);
+					document.removeEventListener('MSFullscreenChange', this.changeFullscreen);
+				}
 			},
 			willActivate: function() {
 				console.log('page-a.willActivate => Do your page init thingy here');
@@ -58,6 +128,12 @@
 			},
 			togglePanel: function(e) {
 				this.fire('toggle-panel', {srcEvent: e}, this, false);
+			},
+			doSomething: function() {
+				console.log('Do something');
+			},
+			changeFullscreen: function() {
+				this.fullscreen = isFullscreenToggled();
 			},
 			scroll: function() {
 				var headerHeight = this.$.headerimage.offsetHeight;

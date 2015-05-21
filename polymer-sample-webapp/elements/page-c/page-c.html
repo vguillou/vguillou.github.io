@@ -31,7 +31,7 @@
 							<div class="row" layout horizontal center hero-p?="{{model.id===selectedUser.id}}">
 								<core-image class="round" src="{{model.picture}}" preload sizing="cover" _style="background-color: {{model.color}};" hero-id="userImg" hero?="{{model.id===selectedUser.id}}"></core-image>
 								<p flex>{{model.name.title}} {{model.name.first}} {{model.name.last}}</p>
-								<p>{{model.username}}</p>
+								<p class="secondary">{{model.username}}</p>
 							</div>
 						</a>
 					</div>

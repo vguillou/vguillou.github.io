@@ -169,13 +169,14 @@
 			},
 			changeHeaderImage: function(newValue) {
 		  		// Background for toolbar when it is at its full size
-		  		var headerStyle = this.$.headerpanel.shadowRoot.querySelector('#headerBg').style;
-		  		headerStyle.backgroundImage = this.$.herodiv.style.backgroundImage = (newValue ? 'url(' + newValue + ')' : 'none');
+		  		var headerBgStyle = this.$.headerpanel.shadowRoot.querySelector('#headerBg').style;
+		  		headerBgStyle.backgroundImage = this.$.herodiv.style.backgroundImage = (newValue ? 'url(' + newValue + ')' : 'none');
 		  	},
 		    changeCondensedHeaderColor: function(newValue) {
 		    	// Background for the toolbar when it is condensed
 		  		var headerStyle = this.$.headerpanel.shadowRoot.querySelector('#condensedHeaderBg').style;
-		  		headerStyle.backgroundColor = this.$.herodiv.style.backgroundColor = (newValue ? newValue : window.defaultColor);
+		  		var headerBgStyle = this.$.headerpanel.shadowRoot.querySelector('#headerBg').style;
+		  		headerStyle.backgroundColor = headerBgStyle.backgroundColor = this.$.herodiv.style.backgroundColor = (newValue ? newValue : window.defaultColor);
 		  	},
 			transformHeader: function(e) {
 				// Hide the herodiv if it is not already
