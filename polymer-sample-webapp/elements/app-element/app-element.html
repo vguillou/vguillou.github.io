@@ -10,6 +10,9 @@
 <!-- Routing configuration -->
 <link rel="import" href="../routes/routes.html">
 
+<!-- Models -->
+<link rel="import" href="../../models/user-model.html">
+
 <!-- Web app pages -->
 <link rel="import" href="../app-scaffold/app-scaffold.html">
 <link rel="import" href="../page-a/page-a.html">
@@ -21,6 +24,13 @@
 <polymer-element name="app-element">
 	<template>
 		<link rel="stylesheet" href="app-element.css">
+
+		<!-- Model -->
+
+		<user-model id="userModel"></user-model>
+
+
+		<!-- View -->
 		
 		<app-scaffold id="layout" narrow="{{narrow}}" fit>
 			<div class="menu" vertical layout not-selectable>
@@ -54,19 +64,19 @@
 						<!-- more-route forces the selector (core-animated-pages) to use index to track the selected child -->
 
 						<!-- 0 -->
-						<page-a route="page-a" narrow="{{narrow}}" on-toggle-panel="{{togglePanel}}" themecolor="#00BCD4" fit></page-a>
+						<page-a route="page-a" narrow?="{{narrow}}" on-toggle-panel="{{togglePanel}}" fit></page-a>
 						
 						<!-- 1 -->
-						<page-b route="page-b" narrow="{{narrow}}" on-toggle-panel="{{togglePanel}}" fit></page-b>
+						<page-b route="page-b" narrow?="{{narrow}}" themecolor="#7986CB" on-toggle-panel="{{togglePanel}}" fit></page-b>
 							
 							<!-- 2 -->
-							<page-b-subpage route="page-b-subpage" narrow="{{narrow}}" params="{{params}}" on-navigate="{{navigate}}" fit></page-b-subpage>
+							<page-b-subpage route="page-b-subpage" narrow="{{narrow}}" params="{{params}}" themecolor="#7986CB" on-navigate="{{navigate}}" fit></page-b-subpage>
 						
 						<!-- 3 -->
-						<page-c route="page-c" selectedUser="{{selectedUser}}" narrow="{{narrow}}" on-toggle-panel="{{togglePanel}}" params="{{params}}" transitionTo="4" fit></page-c>
+						<page-c route="page-c" narrow?="{{narrow}}" transitionTo="4" users="{{$.userModel.users}}" usersLoading="{{$.userModel.usersLoading}}" usersError="{{$.userModel.usersError}}" selectedUser="{{selectedUser}}" on-fetch-users="{{fetchUsers}}" on-toggle-panel="{{togglePanel}}" fit></page-c>
 							
 							<!-- 4 -->
-							<page-c-subpage route="page-c-subpage" user="{{selectedUser}}" narrow="{{narrow}}" params="{{params}}" on-navigate="{{navigate}}" on-change-theme-color="{{changeThemeColor}}" transitionTo="3" fit></page-c-subpage>
+							<page-c-subpage route="page-c-subpage" narrow?="{{narrow}}" params="{{params}}" transitionTo="3" userHeader="{{selectedUser}}" userDetails="{{$.userModel.userDetails}}" userDetailsLoading="{{$.userModel.userDetailsLoading}}" userDetailsError="{{$.userModel.userDetailsError}}" on-fetch-user-details="{{fetchUserDetails}}" on-navigate="{{navigate}}" on-change-theme-color="{{changeThemeColor}}" fit></page-c-subpage>
 
 					</core-animated-pages>
 				</more-route-selector>
@@ -98,10 +108,18 @@
 					MoreRouting.navigateTo(e.detail.route, e.detail.params);
 				}
 			},
+			fetchUsers: function() {
+				this.$.userModel.fetchUsers();
+			},
+			fetchUserDetails: function(e) {
+				if (e && e.detail && e.detail.id) {
+					this.$.userModel.fetchUserDetails(e.detail.id);
+				}
+			},
 			pageChanged: function(e) {
 				// Change theme-color to match the page's
 				var color = null;
-				if (e && e.detail && e.detail.isSelected && e.detail.item) {
+				if (e && e.detail && e.detail.isSelected && e.detail.item && e.detail.item.getAttribute) {
 					color = e.detail.item.getAttribute('themecolor');
 					this.async(function() {
 						this.changeThemeColor({detail: {color: (color ? color : window.defaultColor)}});

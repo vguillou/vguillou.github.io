@@ -11,14 +11,14 @@
 		<link rel="stylesheet" href="page-b-subpage.css">
 		
 		<core-header-panel id="headerpanel" mode="waterfall" fit cross-fade>
-			<core-toolbar not-selectable>
-				<paper-icon-button icon="arrow-back" on-tap="{{onGoBack}}"></paper-icon-button>
+			<core-toolbar _style="background-color: {{themecolor}};" not-selectable>
+				<paper-icon-button icon="arrow-back" on-tap="{{_onGoBack}}"></paper-icon-button>
 				<span flex>Page B Subpage</span>
 			</core-toolbar>
 			<div class="content" flex>
 				<div class="page-content">
 					<h1>Page B subpage with param : {{params.myparam}}</h1>
-					<h2>The scroller on this page is set to top everytime you leave it (see 'willActivate' callback)</h2>
+					<h2>The scroller on this page is set to top everytime you access the page through the 'willActivate' callback added by the activable-mixin</h2>
 				</div>
 				<sample-content size="10"></sample-content>
 			</div>
@@ -28,6 +28,7 @@
 		Polymer('page-b-subpage', Polymer.mixin({
 			publish: {
 				narrow: false,
+				themecolor: window.defaultColor,
 				params: null,
 			},
 			attributeChanged: function(attrName, oldVal, newVal) {
@@ -49,7 +50,7 @@
 			deactivated: function() {
 				console.log('page-b-subpage.deactivated => Do your page destroy thingy here. Parameters of the new page to display : ', this.params);
 			},
-			onGoBack: function() {
+			_onGoBack: function() {
 				this.fire('navigate', {route: 'page-b', params: null}, this, false);
 			}
 		}, Polymer.ActivableMixin));

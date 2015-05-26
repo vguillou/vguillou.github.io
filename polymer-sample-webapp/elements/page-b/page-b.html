@@ -11,8 +11,8 @@
 		<link rel="stylesheet" href="page-b.css">
 		
 		<core-header-panel id="headerpanel" mode="waterfall" fit cross-fade>
-			<core-toolbar not-selectable>
-				<paper-icon-button icon="menu" on-tap="{{togglePanel}}" hidden?="{{!narrow}}"></paper-icon-button>
+			<core-toolbar _style="background-color: {{themecolor}};" not-selectable>
+				<paper-icon-button icon="menu" on-tap="{{_togglePanel}}" hidden?="{{!narrow}}"></paper-icon-button>
 				<span flex>Page B</span>
 			</core-toolbar>
 			<div class="content" flex>
@@ -27,6 +27,7 @@
 		Polymer('page-b', Polymer.mixin({
 			publish: {
 				narrow: false,
+				themecolor: window.defaultColor
 			},
 			attributeChanged: function(attrName, oldVal, newVal) {
 				this.activableAttributeChangedHandler(attrName, oldVal, newVal);
@@ -46,7 +47,7 @@
 			deactivated: function() {
 				console.log('page-b.deactivated => Do your page exit thingy here');
 			},
-			togglePanel: function(e) {
+			_togglePanel: function(e) {
 				this.fire('toggle-panel', {srcEvent: e}, this, false);
 			}
 		}, Polymer.ActivableMixin));

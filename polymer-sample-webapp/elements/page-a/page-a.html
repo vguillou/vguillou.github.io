@@ -6,72 +6,86 @@
 <link rel="import" href="../../../bower_components/core-image/core-image.html">
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../../bower_components/core-animated-pages/transitions/cross-fade.html">
+<link rel="import" href="../../../bower_components/fullscreen-api/fullscreen-api.html">
+<link rel="import" href="../../../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../../../bower_components/core-icons/device-icons.html">
+<link rel="import" href="../../../bower_components/core-icons/hardware-icons.html">
+<link rel="import" href="../../../bower_components/core-icons/av-icons.html">
+<link rel="import" href="../../../bower_components/core-icons/maps-icons.html">
 <link rel="import" href="../sample-content/sample-content.html">
 
 <polymer-element name="page-a">
 	<template>
 		<link rel="stylesheet" href="page-a.css">
 		
-		<core-header-panel id="headerpanel" mode="seamed" on-scroll="{{scroll}}" fit cross-fade>
+		<fullscreen-api id="fsapi"></fullscreen-api>
+
+		<core-header-panel id="headerpanel" mode="seamed" on-scroll="{{_scroll}}" fit cross-fade>
 			
 			<div class="content" fit>
-				<core-image id="headerimage" src="../../images/logo.svg" preload fade sizing="contain" _style="background-color: {{themecolor}};"></core-image>
+				<core-image id="headerimage" src="../../images/logo.svg" preload fade sizing="contain"></core-image>
 
-				<sample-content size="10" cross-fade-delayed></sample-content>
+				<h3 class="row">Leveraging the power of Web Components and the Polymer framework, this sample Web App offers:</h3>
+
+				<div class="content" vertical center layout>
+
+					<div>
+						<div class="row" horizontal center layout>
+							<core-icon icon="hardware:smartphone" class="big"></core-icon>
+							<p>A mobile compatible web-app</p>
+						</div>
+						<div class="row" layout horizontal center>
+							<core-icon icon="android" class="big"></core-icon>
+							<p>Android, iOS, Windows Phone integration</p>
+						</div>
+						<div class="row" layout horizontal center>
+							<core-icon icon="av:repeat-one" class="big"></core-icon>
+							<p>Single-page navigation and routing</p>
+						</div>
+						<div class="row" layout horizontal center>
+							<core-icon icon="device:devices" class="big"></core-icon>
+							<p>Responsive design</p>
+						</div>
+						<div class="row" layout horizontal center>
+							<core-icon icon="device:signal-cellular-connected-no-internet-1-bar" class="big"></core-icon>
+							<p>Offline mode on Chrome using the Service worker</p>
+						</div>
+						<div class="row" layout horizontal center>
+							<core-icon icon="polymer" class="big"></core-icon>
+							<p>Polymer and MV* pattern implementation</p>
+						</div>
+						<div class="row" layout horizontal center>
+							<core-icon icon="maps:layers" class="big"></core-icon>
+							<p>Material Design</p>
+						</div>
+						<div class="row" layout horizontal center>
+							<core-icon icon="view-carousel" class="big"></core-icon>
+							<p>Smooth transitions between pages</p>
+						</div>
+						<div class="row" layout horizontal center>
+							<core-icon icon="input" class="big"></core-icon>
+							<p>Page initialisation pattern (with  <a href="https://github.com/vguillou/activable-mixin">&lt;activable-mixin&gt;</a>)</p>
+						</div>
+						<div class="row" layout horizontal center>
+							<core-icon icon="aspect-ratio" class="big"></core-icon>
+							<p>Full screen mode (with  <a href="https://github.com/vguillou/fullscreen-api">&lt;fullscreen-api&gt;</a>)</p>
+						</div>
+						<div class="row" layout horizontal center>
+							<core-icon icon="device:now-wallpaper" class="big"></core-icon>
+							<p>Splash screen (with <a href="https://github.com/vguillou/splash-element">&lt;splash-element&gt;</a>)</p>
+						</div>
+					</div>
+				</div>
 			</div>
 
 			<core-toolbar id="toolbar" not-selectable>
-				<paper-icon-button icon="menu" on-tap="{{togglePanel}}" hidden?="{{!narrow}}"></paper-icon-button>
+				<paper-icon-button icon="menu" on-tap="{{_togglePanel}}" hidden?="{{!narrow}}"></paper-icon-button>
 				<span id="title" class="toolbarTitle" flex>Page A</span>
-				<paper-icon-button icon="account-circle" title="Do something" on-tap="{{doSomething}}"></paper-icon-button>
-				<paper-icon-button id="fullscreenBtn" icon="{{fullscreen ? 'fullscreen-exit' : 'fullscreen'}}" title="{{(fullscreen ? 'Exit' : 'Go') + ' full screen'}}" onclick="toggleFullscreen()"></paper-icon-button>
+				<paper-icon-button id="fullscreenBtn" icon="{{$.fsapi.fullscreen ? 'fullscreen-exit' : 'fullscreen'}}" title="{{($.fsapi.fullscreen ? 'Exit' : 'Go') + ' full screen'}}" on-click="{{_toggleFullscreen}}" hidden?="{{!$.fsapi.fullscreenAvailable}}"></paper-icon-button>
 			</core-toolbar>
 		</core-header-panel>
 	</template>
 	<script>
-		/*exported toggleFullscreen */
-
-		// Full screen API
-		function isFullscreenEnabled() {
-			return (document.fullscreenEnabled || 
-			    document.webkitFullscreenEnabled || 
-			    document.mozFullScreenEnabled ||
-			    document.msFullscreenEnabled) ? true : false;
-		}
-		function isFullscreenToggled() {
-			return (document.fullscreenElement ||
-			    document.webkitFullscreenElement ||
-			    document.mozFullScreenElement ||
-			    document.msFullscreenElement) ? true : false;
-		}
-		function toggleFullscreen() {
-			if (isFullscreenEnabled()) {
-				if (!isFullscreenToggled()) {
-					var d = document.documentElement;
-					if (d.requestFullscreen) {
-					    d.requestFullscreen();
-					} else if (d.webkitRequestFullscreen) {
-					    d.webkitRequestFullscreen();
-					} else if (d.mozRequestFullScreen) {
-					    d.mozRequestFullScreen();
-					} else if (d.msRequestFullscreen) {
-					    d.msRequestFullscreen();
-					}
-				} else {
-					if (document.exitFullscreen) {
-					    document.exitFullscreen();
-					} else if (document.webkitExitFullscreen) {
-					    document.webkitExitFullscreen();
-					} else if (document.mozCancelFullScreen) {
-					    document.mozCancelFullScreen();
-					} else if (document.msExitFullscreen) {
-					    document.msExitFullscreen();
-					}
-				}
-			}
-		}
-
-		// Element
 		Polymer('page-a', Polymer.mixin({
 			publish: {
 				narrow: false,
@@ -81,72 +95,35 @@
 			/**
 			 * The current opacity of the page's header image.
 			 */
-			alpha: 0,
-
-			/**
-			 * Tracks if the web-app is displayed in fullscreen mode.
-			 */
-			fullscreen: false,
+			_alpha: 0,
 
 			attributeChanged: function(attrName, oldVal, newVal) {
 				this.activableAttributeChangedHandler(attrName, oldVal, newVal);
 			},
-			attached: function() {
-				// Add fullscreen change listener
-				if (isFullscreenEnabled()) {
-					document.addEventListener('fullscreenchange', this.changeFullscreen.bind(this));
-					document.addEventListener('webkitfullscreenchange', this.changeFullscreen.bind(this));
-					document.addEventListener('mozfullscreenchange', this.changeFullscreen.bind(this));
-					document.addEventListener('MSFullscreenChange', this.changeFullscreen.bind(this));
-				} else {
-					this.$.fullscreenBtn.style.display = 'none';
-				}
-				this.changeFullscreen();
-			},
 			detached: function() {
 				this.activableDetachedHandler();
-
-				if (isFullscreenEnabled()) {
-					document.removeEventListener('fullscreenchange', this.changeFullscreen);
-					document.removeEventListener('webkitfullscreenchange', this.changeFullscreen);
-					document.removeEventListener('mozfullscreenchange', this.changeFullscreen);
-					document.removeEventListener('MSFullscreenChange', this.changeFullscreen);
-				}
 			},
 			willActivate: function() {
-				console.log('page-a.willActivate => Do your page init thingy here');
-				this.scroll();
+				this._scroll();
 			},
-			activated: function() {
-				console.log('page-a.activated');
-			},
-			willDeactivate: function() {
-				console.log('page-a.willDeactivate');
-			},
-			deactivated: function() {
-				console.log('page-a.deactivated => Do your page exit thingy here');
-			},
-			togglePanel: function(e) {
+			_togglePanel: function(e) {
 				this.fire('toggle-panel', {srcEvent: e}, this, false);
 			},
-			doSomething: function() {
-				console.log('Do something');
+			_toggleFullscreen: function() {
+				this.$.fsapi.toggleFullscreen();
 			},
-			changeFullscreen: function() {
-				this.fullscreen = isFullscreenToggled();
-			},
-			scroll: function() {
+			_scroll: function() {
 				var headerHeight = this.$.headerimage.offsetHeight;
 				var scrollTop = this.$.headerpanel.scroller.scrollTop;
 				var newAlpha = 1 - Math.max(0, (headerHeight - scrollTop) / headerHeight);
-				if (newAlpha !== this.alpha) {
-					this.alpha = newAlpha;
-					var matches = this.themecolor.match(/#([\da-f]{2})([\da-f]{2})([\da-f]{2})/i);
+				if (newAlpha !== this._alpha) {
+					this._alpha = newAlpha;
+					var matches = window.defaultColor.match(/#([\da-f]{2})([\da-f]{2})([\da-f]{2})/i);
 					var rgba = 'rgba(' + matches.slice(1).map(function(m) {
 						return parseInt(m, 16);
-					}).concat(this.alpha) + ')';
+					}).concat(this._alpha) + ')';
 					this.$.toolbar.style.backgroundColor = rgba;
-					this.$.title.style.opacity = this.alpha;
+					this.$.title.style.opacity = this._alpha;
 				}
 			}
 		}, Polymer.ActivableMixin));
