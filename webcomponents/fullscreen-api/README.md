@@ -102,7 +102,10 @@ Polymer({
 
 ## Demo!
 
-[Link](http://vguillou.github.io/webcomponents/fullscreen-api/demo.html)
+[Link](https://vguillou.github.io/webcomponents/fullscreen-api/demo.html)
+
+[Iframe demo](https://vguillou.github.io/webcomponents/fullscreen-api/demo_iframe.html)
+
 
 ## License
 
