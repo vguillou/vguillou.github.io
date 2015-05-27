@@ -94,7 +94,7 @@ The **&lt;div id="splash"&gt;** will slide down the page, will &lt;your-element&
 
 ## Demo!
 
-[This way.](http://vguillou.github.io/webcomponents/splash-element/demo.html)
+[This way.](https://vguillou.github.io/webcomponents/splash-element/demo.html)
 
 ## License
 

@@ -37,6 +37,11 @@ Usage :
 	<div id="splash" transition="core-transition-center"></div>
 	
 Learn more : https://github.com/vguillou/splash-element
+
+@element splash-element
+@blurb A Polymer based Web Component helping you to display a splash screen while your app is getting ready.
+@homepage https://github.com/vguillou/splash-element
+@demo https://vguillou.github.io/webcomponents/splash-element/demo.html
 -->
 <polymer-element name="splash-element">
 	<template>
@@ -45,6 +50,7 @@ Learn more : https://github.com/vguillou/splash-element
 		</div>
 	</template>
 	<script>
+	(function () {
 		Polymer('splash-element', {
 			publish: {
 				/**
@@ -218,5 +224,6 @@ Learn more : https://github.com/vguillou/splash-element
 					target.style.display = newValue ? newValue : '';
 			}
 		});
+	})();
 	</script>
 </polymer-element>
