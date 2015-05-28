@@ -15,6 +15,7 @@
 		</core-drawer-panel>
 	</template>
 	<script>
+	(function () {
 		Polymer('app-scaffold', {
 			publish: {
 				/**
@@ -42,9 +43,9 @@
 				 *
 				 * @attribute responsiveWidth
 				 * @type string
-				 * @default '750px'
+				 * @default '800px'
 				 */    
-				responsiveWidth: '750px'
+				responsiveWidth: '800px'
 			},
 
 			/**
@@ -71,5 +72,6 @@
 				this.$.drawerPanel.closeDrawer();
 			}
 		});
+	})();
 	</script>
 </polymer-element>

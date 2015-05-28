@@ -22,7 +22,7 @@
 		cross-fade?="{{(parentElement.selected!=transitionTo && parentElement.lastSelected!=transitionTo) || !userHeader}}"></div>
 
 			<!-- Page content -->
-			<core-scroll-header-panel id="headerpanel" on-core-header-transform="{{_transformHeader}}" fit condenses cross-fade-delayed>
+			<core-scroll-header-panel id="headerpanel" on-core-header-transform="{{_transformHeader}}" condenses cross-fade-delayed>
 
 				<core-toolbar id="toolbar" class="tall tall-header" style="background-color: transparent;" not-selectable>
 					<paper-icon-button icon="arrow-back" on-tap="{{_onGoBack}}"></paper-icon-button>
@@ -82,6 +82,7 @@
 		</div>
 	</template>
 	<script>
+	(function () {
 		Polymer('page-c-subpage', Polymer.mixin({
 			narrow: false,
 
@@ -259,5 +260,6 @@
 				this.fire('change-theme-color', {color: this._headerColor}, this, false);
 			}
 		}, Polymer.ActivableMixin));
+	})();
 	</script>
 </polymer-element>

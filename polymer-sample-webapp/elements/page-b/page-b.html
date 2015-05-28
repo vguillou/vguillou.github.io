@@ -10,7 +10,7 @@
 	<template>
 		<link rel="stylesheet" href="page-b.css">
 		
-		<core-header-panel id="headerpanel" mode="waterfall" fit cross-fade>
+		<core-header-panel id="headerpanel" mode="waterfall" cross-fade>
 			<core-toolbar _style="background-color: {{themecolor}};" not-selectable>
 				<paper-icon-button icon="menu" on-tap="{{_togglePanel}}" hidden?="{{!narrow}}"></paper-icon-button>
 				<span flex>Page B</span>
@@ -24,6 +24,7 @@
 		</core-header-panel>
 	</template>
 	<script>
+	(function () {
 		Polymer('page-b', Polymer.mixin({
 			publish: {
 				narrow: false,
@@ -51,5 +52,6 @@
 				this.fire('toggle-panel', {srcEvent: e}, this, false);
 			}
 		}, Polymer.ActivableMixin));
+	})();
 	</script>
 </polymer-element>

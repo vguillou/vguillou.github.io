@@ -23,7 +23,7 @@
 
 <polymer-element name="app-element">
 	<template>
-		<link rel="stylesheet" href="app-element.css">
+		<link rel="stylesheet" href="app-element.css" shim-shadowdom>
 
 		<!-- Model -->
 
@@ -32,7 +32,7 @@
 
 		<!-- View -->
 		
-		<app-scaffold id="layout" narrow="{{narrow}}" fit>
+		<app-scaffold id="layout" narrow="{{narrow}}" responsiveWidth="800px" drawerWidth="{{narrow ? '290px' : '320px'}}" fit>
 			<div class="menu" vertical layout not-selectable>
 				<img class="menuHeader" src="../../images/logo.svg"></img>
 				
@@ -85,8 +85,9 @@
 	</template>
 	
 	<script>
-		/*global MoreRouting */
-
+	/*global MoreRouting */
+	
+	(function () {
 		Polymer('app-element', {
 			selectedUser: null,
 			
@@ -136,5 +137,6 @@
 				}
 			}
 		});
+	})();
 	</script>
 </polymer-element>

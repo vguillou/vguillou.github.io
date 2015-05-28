@@ -1,10 +1,9 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../bower_components/core-header-panel/core-header-panel.html">
 <link rel="import" href="../../../bower_components/core-toolbar/core-toolbar.html">
-<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../../bower_components/activable-mixin/activable-mixin.html">
 <link rel="import" href="../../../bower_components/core-image/core-image.html">
-<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../../bower_components/core-animated-pages/transitions/cross-fade.html">
 <link rel="import" href="../../../bower_components/fullscreen-api/fullscreen-api.html">
 <link rel="import" href="../../../bower_components/core-icons/core-icons.html">
@@ -20,19 +19,24 @@
 		
 		<fullscreen-api id="fsapi"></fullscreen-api>
 
-		<core-header-panel id="headerpanel" mode="seamed" on-scroll="{{_scroll}}" fit cross-fade>
-			
-			<div class="content" fit>
-				<core-image id="headerimage" src="../../images/logo.svg" preload fade sizing="contain"></core-image>
+		<core-header-panel id="headerpanel" mode="{{narrow ? 'waterfall' : 'cover'}}" cross-fade>
 
-				<h3 class="row">Leveraging the power of Web Components and the Polymer framework, this sample Web App offers:</h3>
+			<core-toolbar class="{{ {tall: !narrow} | tokenList}}" _style="background-color: {{themecolor}};">
+				<paper-icon-button icon="menu" on-tap="{{_togglePanel}}" hidden?="{{!narrow}}" selectable></paper-icon-button>
+				<span flex>Page A</span>
+				<paper-fab icon="{{$.fsapi.fullscreen ? 'fullscreen-exit' : 'fullscreen'}}" title="{{($.fsapi.fullscreen ? 'Exit' : 'Go') + ' full screen'}}" on-click="{{_toggleFullscreen}}" tabindex="0" selectable></paper-fab>
+			</core-toolbar>
 
-				<div class="content" vertical center layout>
+			<div class="content" flex>
+
+				<h3 class="row">Leveraging the power of Web Components and the Polymer framework, this sample Web App showcases:</h3>
+
+				<div vertical center layout>
 
 					<div>
 						<div class="row" horizontal center layout>
 							<core-icon icon="hardware:smartphone" class="big"></core-icon>
-							<p>A mobile compatible web-app</p>
+							<p>Mobile compatibility</p>
 						</div>
 						<div class="row" layout horizontal center>
 							<core-icon icon="android" class="big"></core-icon>
@@ -64,68 +68,41 @@
 						</div>
 						<div class="row" layout horizontal center>
 							<core-icon icon="input" class="big"></core-icon>
-							<p>Page initialisation pattern (with  <a href="https://github.com/vguillou/activable-mixin">&lt;activable-mixin&gt;</a>)</p>
+							<p>A Page initialisation pattern (with  <a href="https://github.com/vguillou/activable-mixin">&lt;activable-mixin&gt;</a>)</p>
 						</div>
 						<div class="row" layout horizontal center>
 							<core-icon icon="aspect-ratio" class="big"></core-icon>
-							<p>Full screen mode (with  <a href="https://github.com/vguillou/fullscreen-api">&lt;fullscreen-api&gt;</a>)</p>
+							<p>HTML5 full screen mode (with  <a href="https://github.com/vguillou/fullscreen-api">&lt;fullscreen-api&gt;</a>)</p>
 						</div>
 						<div class="row" layout horizontal center>
 							<core-icon icon="device:now-wallpaper" class="big"></core-icon>
-							<p>Splash screen (with <a href="https://github.com/vguillou/splash-element">&lt;splash-element&gt;</a>)</p>
+							<p>A splash screen implementation (with <a href="https://github.com/vguillou/splash-element">&lt;splash-element&gt;</a>)</p>
 						</div>
 					</div>
 				</div>
 			</div>
-
-			<core-toolbar id="toolbar" not-selectable>
-				<paper-icon-button icon="menu" on-tap="{{_togglePanel}}" hidden?="{{!narrow}}"></paper-icon-button>
-				<span id="title" class="toolbarTitle" flex>Page A</span>
-				<paper-icon-button id="fullscreenBtn" icon="{{$.fsapi.fullscreen ? 'fullscreen-exit' : 'fullscreen'}}" title="{{($.fsapi.fullscreen ? 'Exit' : 'Go') + ' full screen'}}" on-click="{{_toggleFullscreen}}" hidden?="{{!$.fsapi.fullscreenAvailable}}"></paper-icon-button>
-			</core-toolbar>
 		</core-header-panel>
 	</template>
 	<script>
+	(function () {
 		Polymer('page-a', Polymer.mixin({
 			publish: {
 				narrow: false,
 				themecolor: window.defaultColor,
 			},
-
-			/**
-			 * The current opacity of the page's header image.
-			 */
-			_alpha: 0,
-
 			attributeChanged: function(attrName, oldVal, newVal) {
 				this.activableAttributeChangedHandler(attrName, oldVal, newVal);
 			},
 			detached: function() {
 				this.activableDetachedHandler();
 			},
-			willActivate: function() {
-				this._scroll();
-			},
 			_togglePanel: function(e) {
 				this.fire('toggle-panel', {srcEvent: e}, this, false);
 			},
 			_toggleFullscreen: function() {
 				this.$.fsapi.toggleFullscreen();
-			},
-			_scroll: function() {
-				var headerHeight = this.$.headerimage.offsetHeight;
-				var scrollTop = this.$.headerpanel.scroller.scrollTop;
-				var newAlpha = 1 - Math.max(0, (headerHeight - scrollTop) / headerHeight);
-				if (newAlpha !== this._alpha) {
-					this._alpha = newAlpha;
-					var matches = window.defaultColor.match(/#([\da-f]{2})([\da-f]{2})([\da-f]{2})/i);
-					var rgba = 'rgba(' + matches.slice(1).map(function(m) {
-						return parseInt(m, 16);
-					}).concat(this._alpha) + ')';
-					this.$.toolbar.style.backgroundColor = rgba;
-					this.$.title.style.opacity = this._alpha;
-				}
 			}
 		}, Polymer.ActivableMixin));
+	})();
 	</script>
 </polymer-element>

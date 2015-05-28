@@ -17,7 +17,7 @@
 	<template>
 		<link rel="stylesheet" href="page-c.css">
 		
-		<core-header-panel id="headerpanel" mode="waterfall" fit cross-fade>
+		<core-header-panel id="headerpanel" mode="waterfall" cross-fade>
 			<core-toolbar not-selectable>
 				<paper-icon-button icon="menu" on-tap="{{_togglePanel}}" hidden?="{{!narrow}}"></paper-icon-button>
 				<span flex>Page C</span>
@@ -53,6 +53,7 @@
   		</paper-toast>
 	</template>
 	<script>
+	(function () {
 		Polymer('page-c', Polymer.mixin({
 			/**
 			 * The 'mobile or not' flag.
@@ -130,5 +131,6 @@
 				this.fire('toggle-panel', {srcEvent: e}, this, false);
 			}
 		}, Polymer.ActivableMixin));
+	})();
 	</script>
 </polymer-element>

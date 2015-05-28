@@ -10,21 +10,22 @@
 	<template>
 		<link rel="stylesheet" href="page-b-subpage.css">
 		
-		<core-header-panel id="headerpanel" mode="waterfall" fit cross-fade>
+		<core-header-panel id="headerpanel" mode="waterfall" cross-fade>
 			<core-toolbar _style="background-color: {{themecolor}};" not-selectable>
 				<paper-icon-button icon="arrow-back" on-tap="{{_onGoBack}}"></paper-icon-button>
 				<span flex>Page B Subpage</span>
 			</core-toolbar>
 			<div class="content" flex>
 				<div class="page-content">
-					<h1>Page B subpage with param : {{params.myparam}}</h1>
-					<h2>The scroller on this page is set to top everytime you access the page through the 'willActivate' callback added by the activable-mixin</h2>
+					<h2>Page B subpage with param : {{params.myparam}}</h2>
+					<h3>The scroller on this page is set to top everytime you access the page through the 'willActivate' callback added by the activable-mixin</h3>
 				</div>
 				<sample-content size="10"></sample-content>
 			</div>
 		</core-header-panel>
 	</template>
 	<script>
+	(function () {
 		Polymer('page-b-subpage', Polymer.mixin({
 			publish: {
 				narrow: false,
@@ -54,5 +55,6 @@
 				this.fire('navigate', {route: 'page-b', params: null}, this, false);
 			}
 		}, Polymer.ActivableMixin));
+	})();
 	</script>
 </polymer-element>
