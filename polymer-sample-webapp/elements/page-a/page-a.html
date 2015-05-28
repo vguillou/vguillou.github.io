@@ -24,7 +24,7 @@
 			<core-toolbar class="{{ {tall: !narrow} | tokenList}}" _style="background-color: {{themecolor}};">
 				<paper-icon-button icon="menu" on-tap="{{_togglePanel}}" hidden?="{{!narrow}}" selectable></paper-icon-button>
 				<span flex>Page A</span>
-				<paper-fab icon="{{$.fsapi.fullscreen ? 'fullscreen-exit' : 'fullscreen'}}" title="{{($.fsapi.fullscreen ? 'Exit' : 'Go') + ' full screen'}}" on-click="{{_toggleFullscreen}}" tabindex="0" selectable></paper-fab>
+				<paper-fab icon="{{$.fsapi.fullscreen ? 'fullscreen-exit' : 'fullscreen'}}" title="{{($.fsapi.fullscreen ? 'Exit' : 'Go') + ' full screen'}}" on-click="{{_toggleFullscreen}}" hidden?="{{!$.fsapi.fullscreenAvailable}}" tabindex="0" selectable></paper-fab>
 			</core-toolbar>
 
 			<div class="content" flex>
