@@ -5,6 +5,8 @@
 <link rel="import" href="../../../bower_components/core-image/core-image.html">
 <link rel="import" href="../../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../../bower_components/core-animated-pages/transitions/cross-fade.html">
+<link rel="import" href="../../../bower_components/core-animated-pages/transitions/slide-up.html">
+<link rel="import" href="../../../bower_components/core-animated-pages/transitions/scale-up.html">
 <link rel="import" href="../../../bower_components/fullscreen-api/fullscreen-api.html">
 <link rel="import" href="../../../bower_components/core-icons/core-icons.html">
 <link rel="import" href="../../../bower_components/core-icons/device-icons.html">
@@ -19,15 +21,15 @@
 		
 		<fullscreen-api id="fsapi"></fullscreen-api>
 
-		<core-header-panel id="headerpanel" mode="{{narrow ? 'waterfall' : 'cover'}}" cross-fade>
+		<core-header-panel id="headerpanel" mode="{{narrow ? 'waterfall' : 'cover'}}">
 
-			<core-toolbar class="{{ {tall: !narrow} | tokenList}}" _style="background-color: {{themecolor}};">
-				<paper-icon-button icon="menu" on-tap="{{_togglePanel}}" hidden?="{{!narrow}}" selectable></paper-icon-button>
+			<core-toolbar class="{{ {tall: !narrow} | tokenList}}" _style="background-color: {{themecolor}};" cross-fade>
+				<paper-icon-button icon="menu" on-tap="{{_togglePanel}}" hidden?="{{!narrow}}" tabindex="0"></paper-icon-button>
 				<span flex>Page A</span>
-				<paper-fab icon="{{$.fsapi.fullscreen ? 'fullscreen-exit' : 'fullscreen'}}" title="{{($.fsapi.fullscreen ? 'Exit' : 'Go') + ' full screen'}}" on-click="{{_toggleFullscreen}}" hidden?="{{!$.fsapi.fullscreenAvailable}}" tabindex="0" selectable></paper-fab>
+				
 			</core-toolbar>
 
-			<div class="content" flex>
+			<div class="content" flex slide-up>
 
 				<h3 class="row">Leveraging the power of Web Components and the Polymer framework, this sample Web App showcases:</h3>
 
@@ -82,6 +84,9 @@
 				</div>
 			</div>
 		</core-header-panel>
+
+		<!-- Outside the toolbar for the 'scale-up' animation not to be hidden by the toolbar's own 'cross-fade' animation -->
+		<paper-fab icon="{{$.fsapi.fullscreen ? 'fullscreen-exit' : 'fullscreen'}}" title="{{($.fsapi.fullscreen ? 'Exit' : 'Go') + ' full screen'}}" on-click="{{_toggleFullscreen}}" hidden?="{{!$.fsapi.fullscreenAvailable}}" tabindex="1" scale-up></paper-fab>
 	</template>
 	<script>
 	(function () {

@@ -2,6 +2,8 @@
 <link rel="import" href="../../../bower_components/core-animated-pages/core-animated-pages.html">
 <link rel="import" href="../../../bower_components/core-animated-pages/transitions/hero-transition.html">
 <link rel="import" href="../../../bower_components/core-animated-pages/transitions/cross-fade.html">
+<link rel="import" href="../../../bower_components/core-animated-pages/transitions/slide-up.html">
+<link rel="import" href="../../../bower_components/core-animated-pages/transitions/scale-up.html">
 <link rel="import" href="../../../bower_components/core-menu/core-menu.html">
 <link rel="import" href="../../../bower_components/core-item/core-item.html">
 <link rel="import" href="../../../bower_components/core-icons/core-icons.html">
@@ -59,7 +61,7 @@
 
 			<div class="content">
 				<more-route-selector id="routeSelector" selectedParams="{{params}}">
-					<core-animated-pages id="pages" transitions="cross-fade cross-fade-delayed hero-transition" on-core-select="{{pageChanged}}" fit>
+					<core-animated-pages id="pages" transitions="cross-fade cross-fade-delayed hero-transition slide-up scale-up" on-core-select="{{pageChanged}}" fit>
 
 						<!-- more-route forces the selector (core-animated-pages) to use index to track the selected child -->
 
