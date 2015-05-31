@@ -1,0 +1,103 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<script>
+(function(scope) {
+	/**
+	 * Direct children elements of `core-selector` that require finer control over their
+	 * activation status should add this `ActivableMixin` mixin to their Polymer
+	 * prototype definition and implement the `activated` and/or `deactivated` method(s).
+	 * 
+	 * `ActivableMixin`'s must manually call the `activableAttributeChangedHandler` from the
+	 * element's `attributeChanged` callback, forwarding the 3 parameters. In addition, direct
+	 * children of a `core-animated-pages` element must call `activableDetachedHandler`
+	 * as well from their `detached` callback.
+	 *
+	 * Elements with the `ActivableMixin` then get several new callbacks they can implement :
+	 * - willActivate (only for children of `core-animated-pages`) :
+	 *      Called before the transition when the child is selected.
+	 *      Useful to handle initialization before your element gets visible.
+	 * - activated :
+	 *      Called when the child is selected and displayed (after the end of the transition
+	 *      if child of `core-animated-pages`).
+	 * - willDeactivate (only for children of `core-animated-pages`) :
+	 *      Called before the transition when the child is unselected.
+	 * - deactivated :
+	 *      Called when the child is unselected and not displayed anymore (after the end
+	 *      of the transition if child of `core-animated-pages`).
+	 *      Useful to handle exit tasks when your element isn't visible anymore.
+	 *
+	 * Learn more : https://github.com/vguillou/activable-mixin
+	 *
+	 * @element ActivableMixin
+	 */
+	scope.ActivableMixin = {
+	
+		activableSelectedAttribute : null,
+		activableParentElementIsCAP : false,
+		activableWasActivated : false,
+
+		/**
+		 * User must call from `attributeChanged` callback
+		 *
+		 * @method activableAttributeChangedHandler
+		 */
+		activableAttributeChangedHandler: function(attrName, oldVal, newVal) {
+			// Initialization, done only once
+			if (this.activableSelectedAttribute == null && this.parentElement) {
+				this.activableSelectedAttribute = this.parentElement.selectedAttribute;
+				
+				if (this.parentElement.localName === 'core-animated-pages') {
+					this.activableParentElementIsCAP = true;
+					this.parentElement.addEventListener('core-animated-pages-transition-prepare', this.activableTransitionPrepareHandler.bind(this));
+					this.parentElement.addEventListener('core-animated-pages-transition-end', this.activableTransitionEndHandler.bind(this));
+				}
+			}
+			
+			if (attrName === this.activableSelectedAttribute && oldVal != newVal) {
+				if (newVal != null) {
+					var callbackA = this.activableParentElementIsCAP ? this.willActivate : this.activated;
+					if (callbackA)
+						callbackA.apply(this, []);
+					// run 'activated' as well if no page selected before, as there won't be any transition
+					if (this.activated && this.activableParentElementIsCAP && this.parentElement.lastSelected === null)
+						this.activated.apply(this, []);
+				} else {
+					var callbackD = this.activableParentElementIsCAP ? this.willDeactivate : this.deactivated;
+					if (callbackD)
+						callbackD.apply(this, []);
+				}
+			}
+		},
+		
+		/**
+		 * User must call from `detached` callback, only
+		 * if the parent is a <core-animated-pages> element.
+		 *
+		 * @method activableDetachedHandler
+		 */
+		activableDetachedHandler: function() {
+			if (this.activableParentElementIsCAP) {
+				this.parentElement.removeEventListener('core-animated-pages-transition-prepare', this.activableTransitionPrepareHandler);
+				this.parentElement.removeEventListener('core-animated-pages-transition-end', this.activableTransitionEndHandler);
+			}
+		},
+		
+		activableTransitionPrepareHandler: function(e) {
+			if (this.getAttribute(this.activableSelectedAttribute) != null) {
+				this.activableWasActivated = true;
+			}
+		},
+		
+		activableTransitionEndHandler: function(e) {
+			if (this.getAttribute(this.activableSelectedAttribute) != null) {
+				if (this.activated)
+					this.activated.apply(this, []);
+			} else if (this.activableWasActivated) {
+				this.activableWasActivated = false;
+				if (this.deactivated)
+					this.deactivated.apply(this, []);
+			}
+		}
+	};
+})(Polymer);
+</script>
