@@ -1,0 +1,17 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../core-transition/core-transition-css.html">
+
+<polymer-element name="custom-transition" extends="core-transition-css">
+    <template>
+		<link no-shim rel="stylesheet" href="custom-transition.css">
+    </template>
+    <script>
+      Polymer({
+        baseClass: 'custom-transition',
+        openedClass: 'custom-opened'
+      });
+    </script>
+</polymer-element>
+
+<custom-transition id="custom-transition-front" transitionType="front"></custom-transition>
+<custom-transition id="custom-transition-back" transitionType="back"></custom-transition>
