@@ -111,6 +111,7 @@ Polymer({
   attached: function() {
     this._managedSelector = this._findTargetSelector();
     if (!this._managedSelector) {
+      console.warn(this, 'was built without a selector to manage. It will do nothing.');
       return;
     }
 
@@ -140,7 +141,7 @@ Polymer({
     this._setRoutes(routes);
   },
 
-  _onMoreRouteChange: function(event) {
+  _onMoreRouteChange: function(event, detail) {
     if (!this._managedSelector) return;
 
     var selected = '';
@@ -159,11 +160,19 @@ Polymer({
     this._settingSelection = true;
     this._managedSelector.select(selected);
     this._settingSelection = false;
+
+    // propogate the changes to this component
+    this._setSelectedRoute(detail.newRoute);
+    this._setSelectedIndex(detail.newIndex);
+    this._setSelectedPath(detail.newPath);
+    this._setSelectedParams();
+    this._setSelectedParams(detail.newParams);
   },
 
   _findTargetSelector: function() {
     var children = Polymer.dom(this).children;
     if (children.length !== 1) {
+      console.error(this, 'expects only a single selector child');
       return null;
     }
 
@@ -171,6 +180,7 @@ Polymer({
     if ('selected' in child && 'items' in child) {
       return child;
     } else {
+      console.error(this, 'can only manage children that are selectors');
       return null;
     }
   },
@@ -182,12 +192,14 @@ Polymer({
     }
 
     if (!item.hasAttribute(this.routeAttribute)) {
+      console.warn(item, 'is missing a context route or "' + this.routeAttribute + '" attribute');
       return null;
     }
     var expression = item.getAttribute(this.routeAttribute);
     var route      = MoreRouting.getRoute(expression, this.parentRoute);
     // Associate the route w/ its element while we're here.
     item.moreRouteContext = route;
+
     return route;
   },
 

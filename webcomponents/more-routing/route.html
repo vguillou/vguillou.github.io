@@ -128,7 +128,7 @@ Route.prototype.partsForParams = function partsForParams(params, silent) {
           throw new Error('Missing param "' + config.name + '" for route ' + this);
         }
       }
-      parts.push(value);
+      parts.push(encodeURIComponent(value));
     }
   }
   return parts;
@@ -143,6 +143,7 @@ Route.prototype.partsForParams = function partsForParams(params, silent) {
 Route.prototype.processPathParts = function processPathParts(parts) {
   this.parts  = parts;
   this.active = this.matchesPathParts(parts);
+  //console.log('processPathParts', this.path, "isActive : " + this.active, this.compiled, parts);
 
   // We don't want to notify of these changes; they'd be no-op noise.
   this.params.__silent = true;
@@ -154,7 +155,7 @@ Route.prototype.processPathParts = function processPathParts(parts) {
     }
     for (var i = 0, config; config = this.compiled[i]; i++) {
       if (config.type === 'param') {
-        this.params[config.name] = parts[i];
+        this.params[config.name] = decodeURIComponent(parts[i]);
       }
     }
   } else {
