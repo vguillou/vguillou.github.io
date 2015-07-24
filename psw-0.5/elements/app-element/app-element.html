@@ -69,10 +69,10 @@
 						<page-a route="page-a" narrow?="{{narrow}}" on-toggle-panel="{{togglePanel}}" fit></page-a>
 						
 						<!-- 1 -->
-						<page-b route="page-b" narrow?="{{narrow}}" themecolor="#7986CB" on-toggle-panel="{{togglePanel}}" fit></page-b>
+						<page-b route="page-b" narrow?="{{narrow}}" on-toggle-panel="{{togglePanel}}" fit></page-b>
 							
 							<!-- 2 -->
-							<page-b-subpage route="page-b-subpage" narrow="{{narrow}}" params="{{params}}" themecolor="#7986CB" on-navigate="{{navigate}}" fit></page-b-subpage>
+							<page-b-subpage route="page-b-subpage" narrow="{{narrow}}" params="{{params}}" on-navigate="{{navigate}}" fit></page-b-subpage>
 						
 						<!-- 3 -->
 						<page-c route="page-c" narrow?="{{narrow}}" transitionTo="4" users="{{$.userModel.users}}" usersLoading="{{$.userModel.usersLoading}}" usersError="{{$.userModel.usersError}}" selectedUser="{{selectedUser}}" on-fetch-users="{{fetchUsers}}" on-toggle-panel="{{togglePanel}}" fit></page-c>
