@@ -1,0 +1,1 @@
+!function(e){"use strict";e.defaultColor="#00BCD4","serviceWorker"in navigator?navigator.serviceWorker.register("./serviceworker.js",{scope:"./"}).then(function(e){console.log("Registered service worker with scope: "+e.scope)}).catch(function(e){console.error("Error while registering the service worker"),console.error(e)}):console.log("No service worker")}(window,document);

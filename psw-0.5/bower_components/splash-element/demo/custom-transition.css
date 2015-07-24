@@ -1,0 +1,20 @@
+:host(.custom-transition) {
+	outline: none;
+	overflow: auto;
+	-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
+	-webkit-transition: -webkit-transform 0.5s ease-in-out;
+	transition: transform 0.5s ease-in-out;
+}
+:host(.custom-transition.custom-opened) {
+	-webkit-transform: rotateX(0);
+	transform: rotateX(0);
+}
+:host(.custom-transition-front) {
+	-webkit-transform: rotateX(-180deg);
+	transform: rotateX(-180deg);
+}
+:host(.custom-transition-back) {
+	-webkit-transform: rotateX(180deg);
+	transform: rotateX(180deg);
+}

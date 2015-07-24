@@ -1,0 +1,55 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/core-header-panel/core-header-panel.html">
+<link rel="import" href="../../../bower_components/core-toolbar/core-toolbar.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/activable-mixin/activable-mixin.html">
+<link rel="import" href="../../../bower_components/core-animated-pages/transitions/cross-fade.html">
+<link rel="import" href="../sample-content/sample-content.html">
+
+<polymer-element name="page-b">
+	<template>
+		<core-header-panel id="headerpanel" mode="waterfall" cross-fade>
+			<core-toolbar _style="background-color: {{themecolor}};" not-selectable>
+				<paper-icon-button icon="menu" on-tap="{{_togglePanel}}" hidden?="{{!narrow}}"></paper-icon-button>
+				<span flex>Page B</span>
+			</core-toolbar>
+			<div class="content" flex>
+				<div class="paper-card">
+					Try this link to a <a class="info" href="{{urlFor('page-b-subpage', {myparam: 'foo'})}}">nested page with the 'foo' parameter</a> !
+				</div>
+				<sample-content size="10"></sample-content>
+			</div>
+		</core-header-panel>
+	</template>
+	<script>
+	(function () {
+		Polymer('page-b', Polymer.mixin({
+			publish: {
+				narrow: false,
+				themecolor: window.defaultColor
+			},
+			attributeChanged: function(attrName, oldVal, newVal) {
+				this.activableAttributeChangedHandler(attrName, oldVal, newVal);
+			},
+			detached: function() {
+				this.activableDetachedHandler();
+			},
+			willActivate: function() {
+				console.log('page-b.willActivate => Do your page init thingy here');
+			},
+			activated: function() {
+				console.log('page-b.activated');
+			},
+			willDeactivate: function() {
+				console.log('page-b.willDeactivate');
+			},
+			deactivated: function() {
+				console.log('page-b.deactivated => Do your page exit thingy here');
+			},
+			_togglePanel: function(e) {
+				this.fire('toggle-panel', {srcEvent: e}, this, false);
+			}
+		}, Polymer.ActivableMixin));
+	})();
+	</script>
+</polymer-element>

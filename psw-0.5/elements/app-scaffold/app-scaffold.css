@@ -1,0 +1,1 @@
+[drawer],[main]{background-color:#F5F5F5}:host,[main]{display:block}[drawer]{-webkit-transform:translateZ(0);transform:translateZ(0);-webkit-overflow-scrolling:touch;overflow:auto}core-drawer-panel::shadow #drawer{z-index:10}[main]{top:0;left:0;bottom:0;right:0}

@@ -1,0 +1,144 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/core-animated-pages/core-animated-pages.html">
+<link rel="import" href="../../../bower_components/core-animated-pages/transitions/hero-transition.html">
+<link rel="import" href="../../../bower_components/core-animated-pages/transitions/cross-fade.html">
+<link rel="import" href="../../../bower_components/core-animated-pages/transitions/slide-up.html">
+<link rel="import" href="../../../bower_components/core-animated-pages/transitions/scale-up.html">
+<link rel="import" href="../../../bower_components/core-menu/core-menu.html">
+<link rel="import" href="../../../bower_components/core-item/core-item.html">
+<link rel="import" href="../../../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../../../bower_components/paper-ripple/paper-ripple.html">
+
+<!-- Routing configuration -->
+<link rel="import" href="../routes/routes.html">
+
+<!-- Models -->
+<link rel="import" href="../../models/user-model.html">
+
+<!-- Web app pages -->
+<link rel="import" href="../app-scaffold/app-scaffold.html">
+<link rel="import" href="../page-a/page-a.html">
+<link rel="import" href="../page-b/page-b.html">
+<link rel="import" href="../page-b-subpage/page-b-subpage.html">
+<link rel="import" href="../page-c/page-c.html">
+<link rel="import" href="../page-c-subpage/page-c-subpage.html">
+
+<polymer-element name="app-element">
+	<template>
+		<link rel="stylesheet" href="app-element.css" shim-shadowdom>
+
+		<!-- Model -->
+
+		<user-model id="userModel"></user-model>
+
+
+		<!-- View -->
+		
+		<app-scaffold id="layout" narrow="{{narrow}}" responsiveWidth="800px" drawerWidth="{{narrow ? '290px' : '320px'}}" fit>
+			<div class="menu" vertical layout not-selectable>
+				<img class="menuHeader" src="../../images/logo.svg"></img>
+				
+				<more-route-selector>
+					<core-menu excludedLocalNames="div" on-core-select="{{menuItemSelectedHandler}}">
+					
+						<!--<div class="separator">Simple routing</div>-->
+						
+						<core-item icon="book" label="Page A" route="page-a">
+							<a href="{{urlFor('page-a')}}"><paper-ripple fit></paper-ripple></a>
+						</core-item>
+						
+						<!--<div class="separator">Nested page routing</div>-->
+						
+						<core-item icon="work" label="Page B" route="page-b">
+							<a href="{{urlFor('page-b')}}"><paper-ripple fit></paper-ripple></a>
+						</core-item>
+						<core-item icon="language" label="Page C" route="page-c">
+							<a href="{{urlFor('page-c')}}"><paper-ripple fit></paper-ripple></a>
+						</core-item>
+					</core-menu>
+				</more-route-selector>
+			</div>
+
+			<div class="content">
+				<more-route-selector id="routeSelector" selectedParams="{{params}}">
+					<core-animated-pages id="pages" transitions="cross-fade cross-fade-delayed hero-transition slide-up scale-up" on-core-select="{{pageChanged}}" fit>
+
+						<!-- more-route forces the selector (core-animated-pages) to use index to track the selected child -->
+
+						<!-- 0 -->
+						<page-a route="page-a" narrow?="{{narrow}}" on-toggle-panel="{{togglePanel}}" fit></page-a>
+						
+						<!-- 1 -->
+						<page-b route="page-b" narrow?="{{narrow}}" themecolor="#7986CB" on-toggle-panel="{{togglePanel}}" fit></page-b>
+							
+							<!-- 2 -->
+							<page-b-subpage route="page-b-subpage" narrow="{{narrow}}" params="{{params}}" themecolor="#7986CB" on-navigate="{{navigate}}" fit></page-b-subpage>
+						
+						<!-- 3 -->
+						<page-c route="page-c" narrow?="{{narrow}}" transitionTo="4" users="{{$.userModel.users}}" usersLoading="{{$.userModel.usersLoading}}" usersError="{{$.userModel.usersError}}" selectedUser="{{selectedUser}}" on-fetch-users="{{fetchUsers}}" on-toggle-panel="{{togglePanel}}" fit></page-c>
+							
+							<!-- 4 -->
+							<page-c-subpage route="page-c-subpage" narrow?="{{narrow}}" params="{{params}}" transitionTo="3" userHeader="{{selectedUser}}" userDetails="{{$.userModel.userDetails}}" userDetailsLoading="{{$.userModel.userDetailsLoading}}" userDetailsError="{{$.userModel.userDetailsError}}" on-fetch-user-details="{{fetchUserDetails}}" on-navigate="{{navigate}}" on-change-theme-color="{{changeThemeColor}}" fit></page-c-subpage>
+
+					</core-animated-pages>
+				</more-route-selector>
+			</div>
+		</app-scaffold>
+	</template>
+	
+	<script>
+	/*global MoreRouting */
+	
+	(function () {
+		Polymer('app-element', {
+			selectedUser: null,
+			
+			menuItemSelectedHandler: function(e) {
+				if (e && e.detail && e.detail.isSelected) {
+					this.async(function() {
+						this.closeDrawer();
+					}, null, 100);
+				}
+			},
+			togglePanel: function() {
+				this.$.layout.togglePanel();
+			},
+			closeDrawer: function() {
+				this.$.layout.closeDrawer();
+			},
+			navigate: function(e) {
+				if (e && e.detail && e.detail.route) {
+					MoreRouting.navigateTo(e.detail.route, e.detail.params);
+				}
+			},
+			fetchUsers: function() {
+				this.$.userModel.fetchUsers();
+			},
+			fetchUserDetails: function(e) {
+				if (e && e.detail && e.detail.id) {
+					this.$.userModel.fetchUserDetails(e.detail.id);
+				}
+			},
+			pageChanged: function(e) {
+				// Change theme-color to match the page's
+				var color = null;
+				if (e && e.detail && e.detail.isSelected && e.detail.item && e.detail.item.getAttribute) {
+					color = e.detail.item.getAttribute('themecolor');
+					this.async(function() {
+						this.changeThemeColor({detail: {color: (color ? color : window.defaultColor)}});
+					}, null, 250);
+				}
+			},
+			changeThemeColor: function(e) {
+		  	var metas = document.getElementsByTagName('meta');
+				for (var i=0; i<metas.length; i++) {
+					if (metas[i].getAttribute('name') && metas[i].getAttribute('name') === 'theme-color') {
+						metas[i].setAttribute('content', (e && e.detail && e.detail.color) ? e.detail.color : window.defaultColor);
+						return;
+					}
+				}
+			}
+		});
+	})();
+	</script>
+</polymer-element>

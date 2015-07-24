@@ -1,0 +1,113 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/core-header-panel/core-header-panel.html">
+<link rel="import" href="../../../bower_components/core-toolbar/core-toolbar.html">
+<link rel="import" href="../../../bower_components/activable-mixin/activable-mixin.html">
+<link rel="import" href="../../../bower_components/core-image/core-image.html">
+<link rel="import" href="../../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../../bower_components/core-animated-pages/transitions/cross-fade.html">
+<link rel="import" href="../../../bower_components/core-animated-pages/transitions/slide-up.html">
+<link rel="import" href="../../../bower_components/core-animated-pages/transitions/scale-up.html">
+<link rel="import" href="../../../bower_components/fullscreen-api/fullscreen-api.html">
+<link rel="import" href="../../../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../../../bower_components/core-icons/device-icons.html">
+<link rel="import" href="../../../bower_components/core-icons/hardware-icons.html">
+<link rel="import" href="../../../bower_components/core-icons/av-icons.html">
+<link rel="import" href="../../../bower_components/core-icons/maps-icons.html">
+<link rel="import" href="../sample-content/sample-content.html">
+
+<polymer-element name="page-a">
+	<template>
+		<link rel="stylesheet" href="page-a.css">
+		
+		<fullscreen-api id="fsapi"></fullscreen-api>
+
+		<core-header-panel id="headerpanel" mode="{{narrow ? 'waterfall' : 'cover'}}">
+
+			<core-toolbar class="{{ {tall: !narrow} | tokenList}}" _style="background-color: {{themecolor}};" cross-fade>
+				<paper-icon-button icon="menu" on-tap="{{_togglePanel}}" hidden?="{{!narrow}}" tabindex="0"></paper-icon-button>
+				<span flex>Page A</span>
+				
+			</core-toolbar>
+
+			<div class="content" flex slide-up>
+
+				<h3 class="row">Leveraging the power of Web Components and the Polymer framework, this sample Web App showcases:</h3>
+
+				<div vertical center layout>
+
+					<div>
+						<div class="row" horizontal center layout>
+							<core-icon icon="hardware:smartphone" class="big"></core-icon>
+							<p>Mobile compatibility</p>
+						</div>
+						<div class="row" layout horizontal center>
+							<core-icon icon="android" class="big"></core-icon>
+							<p>Android, iOS, Windows Phone integration</p>
+						</div>
+						<div class="row" layout horizontal center>
+							<core-icon icon="av:repeat-one" class="big"></core-icon>
+							<p>Single-page navigation and routing</p>
+						</div>
+						<div class="row" layout horizontal center>
+							<core-icon icon="device:devices" class="big"></core-icon>
+							<p>Responsive design</p>
+						</div>
+						<div class="row" layout horizontal center>
+							<core-icon icon="device:signal-cellular-connected-no-internet-1-bar" class="big"></core-icon>
+							<p>Offline mode on Chrome using the Service worker</p>
+						</div>
+						<div class="row" layout horizontal center>
+							<core-icon icon="polymer" class="big"></core-icon>
+							<p>Polymer and MV* pattern implementation</p>
+						</div>
+						<div class="row" layout horizontal center>
+							<core-icon icon="maps:layers" class="big"></core-icon>
+							<p>Material Design</p>
+						</div>
+						<div class="row" layout horizontal center>
+							<core-icon icon="view-carousel" class="big"></core-icon>
+							<p>Smooth transitions between pages</p>
+						</div>
+						<div class="row" layout horizontal center>
+							<core-icon icon="input" class="big"></core-icon>
+							<p>A Page initialisation pattern (with  <a href="https://github.com/vguillou/activable-mixin">&lt;activable-mixin&gt;</a>)</p>
+						</div>
+						<div class="row" layout horizontal center>
+							<core-icon icon="aspect-ratio" class="big"></core-icon>
+							<p>HTML5 full screen mode (with  <a href="https://github.com/vguillou/fullscreen-api">&lt;fullscreen-api&gt;</a>)</p>
+						</div>
+						<div class="row" layout horizontal center>
+							<core-icon icon="device:now-wallpaper" class="big"></core-icon>
+							<p>A splash screen implementation (with <a href="https://github.com/vguillou/splash-element">&lt;splash-element&gt;</a>)</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</core-header-panel>
+
+		<!-- Outside the toolbar for the 'scale-up' animation not to be hidden by the toolbar's own 'cross-fade' animation -->
+		<paper-fab icon="{{$.fsapi.fullscreen ? 'fullscreen-exit' : 'fullscreen'}}" title="{{($.fsapi.fullscreen ? 'Exit' : 'Go') + ' full screen'}}" on-click="{{_toggleFullscreen}}" hidden?="{{!$.fsapi.fullscreenAvailable}}" tabindex="1" scale-up></paper-fab>
+	</template>
+	<script>
+	(function () {
+		Polymer('page-a', Polymer.mixin({
+			publish: {
+				narrow: false,
+				themecolor: window.defaultColor,
+			},
+			attributeChanged: function(attrName, oldVal, newVal) {
+				this.activableAttributeChangedHandler(attrName, oldVal, newVal);
+			},
+			detached: function() {
+				this.activableDetachedHandler();
+			},
+			_togglePanel: function(e) {
+				this.fire('toggle-panel', {srcEvent: e}, this, false);
+			},
+			_toggleFullscreen: function() {
+				this.$.fsapi.toggleFullscreen();
+			}
+		}, Polymer.ActivableMixin));
+	})();
+	</script>
+</polymer-element>

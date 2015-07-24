@@ -1,0 +1,265 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/core-scroll-header-panel/core-scroll-header-panel.html">
+<link rel="import" href="../../../bower_components/core-toolbar/core-toolbar.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="../../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../../bower_components/activable-mixin/activable-mixin.html">
+<link rel="import" href="../../../bower_components/core-image/core-image.html">
+<link rel="import" href="../../../bower_components/core-icon/core-icon.html">
+<link rel="import" href="../../../bower_components/core-animated-pages/transitions/hero-transition.html">
+<link rel="import" href="../../../bower_components/core-animated-pages/transitions/cross-fade.html">
+<link rel="import" href="../sample-content/sample-content.html">
+
+<polymer-element name="page-c-subpage" attributes="narrow params transitionTo userHeader userDetails userDetailsLoading userDetailsError">
+	<template>
+		<link rel="stylesheet" href="page-c-subpage.css">
+		
+		<!-- Only for the hero transition; to be hidden when the transition ends -->
+		<div id="herodiv" class="tall-header {{ {hidden: !_herodivVisible, visible: _herodivVisible} | tokenList}}"
+		hero-id="userImg" hero?="{{(parentElement.selected===transitionTo || parentElement.lastSelected===transitionTo) && userHeader!=null}}"
+		cross-fade?="{{(parentElement.selected!=transitionTo && parentElement.lastSelected!=transitionTo) || !userHeader}}"></div>
+
+			<!-- Page content -->
+			<core-scroll-header-panel id="headerpanel" on-core-header-transform="{{_transformHeader}}" condenses cross-fade-delayed>
+
+				<core-toolbar id="toolbar" class="tall tall-header" style="background-color: transparent;" not-selectable>
+					<paper-icon-button icon="arrow-back" on-tap="{{_onGoBack}}"></paper-icon-button>
+					<div class="bottom indent title" flex>{{headerTitle}}</div>
+				</core-toolbar>
+
+				<div class="content" style="overflow: {{userDetailsLoading || userDetailsError ? 'hidden' : 'inherit'}};">
+
+					<div class="{{ {transparent: userDetailsLoading || userDetailsError, opaque: !userDetailsLoading && !userDetailsError} | tokenList}}" fade>
+						<!-- Phone -->
+				        <div class="group">
+				          <div class="item">
+				            <core-icon icon="perm-phone-msg"></core-icon>
+				            <div class="double-line-1">{{userDetails.phone ? userDetails.phone : '...'}}</div>
+				            <div class="double-line-2">Home</div>
+				          </div>
+				          <div class="item">
+				            <div class="double-line-1">{{userDetails.cell ? userDetails.cell : '...'}}</div>
+				            <div class="double-line-2">Cell</div>
+				          </div>
+				        </div>
+
+				        <!-- Email -->
+				        <div class="group">
+				          <div class="item">
+				          	<core-icon icon="mail"></core-icon>
+				            <div class="double-line-1">{{userDetails.email ? userDetails.email : '...'}}</div>
+				            <div class="double-line-2">Personal</div>
+				          </div>
+				        </div>
+
+				        <!-- Address -->
+				        <div class="group">
+				          <div class="item">
+				            <core-icon icon="room"></core-icon>
+				            <div class="double-line-1">{{userDetails.location ? userDetails.location.street : '...'}}</div>
+				            <div class="double-line-1">{{userDetails.location ? userDetails.location.city : '...'}} {{userDetails.location.state}} {{userDetails.location.zip}}</div>
+				            <div class="double-line-2">Home</div>
+				          </div>
+				        </div>
+
+						<sample-content size="5" ></sample-content>
+					</div>
+
+					<paper-spinner active?="{{userDetailsLoading}}" class="center-middle"></paper-spinner>
+
+					<paper-button centered on-click="{{_refreshUserDetailsAfterDelay}}" class="blend center-middle" hidden?="{{!userDetailsError}}">
+						<core-icon icon="refresh"></core-icon>
+						Refresh
+					</paper-button>
+				</div>
+			</core-scroll-header-panel>
+
+			<paper-toast id="errorToast" role="alert" text="Error while loading the details">
+				<div on-click="{{_refreshUserDetails}}" class="toast-action">Retry</div>
+	  		</paper-toast>
+		</div>
+	</template>
+	<script>
+	(function () {
+		Polymer('page-c-subpage', Polymer.mixin({
+			narrow: false,
+
+			/**
+			 * The route parameters.
+			 */
+			params: null,
+
+			/**
+			 * The identifier of the page to transition to when a user is clicked.
+			 */
+			transitionTo: -1,
+
+			/**
+			 * The headers (names, pic, color) of the user to be displayed.
+			 */
+			userHeader: null,
+
+			/**
+             * Loaded details of the selected user.
+             */
+            userDetails: null,
+
+            /**
+             * Flag indicating if a user's details are currently being fetched.
+             */
+            userDetailsLoading: false,
+
+            /**
+             * Error that occured while fetching a user's details.
+             */
+            userDetailsError: null,
+
+			/**
+			 * Color of the page's header.
+			 */
+			get _headerColor() {
+				return this.userDetails ? this.userDetails.color :
+					(this.userHeader ? this.userHeader.color : window.defaultColor);
+			},
+
+			/**
+			 * Full name of the user displayed.
+			 */
+			get _userName() {
+				if (this.userDetails) {
+					return this._toUpperCase(this.userDetails.name.title + ' ' + this.userDetails.name.first + ' ' + this.userDetails.name.last);
+				} else if (this.userHeader) {
+					return this._toUpperCase(this.userHeader.name.title + ' ' + this.userHeader.name.first + ' ' + this.userHeader.name.last);
+				}
+				return '';
+			},
+
+			_herodivVisible: true,
+
+			_titleStyle: null,
+
+			attributeChanged: function(attrName, oldVal, newVal) {
+				// Necessary for ActivableMixin
+				this.activableAttributeChangedHandler(attrName, oldVal, newVal);
+			},
+			paramsChanged: function() {
+				// Get the details of the user from the object's ID
+				this._refreshUserDetails();
+			},
+			userHeaderChanged: function(oldVal, newVal) {
+				// When basic infos about the user to display are passed to the page,
+				// we can initialized the header with the good color, picture and name
+				this._changeCondensedHeaderColor();
+				this._changeHeaderImage(newVal ? newVal.picture : null);
+				this.headerTitle = this._userName;
+			},
+			userDetailsChanged: function(oldVal, newVal) {
+				// Needs to initialize the header panel an theme if no user headers were set
+				var needsThemeAndHeaderInit = !this.userHeader;
+
+				if (newVal) {
+					// Change theme if not already done
+					if (needsThemeAndHeaderInit) {
+						this._requestThemeColorChange();
+						this._changeCondensedHeaderColor();
+						this._changeHeaderImage(newVal.picture);
+						this.headerTitle = this._userName;
+					}
+				}
+			},
+			userDetailsErrorChanged: function(oldVal, newVal) {
+				if (newVal) {
+					// Show the error that happened while loading the user's details
+					this.$.errorToast.show();
+				}
+			},
+			ready: function() {
+				// Getting references to all we need to handle the scroll event,
+				// in order to avoid querying to dom on every single scroll event.
+				this._titleStyle = this.shadowRoot.querySelector('.title').style;
+			},
+			detached: function() {
+				// Necessary for ActivableMixin
+				this.activableDetachedHandler();
+			},
+			willActivate: function() {
+				// Before even displaying the page, make sure the scroller is set to top
+				this.$.headerpanel.scroller.scrollTop = 0;
+
+				// Show the hero-transition's target
+				this._herodivVisible = true;
+
+				// Set the header color, default value if no userHeader or userDetails
+				this._changeCondensedHeaderColor();
+			},
+			activated: function() {
+				// Hide the now useless hero-transition's target
+				this.async(function() {
+					this._herodivVisible = false;
+				}, null, 350);
+
+				// Request to change the theme color if possible
+				// No need to reset it when we leave the page,
+				// app-element takes care of that
+				this._requestThemeColorChange();
+			},
+			deactivated: function() {
+				// Reset the page once the page is not displayed anymore
+				this.user = null;
+				this.userDetails = null;
+				this.userHeader = null;
+			},
+			_refreshUserDetails: function() {
+				if (this.params && this.params.id) {
+					this.fire('fetch-user-details', {id: this.params.id}, this, false);
+				}
+			},
+			_refreshUserDetailsAfterDelay: function() {
+				this.async(function() {
+            		this._refreshUserDetails();
+          		}, null, 150);
+			},
+			_onGoBack: function() {
+				this.fire('navigate', {route: 'page-c', params: null}, this, false);
+			},
+			_toUpperCase: function(value) {
+			    // Filter to display a string in upper case only
+				if (value) {
+					return value.toUpperCase();
+				}
+			},
+			_changeHeaderImage: function(newValue) {
+		  		// Background for toolbar when it is at its full size
+		  		var headerBgStyle = this.$.headerpanel.shadowRoot.querySelector('#headerBg').style;
+		  		headerBgStyle.backgroundImage = this.$.herodiv.style.backgroundImage = (newValue ? 'url(' + newValue + ')' : 'none');
+		  	},
+		    _changeCondensedHeaderColor: function() {
+		    	// Background for the toolbar when it is condensed
+		  		var headerStyle = this.$.headerpanel.shadowRoot.querySelector('#condensedHeaderBg').style;
+		  		var headerBgStyle = this.$.headerpanel.shadowRoot.querySelector('#headerBg').style;
+		  		headerStyle.backgroundColor = headerBgStyle.backgroundColor = this.$.herodiv.style.backgroundColor = this._headerColor;
+		  	},
+			_transformHeader: function(e) {
+				// Hide the herodiv if it is not already
+				if (this._herodivVisible && this.$.headerpanel.scroller.scrollTop > 0) {
+					this._herodivVisible = false;
+				}
+
+				// Calculating the scale of the title
+				if (this._titleStyle) {
+					var d = e.detail;
+					var m = d.height - d.condensedHeight;
+					var scale = Math.max(0.75, (m - d.y) / (m / 0.25)  + 0.75);
+					this._titleStyle.transform = this._titleStyle.webkitTransform =
+						'scale(' + scale + ') translateZ(0)';
+				}
+			},
+			_requestThemeColorChange: function() {
+				this.fire('change-theme-color', {color: this._headerColor}, this, false);
+			}
+		}, Polymer.ActivableMixin));
+	})();
+	</script>
+</polymer-element>

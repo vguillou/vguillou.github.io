@@ -1,0 +1,14 @@
+{
+  "name": "Web App with Polymer",
+  "description": "Simple Web-app built with WebComponents and Polymer. This is intended to be used as a base for your own web-app, as it already implements the following: splash screen, mobile compatible web-app (including iOS) metadata, single-page navigation, routing, responsive design, material design, page transition effects and a page initialisation pattern",
+  "launch_path": "/polymer-sample-webapp/dist/",
+  "icons": {
+    "512": "/polymer-sample-webapp/images/icon-fire-512.png",
+    "128": "/polymer-sample-webapp/images/icon-win-128.png"
+  },
+  "developer": {
+    "name": "Vincent Guillou",
+    "url": "https://github.com/vguillou"
+  },
+  "default_locale": "en"
+}
