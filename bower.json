@@ -1,13 +1,11 @@
 {
   "name": "vguillou.github.io",
-  "version": "0.1",
+  "version": "1.0",
   "authors": [
     "Vincent Guillou <vin.guillou@gmail.com>"
   ],
-  "description": "As of now, only a simple container for various demos.",
-  "keywords": [
-    "polymer", "splash-element", "activable-mixin", "polymer-sample-webapp"
-  ],
+  "description": "A Web Components-based GitHub page, illustrating Web Components. ",
+  "keywords": [],
   "main": "index.html",
   "license": "MIT",
   "ignore": [
@@ -17,11 +15,14 @@
     "url": "git://github.com/vguillou/vguillou.github.io.git"
   },
   "dependencies": {
-	  "polymer": "Polymer/polymer#^0.5",
-    "splash-element": "vguillou/splash-element#^0.5",
-    "activable-mixin": "vguillou/activable-mixin#^0.5"
-  },
-  "devDependencies": {
-    "core-animated-pages": "Polymer/core-animated-pages#^0.5"
+	  "iron-elements": "PolymerElements/iron-elements#^1.0",
+    "paper-elements": "PolymerElements/paper-elements#^1.0",
+    "platinum-elements": "PolymerElements/platinum-elements#^1.0.1",
+    "neon-elements": "PolymerElements/neon-elements#^1.0",
+    "neon-page-behavior": "vguillou/neon-page-behavior#^1.0",
+    "fullscreen-api": "vguillou/fullscreen-api#^1.0",
+    
+    
+    "web-animations-js": "web-animations/web-animations-js#2.1.0"
   }
 }
