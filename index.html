@@ -4,18 +4,32 @@
   <title>vguillou @ GitHub pages</title>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+  <meta name="description" content="Single-page Web App with WebComponents and Polymer">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <meta name="theme-color" content="#00796B">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="vguillou @ GitHub pages">
+  <link rel="icon" sizes="192x192" href="./images/icon-192.png">
 
-  <script src="webcomponents/webcomponentsjs/webcomponents-lite.js"></script>
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Web App with Polymer">
+  <link rel="apple-touch-icon" sizes="120x120" href="./images/icon-ios-120.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="./images/icon-ios-152.png">
+
+  <!-- Tile icon for Win8 (144x144 + tile color) -->
+  <meta name="msapplication-TileImage" content="./images/icon-144.png">
+  <meta name="msapplication-TileColor" content="#009688">
+
+  <script src="webcomponents/webcomponentsjs/webcomponents-lite.min.js"></script>
   
   <!-- Html imports -->
   <link rel="import" href="webcomponents/iron-icon/iron-icon.html">
   <link rel="import" href="webcomponents/iron-icons/iron-icons.html">
-  <link rel="import" href="webcomponents/iron-image/iron-image.html">
 
   <link rel="import" href="webcomponents/fullscreen-api/fullscreen-api.html">
-  <link rel="import" href="webcomponent/github-card.html">
+  <link rel="import" href="webcomponents/github-card/github-card.html">
 
   <link rel="import" href="webcomponents/more-routing/more-routing.html">
 
@@ -28,7 +42,6 @@
   <link rel="import" href="webcomponents/paper-fab/paper-fab.html">
   <link rel="import" href="webcomponents/paper-header-panel/paper-header-panel.html">
   <link rel="import" href="webcomponents/paper-icon-button/paper-icon-button.html">
-  <link rel="import" href="webcomponents/paper-item/paper-item.html">
   <link rel="import" href="webcomponents/paper-material/paper-material.html">
   <link rel="import" href="webcomponents/paper-menu/paper-menu.html">
   <link rel="import" href="webcomponents/paper-styles/paper-styles-classes.html">
@@ -119,7 +132,38 @@
     }
 
     paper-material.no-padding {
-      padding: 16px 0;
+      padding: 0 0;
+    }
+
+    paper-material img.half {
+      width: 50%;
+      margin: 0 -1px;
+    }
+
+    paper-material img.full {
+      width: 100%;
+      margin-bottom: -4px;
+    }
+
+    paper-material .app-card-header {
+      padding: 16px 16px;
+      background-color: #00BCD4;
+      color: #FFF;
+      border-radius: 2px 2px 0 0;
+    }
+
+    paper-material .app-card-header a {
+      color: #FFF;
+    }
+
+    paper-material .app-card-footer {
+      margin: 0 16px;
+      padding-bottom: 16px;
+    }
+
+    paper-material paper-icon-button {
+      color: var(--accent-color);
+      --paper-icon-button-ink-color: var(--accent-color);
     }
 
     github-card {
@@ -153,20 +197,14 @@
       height: auto;
     }
 
+    neon-animated-pages > * > div {
+      padding-bottom: 72px;
+    }
+
     paper-fab {
       position: fixed;
       bottom: 16px;
       right: 16px;
-    }
-
-    paper-material img.half {
-      width: 50%;
-      margin: 0 -1px;
-    }
-
-    paper-material img.full {
-      width: 100%;
-      margin-bottom: -4px;
     }
 
     /* Small */
@@ -187,13 +225,14 @@
   <more-routing-config driver="hash"></more-routing-config>
   <more-route name="home" path="/"></more-route>
   <more-route name="webcomponents" path="/webcomponents"></more-route>
-  <more-route name="sample-apps" path="/sample-apps"></more-route>
+  <more-route name="apps" path="/apps"></more-route>
+  <more-route name="about" path="/about"></more-route>
 
   <!-- Helpers -->
   <fullscreen-api id="fsapi"></fullscreen-api>
 
   <!-- Visual elements -->
-  <paper-drawer-panel id="paperDrawerPanel">
+  <paper-drawer-panel id="paperDrawerPanel" drawer-width="230px">
 
     <paper-header-panel drawer>
 
@@ -211,9 +250,13 @@
             <iron-icon icon="polymer"></iron-icon>
             <span>Web Components</span>
           </a>
-          <a route="sample-apps" href="#!/sample-apps" class="unselectable">
+          <a route="apps" href="#!/apps" class="unselectable">
             <iron-icon icon="view-carousel"></iron-icon>
             <span>Apps</span>
+          </a>
+          <a route="about" href="#!/about" class="unselectable">
+            <iron-icon icon="info"></iron-icon>
+            <span>About</span>
           </a>
         </paper-menu>
       </more-route-selector>
@@ -233,103 +276,146 @@
           
           <!-- Home -->
           <neon-animatable route="home" class="page vertical center layout">
+            <div>
+              <github-card user="vguillou"></github-card>
 
-            <github-card user="vguillou"></github-card>
-
-            <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
-               <span>Nice and shiny WEB-CV coming soon!</span>
-            </paper-material>
-
+              <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
+                 <span>Nice and shiny WEB-CV coming soon!</span>
+              </paper-material>
+            </div>
           </neon-animatable>
 
           <!-- Web Components -->
           <neon-animatable route="webcomponents" class="page">
+            <div>
+              <span class="paper-font-headline">Polymer 1.X</span>
 
-            <span class="paper-font-headline">Polymer 1.X</span>
-
-            <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
-              <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/fullscreen-api">&lt;fullscreen-api&gt;</a></span>
-              <p>A simple Polymer based Web Component wrapper for the HTML5 full screen API</p>
-              <div class="horizontal layout">
-                <a target="_blank" href="https://github.com/vguillou/fullscreen-api"><paper-button>GitHub</paper-button></a>
-                <a target="_blank" href="https://vguillou.github.io/webcomponents/fullscreen-api/demo.html"><paper-button>Demo</paper-button></a>
-              </div>
-            </paper-material>
-
-            <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
-              <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/neon-page-behavior">neon-page-behavior</a></span>
-              <p>Make the most of Polymer's 'neon-animated-pages' effortlessly. NeonPageBehavior fires events allowing more control over a page's lifecycle, and allows your page element to use a different animation-configuration when transitioning to each different page</p>
-              <div class="horizontal layout">
-                <a target="_blank" href="https://github.com/vguillou/neon-page-behavior"><paper-button>GitHub</paper-button></a>
-                <a target="_blank" href="https://vguillou.github.io/webcomponents/neon-page-behavior/demo/index.html"><paper-button>Demo</paper-button></a>
-              </div>
-            </paper-material>
-
-            <br/>
-            <span class="paper-font-headline">Polymer 0.5</span>
-
-            <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
-              <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/fullscreen-api">&lt;fullscreen-api&gt;</a></span>
-              <p>A simple Polymer based Web Component wrapper for the HTML5 full screen API</p>
-              <div class="horizontal layout">
-                <a target="_blank" href="https://github.com/vguillou/fullscreen-api"><paper-button>GitHub</paper-button></a>
-                <a target="_blank" href="https://vguillou.github.io/0.5/fullscreen-api/demo.html"><paper-button>Demo</paper-button></a>
-              </div>
-            </paper-material>
-
-            <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
-              <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/splash-element">&lt;splash-element&gt;</a></span>
-              <p>A Polymer based Web-Component helping you to display a splash screen while your own Web-Component is getting ready</p>
-              <div class="horizontal layout">
-                <a target="_blank" href="https://github.com/vguillou/splash-element"><paper-button>GitHub</paper-button></a>
-                <a target="_blank" href="https://vguillou.github.io/0.5/splash-element/demo.html"><paper-button>Demo</paper-button></a>
-              </div>
-            </paper-material>
-
-            <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
-              <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/activable-mixin">&lt;activable-mixin&gt;</a></span>
-              <p>A Polymer mixin that gives you more control over the lifecycle of the children of your core-selector, and core-animated-pages in particular</p>
-              <div class="horizontal layout">
-                <a target="_blank" href="https://github.com/vguillou/activable-mixin"><paper-button>GitHub</paper-button></a>
-                <a target="_blank" href="https://vguillou.github.io/0.5/activable-mixin/demo.html"><paper-button>Demo</paper-button></a>
-              </div>
-            </paper-material>
-
-          </neon-animatable>
-
-          <!-- Sample Apps -->
-          <neon-animatable route="sample-apps" class="page">
-            
-            <paper-material elevation="1" class="no-padding" style="margin-top: 0;" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
-              <div style="margin: 0 16px;">
-                <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/polymer-0.5-sample-webapp">polymer-0.5-sample-webapp</a></span>
-                <p>Simple Web App built with Web Components and Polymer 0.5.</p>
-              </div>
-              <img src="images/psw-0.5-1.png" preload class="full" border="0" alt="psw-0.5"></img>
-              <img src="images/psw-0.5-2.png" preload class="half" border="0" alt="psw-0.5"></img>
-              <img src="images/psw-0.5-3.png" preload class="half" border="0" alt="psw-0.5"></img>
-              <div style="margin: 0 16px;">
-                <ul>
-                  <li>a responsive Web App, of course, build with Polymer 0.5</li>
-                  <li>Android, iOS, Windows Phone integration</li>
-                  <li>routing and single-page navigation (using more-routing)</li>
-                  <li>an offline mode on Chrome using the Service worker</li>
-                  <li>a Polymer 0.5 and MV* pattern implementation</li>
-                  <li>some sweet Material Design</li>
-                  <li>a splash screen (using splash-element)</li>
-                  <li>neat and smooth page transition effects</li>
-                  <li>a page initialisation pattern (using activable-mixin)</li>
-                  <li>native HTML5 full screen mode (using fullscreen-api)</li>
-                </ul>
+              <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
+                <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/fullscreen-api">&lt;fullscreen-api&gt;</a></span>
+                <p>A simple Polymer based Web Component wrapper for the HTML5 full screen API</p>
                 <div class="horizontal layout">
-                  <a target="_blank" href="https://github.com/vguillou/polymer-0.5-sample-webapp"><paper-button>GitHub</paper-button></a>
-                  <a target="_blank" href="https://vguillou.github.io/psw-0.5/"><paper-button>Demo</paper-button></a>
+                  <a target="_blank" href="https://github.com/vguillou/fullscreen-api"><paper-button>GitHub</paper-button></a>
+                  <a target="_blank" href="https://vguillou.github.io/webcomponents/fullscreen-api/demo.html"><paper-button>Demo</paper-button></a>
                 </div>
-              </div>
-            </paper-material>
+              </paper-material>
 
+              <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
+                <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/neon-page-behavior">neon-page-behavior</a></span>
+                <p>Make the most of Polymer's 'neon-animated-pages' effortlessly. NeonPageBehavior fires events allowing more control over a page's lifecycle, and allows your page element to use a different animation-configuration when transitioning to each different page</p>
+                <div class="horizontal layout">
+                  <a target="_blank" href="https://github.com/vguillou/neon-page-behavior"><paper-button>GitHub</paper-button></a>
+                  <a target="_blank" href="https://vguillou.github.io/webcomponents/neon-page-behavior/demo/index.html"><paper-button>Demo</paper-button></a>
+                </div>
+              </paper-material>
+
+              <br/>
+              <span class="paper-font-headline">Polymer 0.5</span>
+
+              <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
+                <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/fullscreen-api">&lt;fullscreen-api&gt;</a></span>
+                <p>A simple Polymer based Web Component wrapper for the HTML5 full screen API</p>
+                <div class="horizontal layout">
+                  <a target="_blank" href="https://github.com/vguillou/fullscreen-api"><paper-button>GitHub</paper-button></a>
+                  <a target="_blank" href="https://vguillou.github.io/0.5/fullscreen-api/demo.html"><paper-button>Demo</paper-button></a>
+                </div>
+              </paper-material>
+
+              <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
+                <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/splash-element">&lt;splash-element&gt;</a></span>
+                <p>A Polymer based Web-Component helping you to display a splash screen while your own Web-Component is getting ready</p>
+                <div class="horizontal layout">
+                  <a target="_blank" href="https://github.com/vguillou/splash-element"><paper-button>GitHub</paper-button></a>
+                  <a target="_blank" href="https://vguillou.github.io/0.5/splash-element/demo.html"><paper-button>Demo</paper-button></a>
+                </div>
+              </paper-material>
+
+              <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
+                <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/activable-mixin">&lt;activable-mixin&gt;</a></span>
+                <p>A Polymer mixin that gives you more control over the lifecycle of the children of your core-selector, and core-animated-pages in particular</p>
+                <div class="horizontal layout">
+                  <a target="_blank" href="https://github.com/vguillou/activable-mixin"><paper-button>GitHub</paper-button></a>
+                  <a target="_blank" href="https://vguillou.github.io/0.5/activable-mixin/demo.html"><paper-button>Demo</paper-button></a>
+                </div>
+              </paper-material>
+            </div>
           </neon-animatable>
 
+          <!-- Apps -->
+          <neon-animatable route="apps" class="page">
+            <div>
+              <paper-material elevation="1" class="no-padding" style="margin-top: 0;" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
+                <div class="app-card-header">
+                  <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/polymer-0.5-sample-webapp">polymer-0.5-sample-webapp</a></span>
+                  <p>Simple Web App built with Web Components and Polymer 0.5</p>
+                </div>
+                <img src="images/psw-0.5-1.png" class="full" border="0" alt="psw-0.5"></img>
+                <img src="images/psw-0.5-2.png" class="half" border="0" alt="psw-0.5"></img>
+                <img src="images/psw-0.5-3.png" class="half" border="0" alt="psw-0.5"></img>
+                <div class="app-card-footer">
+                  <ul>
+                    <li>A responsive Web App, of course, build with Polymer 0.5</li>
+                    <li>Android, iOS, Windows Phone integration</li>
+                    <li>Routing and single-page navigation (using more-routing)</li>
+                    <li>An offline mode on Chrome using the Service worker</li>
+                    <li>A Polymer 0.5 and MV* pattern implementation</li>
+                    <li>Some sweet Material Design</li>
+                    <li>A splash screen (using splash-element)</li>
+                    <li>Neat and smooth page transition effects</li>
+                    <li>A page initialisation pattern (using activable-mixin)</li>
+                    <li>Native HTML5 full screen mode (using fullscreen-api)</li>
+                  </ul>
+                  <div class="horizontal layout">
+                    <a target="_blank" href="https://github.com/vguillou/polymer-0.5-sample-webapp"><paper-button>GitHub</paper-button></a>
+                    <a target="_blank" href="https://vguillou.github.io/psw-0.5/"><paper-button>Demo</paper-button></a>
+                  </div>
+                </div>
+              </paper-material>
+            </div>
+          </neon-animatable>
+
+          <!-- About -->
+          <neon-animatable route="about" class="page">
+            <div>
+              <span class="paper-font-headline">Made with :</span>
+              
+              <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
+                <span class="paper-font-title"><a target="_blank" href="https://www.polymer-project.org/" class="horizontal end layout">
+                  <img src="images/polymer.svg" style="width: 140px;" border="0" alt="Polymer"></img>
+                  <img src="images/polymer1.0.svg" class="self-start" style="width: 40px; padding-left: 10px;" border="0" alt="1.0"></img>
+                </a></span>
+                <p>The Polymer library is designed to make it easier and faster for developers to create great, reusable components for the modern web</p>
+                <div class="horizontal layout end-justified">
+                  <a target="_blank" href="https://www.polymer-project.org/"><paper-icon-button icon="link"></paper-icon-button></a>
+                </div>
+              </paper-material>
+
+              <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
+                <span class="paper-font-title"><a target="_blank" href="https://www.polymer-project.org/">&lt;more-routing&gt;</a></span>
+                <p>A composable suite of objects and elements to make routing with web components a breeze</p>
+                <div class="horizontal layout end-justified">
+                  <a target="_blank" href="https://www.youtube.com/watch?v=-67kb7poIT8"><paper-icon-button icon="visibility"></paper-icon-button></a>
+                  <a target="_blank" href="https://www.polymer-project.org/"><paper-icon-button icon="link"></paper-icon-button></a>
+                </div>
+              </paper-material>
+
+              <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
+                <span class="paper-font-title"><a target="_blank" href="https://www.polymer-project.org/">&lt;polymer-github-card&gt;</a></span>
+                <p>&lt;github-card&gt; with Polymer</p>
+                <div class="horizontal layout end-justified">
+                  <a target="_blank" href="http://ds82.github.io/polymer-github-card/components/demo/"><paper-icon-button icon="visibility"></paper-icon-button></a>
+                  <a target="_blank" href="https://github.com/ds82/polymer-github-card"><paper-icon-button icon="link"></paper-icon-button></a>
+                </div>
+              </paper-material>
+
+              <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
+                <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/fullscreen-api">&lt;fullscreen-api&gt;</a></span>
+                <p>A simple Polymer based Web Component wrapper for the HTML5 full screen API</p>
+                <div class="horizontal layout end-justified">
+                  <a target="_blank" href="https://vguillou.github.io/webcomponents/fullscreen-api/demo.html"><paper-icon-button icon="visibility"></paper-icon-button></a>
+                  <a target="_blank" href="https://github.com/vguillou/fullscreen-api"><paper-icon-button icon="link"></paper-icon-button></a>
+                </div>
+              </paper-material>
+            </div>
         </neon-animated-pages>
       </more-route-selector>
 
@@ -347,7 +433,6 @@
 
   scope.addEventListener('dom-change', function() {
     var fsapi = document.querySelector('#fsapi');
-    console.log(fsapi, fsapi.fullscreen, fsapi.fullscreenAvailable);
     scope.fsHidden = !fsapi.fullscreenAvailable;
     _computeFsIcon(fsapi.fullscreen);
   });

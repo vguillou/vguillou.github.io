@@ -1,20 +1,16 @@
-# &lt;github-card&gt;
+# polymer-github-card
 
-> A web component to show a profile-card for your Github account.
+> &lt;github-card&gt; with polymer.
 
-## How-to
-```html
-<github-card user="pazguille"></github-card>
-```
-![Example](src/assets/example.png)
 
-## Maintained by
-- Guille Paz (Front-end developer | Web standards lover)
-- E-mail: [guille87paz@gmail.com](mailto:guille87paz@gmail.com)
-- Twitter: [@pazguille](http://twitter.com/pazguille)
-- Web: [http://pazguille.me](http://pazguille.me)
+This is a polymer port of [pazguille's](https://github.com/pazguille) great [github-card webcomponent](https://github.com/pazguille/github-card).
 
-## License
-Licensed under the MIT license.
+![](example.png)
 
-Copyright (c) 2014 [@pazguille](http://twitter.com/pazguille).
+## Demo
+
+[Link](http://ds82.github.io/polymer-github-card/components/demo/)
+
+## Update
+
+Updated component to use polymer 1.0
