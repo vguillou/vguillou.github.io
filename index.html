@@ -202,9 +202,24 @@
     }
 
     paper-fab {
-      position: fixed;
+      position: absolute;
       bottom: 16px;
       right: 16px;
+      -webkit-transition: all 200ms linear;
+      -moz-transition: all 200ms linear;
+      -o-transition: all 200ms linear;
+      transition: all 200ms linear;
+      -webkit-transform: translateZ(0);
+      -moz-transform: translateZ(0);
+      -o-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+
+    paper-fab.hidden {
+      -webkit-transform: scale(0) translateZ(0);
+      -moz-transform: scale(0) translateZ(0);
+      -o-transform: scale(0) translateZ(0);
+      transform: scale(0) translateZ(0);
     }
 
     /* Small */
@@ -419,13 +434,16 @@
         </neon-animated-pages>
       </more-route-selector>
 
-      <!-- Most important FAB in the universe!!! :-) -->
-      <a target="_blank" href="https://github.com/vguillou">
-        <paper-fab icon="perm-identity" class="unselectable">CV</paper-fab>
-      </a>
-
     </paper-header-panel>
+
+
   </paper-drawer-panel>
+
+  <!-- Most important FAB in the universe!!! :-) -->
+  <a target="_blank" href="https://github.com/vguillou">
+    <paper-fab id="fab" icon="perm-identity" class="unselectable">CV</paper-fab>
+  </a>
+
 </template>
 
 <script>
@@ -435,6 +453,12 @@
     var fsapi = document.querySelector('#fsapi');
     scope.fsHidden = !fsapi.fullscreenAvailable;
     _computeFsIcon(fsapi.fullscreen);
+
+    var drawerPanel = document.querySelector('#paperDrawerPanel');
+    var fab = document.querySelector('#fab');
+    drawerPanel.addEventListener('iron-select', function(event) {
+      Polymer.Base.toggleClass('hidden', drawerPanel.selected == 'drawer', fab);
+    });
   });
 
   scope.onMenuSelect = function() {
