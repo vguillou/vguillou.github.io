@@ -473,6 +473,7 @@
 
   scope.addEventListener('dom-change', function() {
     var fsapi = document.querySelector('#fsapi');
+    fsapi.target = document.querySelector('#paperDrawerPanel');
     scope.fsHidden = !fsapi.fullscreenAvailable;
     _computeFsIcon(fsapi.fullscreen);
 
