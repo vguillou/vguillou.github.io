@@ -44,6 +44,7 @@
   <link rel="import" href="webcomponents/paper-icon-button/paper-icon-button.html">
   <link rel="import" href="webcomponents/paper-material/paper-material.html">
   <link rel="import" href="webcomponents/paper-menu/paper-menu.html">
+  <link rel="import" href="webcomponents/paper-ripple/paper-ripple.html">
   <link rel="import" href="webcomponents/paper-styles/paper-styles-classes.html">
   <link rel="import" href="webcomponents/paper-toolbar/paper-toolbar.html">
 
@@ -215,7 +216,7 @@
       transform: translateZ(0);
     }
 
-    paper-fab.hidden {
+    paper-fab.hide {
       -webkit-transform: translateZ(0) translateX(80px);
       -moz-transform: translateZ(0) translateX(80px);
       -o-transform: translateZ(0) translateX(80px);
@@ -247,7 +248,7 @@
   <fullscreen-api id="fsapi"></fullscreen-api>
 
   <!-- Visual elements -->
-  <paper-drawer-panel id="paperDrawerPanel" drawer-width="230px">
+  <paper-drawer-panel id="paperDrawerPanel" drawer-width="230px" narrow="{{narrow}}">
 
     <paper-header-panel drawer>
 
@@ -282,7 +283,7 @@
 
       <paper-toolbar>
         <paper-icon-button id="paperToggle" icon="menu" class="unselectable" paper-drawer-toggle></paper-icon-button>
-        <span class="flex paper-font-headline unselectable">Welcome!&nbsp;&nbsp;&nbsp;(&nbsp;&nbsp;◠‿◠)</span>
+        <span class="flex paper-font-headline unselectable">Welcome!</span>
         <paper-icon-button icon="{{fsIcon}}" on-click="toggleFullscreen" hidden$="{{fsHidden}}"></paper-icon-button>
       </paper-toolbar>
 
@@ -295,7 +296,8 @@
               <github-card user="vguillou"></github-card>
 
               <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
-                 <span>Nice and shiny WEB-CV coming soon!</span>
+                <paper-ripple class="fit"></paper-ripple>
+                <span>Nice and shiny WEB-CV coming soon!</span>
               </paper-material>
             </div>
           </neon-animatable>
@@ -306,6 +308,7 @@
               <span class="paper-font-headline">Polymer 1.X</span>
 
               <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
+                <paper-ripple class="fit"></paper-ripple>
                 <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/fullscreen-api">&lt;fullscreen-api&gt;</a></span>
                 <p>A simple Polymer based Web Component wrapper for the HTML5 full screen API</p>
                 <div class="horizontal layout">
@@ -315,6 +318,7 @@
               </paper-material>
 
               <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
+                <paper-ripple class="fit"></paper-ripple>
                 <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/neon-page-behavior">neon-page-behavior</a></span>
                 <p>Make the most of Polymer's 'neon-animated-pages' effortlessly. NeonPageBehavior fires events allowing more control over a page's lifecycle, and allows your page element to use a different animation-configuration when transitioning to each different page</p>
                 <div class="horizontal layout">
@@ -327,6 +331,7 @@
               <span class="paper-font-headline">Polymer 0.5</span>
 
               <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
+                <paper-ripple class="fit"></paper-ripple>
                 <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/fullscreen-api">&lt;fullscreen-api&gt;</a></span>
                 <p>A simple Polymer based Web Component wrapper for the HTML5 full screen API</p>
                 <div class="horizontal layout">
@@ -336,6 +341,7 @@
               </paper-material>
 
               <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
+                <paper-ripple class="fit"></paper-ripple>
                 <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/splash-element">&lt;splash-element&gt;</a></span>
                 <p>A Polymer based Web-Component helping you to display a splash screen while your own Web-Component is getting ready</p>
                 <div class="horizontal layout">
@@ -345,6 +351,7 @@
               </paper-material>
 
               <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
+                <paper-ripple class="fit"></paper-ripple>
                 <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/activable-mixin">&lt;activable-mixin&gt;</a></span>
                 <p>A Polymer mixin that gives you more control over the lifecycle of the children of your core-selector, and core-animated-pages in particular</p>
                 <div class="horizontal layout">
@@ -359,13 +366,14 @@
           <neon-animatable route="apps" class="page">
             <div>
               <paper-material elevation="1" class="no-padding" style="margin-top: 0;" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
+                <paper-ripple class="fit"></paper-ripple>
                 <div class="app-card-header">
                   <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/polymer-0.5-sample-webapp">polymer-0.5-sample-webapp</a></span>
                   <p>Simple Web App built with Web Components and Polymer 0.5</p>
                 </div>
-                <img src="images/psw-0.5-1.png" class="full" border="0" alt="psw-0.5"></img>
-                <img src="images/psw-0.5-2.png" class="half" border="0" alt="psw-0.5"></img>
-                <img src="images/psw-0.5-3.png" class="half" border="0" alt="psw-0.5"></img>
+                <img src="images/psw-0.5-1.png" class="full" border="0" alt="psw-0.5">
+                <img src="images/psw-0.5-2.png" class="half" border="0" alt="psw-0.5">
+                <img src="images/psw-0.5-3.png" class="half" border="0" alt="psw-0.5">
                 <div class="app-card-footer">
                   <ul>
                     <li>A responsive Web App, of course, build with Polymer 0.5</li>
@@ -394,9 +402,10 @@
               <span class="paper-font-headline">Made with :</span>
               
               <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
+                <paper-ripple class="fit"></paper-ripple>
                 <span class="paper-font-title"><a target="_blank" href="https://www.polymer-project.org/" class="horizontal end layout">
-                  <img src="images/polymer.svg" style="width: 140px;" border="0" alt="Polymer"></img>
-                  <img src="images/polymer1.0.svg" class="self-start" style="width: 40px; padding-left: 10px;" border="0" alt="1.0"></img>
+                  <img src="images/polymer.svg" style="width: 140px;" border="0" alt="Polymer">
+                  <img src="images/polymer1.0.svg" class="self-start" style="width: 40px; padding-left: 10px;" border="0" alt="1.0">
                 </a></span>
                 <p>The Polymer library is designed to make it easier and faster for developers to create great, reusable components for the modern web</p>
                 <div class="horizontal layout end-justified">
@@ -405,6 +414,7 @@
               </paper-material>
 
               <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
+                <paper-ripple class="fit"></paper-ripple>
                 <span class="paper-font-title"><a target="_blank" href="https://www.polymer-project.org/">&lt;more-routing&gt;</a></span>
                 <p>A composable suite of objects and elements to make routing with web components a breeze</p>
                 <div class="horizontal layout end-justified">
@@ -414,6 +424,7 @@
               </paper-material>
 
               <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
+                <paper-ripple class="fit"></paper-ripple>
                 <span class="paper-font-title"><a target="_blank" href="https://www.polymer-project.org/">&lt;polymer-github-card&gt;</a></span>
                 <p>&lt;github-card&gt; with Polymer</p>
                 <div class="horizontal layout end-justified">
@@ -423,6 +434,7 @@
               </paper-material>
 
               <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
+                <paper-ripple class="fit"></paper-ripple>
                 <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/fullscreen-api">&lt;fullscreen-api&gt;</a></span>
                 <p>A simple Polymer based Web Component wrapper for the HTML5 full screen API</p>
                 <div class="horizontal layout end-justified">
@@ -431,17 +443,16 @@
                 </div>
               </paper-material>
             </div>
+          </neon-animatable>
         </neon-animated-pages>
       </more-route-selector>
 
     </paper-header-panel>
-
-
   </paper-drawer-panel>
 
   <!-- Most important FAB in the universe!!! :-) -->
   <a target="_blank" href="https://github.com/vguillou">
-    <paper-fab id="fab" icon="perm-identity" class="unselectable">CV</paper-fab>
+    <paper-fab id="fab" icon="perm-identity" class="unselectable hide">CV</paper-fab>
   </a>
 
 </template>
@@ -457,7 +468,7 @@
     var drawerPanel = document.querySelector('#paperDrawerPanel');
     var fab = document.querySelector('#fab');
     drawerPanel.addEventListener('iron-select', function(event) {
-      Polymer.Base.toggleClass('hidden', drawerPanel.selected == 'drawer', fab);
+      Polymer.Base.toggleClass('hide', drawerPanel.selected == 'drawer', fab);
     });
   });
 
@@ -479,7 +490,9 @@
   };
 
   scope.onMouseOverPaper = function(event) {
-    _getTargetPaperMaterial(event).elevation = 5;
+    if (!scope.narrow) {
+      _getTargetPaperMaterial(event).elevation = 5;
+    }
   };
 
   scope.onMouseOutPaper = function(event) {
