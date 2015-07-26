@@ -44,7 +44,6 @@
   <link rel="import" href="webcomponents/paper-icon-button/paper-icon-button.html">
   <link rel="import" href="webcomponents/paper-material/paper-material.html">
   <link rel="import" href="webcomponents/paper-menu/paper-menu.html">
-  <link rel="import" href="webcomponents/paper-ripple/paper-ripple.html">
   <link rel="import" href="webcomponents/paper-styles/paper-styles-classes.html">
   <link rel="import" href="webcomponents/paper-toolbar/paper-toolbar.html">
 
@@ -55,6 +54,26 @@
       -webkit-touch-callout: none;
       -webkit-tap-highlight-color: rgba(0,0,0,0);
       overflow: hidden;
+    }
+
+    div.place-holder-toolbar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background-color: #009688;
+      color: #FFFFFF;
+    }
+
+    div.place-holder-fab {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background-color: #FF5252;
     }
 
     :root {
@@ -235,6 +254,9 @@
 </head>
 <body class="fullbleed">
 
+<div class="place-holder-toolbar"></div>
+<div class="place-holder-fab"></div>
+
 <template is="dom-bind">
 
   <!-- Routes -->
@@ -283,7 +305,7 @@
 
       <paper-toolbar>
         <paper-icon-button id="paperToggle" icon="menu" class="unselectable" paper-drawer-toggle></paper-icon-button>
-        <span class="flex paper-font-headline unselectable">Welcome!</span>
+        <span class="flex paper-font-headline unselectable">Welcome!&nbsp;&nbsp;&nbsp;(&nbsp;&nbsp;◠‿◠)</span>
         <paper-icon-button icon="{{fsIcon}}" on-click="toggleFullscreen" hidden$="{{fsHidden}}"></paper-icon-button>
       </paper-toolbar>
 
@@ -296,7 +318,6 @@
               <github-card user="vguillou"></github-card>
 
               <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
-                <paper-ripple class="fit"></paper-ripple>
                 <span>Nice and shiny WEB-CV coming soon!</span>
               </paper-material>
             </div>
@@ -308,7 +329,6 @@
               <span class="paper-font-headline">Polymer 1.X</span>
 
               <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
-                <paper-ripple class="fit"></paper-ripple>
                 <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/fullscreen-api">&lt;fullscreen-api&gt;</a></span>
                 <p>A simple Polymer based Web Component wrapper for the HTML5 full screen API</p>
                 <div class="horizontal layout">
@@ -318,7 +338,6 @@
               </paper-material>
 
               <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
-                <paper-ripple class="fit"></paper-ripple>
                 <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/neon-page-behavior">neon-page-behavior</a></span>
                 <p>Make the most of Polymer's 'neon-animated-pages' effortlessly. NeonPageBehavior fires events allowing more control over a page's lifecycle, and allows your page element to use a different animation-configuration when transitioning to each different page</p>
                 <div class="horizontal layout">
@@ -331,7 +350,6 @@
               <span class="paper-font-headline">Polymer 0.5</span>
 
               <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
-                <paper-ripple class="fit"></paper-ripple>
                 <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/fullscreen-api">&lt;fullscreen-api&gt;</a></span>
                 <p>A simple Polymer based Web Component wrapper for the HTML5 full screen API</p>
                 <div class="horizontal layout">
@@ -341,7 +359,6 @@
               </paper-material>
 
               <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
-                <paper-ripple class="fit"></paper-ripple>
                 <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/splash-element">&lt;splash-element&gt;</a></span>
                 <p>A Polymer based Web-Component helping you to display a splash screen while your own Web-Component is getting ready</p>
                 <div class="horizontal layout">
@@ -351,7 +368,6 @@
               </paper-material>
 
               <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
-                <paper-ripple class="fit"></paper-ripple>
                 <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/activable-mixin">&lt;activable-mixin&gt;</a></span>
                 <p>A Polymer mixin that gives you more control over the lifecycle of the children of your core-selector, and core-animated-pages in particular</p>
                 <div class="horizontal layout">
@@ -366,7 +382,6 @@
           <neon-animatable route="apps" class="page">
             <div>
               <paper-material elevation="1" class="no-padding" style="margin-top: 0;" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
-                <paper-ripple class="fit"></paper-ripple>
                 <div class="app-card-header">
                   <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/polymer-0.5-sample-webapp">polymer-0.5-sample-webapp</a></span>
                   <p>Simple Web App built with Web Components and Polymer 0.5</p>
@@ -402,7 +417,6 @@
               <span class="paper-font-headline">Made with :</span>
               
               <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
-                <paper-ripple class="fit"></paper-ripple>
                 <span class="paper-font-title"><a target="_blank" href="https://www.polymer-project.org/" class="horizontal end layout">
                   <img src="images/polymer.svg" style="width: 140px;" border="0" alt="Polymer">
                   <img src="images/polymer1.0.svg" class="self-start" style="width: 40px; padding-left: 10px;" border="0" alt="1.0">
@@ -414,7 +428,6 @@
               </paper-material>
 
               <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
-                <paper-ripple class="fit"></paper-ripple>
                 <span class="paper-font-title"><a target="_blank" href="https://www.polymer-project.org/">&lt;more-routing&gt;</a></span>
                 <p>A composable suite of objects and elements to make routing with web components a breeze</p>
                 <div class="horizontal layout end-justified">
@@ -424,7 +437,6 @@
               </paper-material>
 
               <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
-                <paper-ripple class="fit"></paper-ripple>
                 <span class="paper-font-title"><a target="_blank" href="https://www.polymer-project.org/">&lt;polymer-github-card&gt;</a></span>
                 <p>&lt;github-card&gt; with Polymer</p>
                 <div class="horizontal layout end-justified">
@@ -434,7 +446,6 @@
               </paper-material>
 
               <paper-material elevation="1" class="vertical layout" on-mouseover="onMouseOverPaper" on-mouseout="onMouseOutPaper">
-                <paper-ripple class="fit"></paper-ripple>
                 <span class="paper-font-title"><a target="_blank" href="https://github.com/vguillou/fullscreen-api">&lt;fullscreen-api&gt;</a></span>
                 <p>A simple Polymer based Web Component wrapper for the HTML5 full screen API</p>
                 <div class="horizontal layout end-justified">
@@ -452,7 +463,7 @@
 
   <!-- Most important FAB in the universe!!! :-) -->
   <a target="_blank" href="https://github.com/vguillou">
-    <paper-fab id="fab" icon="perm-identity" class="unselectable hide">CV</paper-fab>
+    <paper-fab id="fab" icon="perm-identity" class="unselectable">CV</paper-fab>
   </a>
 
 </template>
