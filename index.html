@@ -242,19 +242,22 @@
       right: 16px;
       -webkit-transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
       -moz-transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+      -ms-transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
       -o-transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
       transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
       -webkit-transform: translateZ(0);
       -moz-transform: translateZ(0);
+      -ms-transform: translateZ(0);
       -o-transform: translateZ(0);
       transform: translateZ(0);
     }
 
     paper-fab.hide {
-      -webkit-transform: translateZ(0) scale(0);
-      -moz-transform: translateZ(0) scale(0);
-      -o-transform: translateZ(0) scale(0);
-      transform: translateZ(0) scale(0);
+      -webkit-transform: scale(0.001) translateZ(0);
+      -moz-transform: scale(0.001) translateZ(0);
+      -ms-transform: scale(0.001) translateZ(0);
+      -o-transform: scale(0.001) translateZ(0);
+      transform: scale(0.001) translateZ(0);
     }
 
     /* Small */
