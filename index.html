@@ -67,14 +67,19 @@
       overflow: hidden;
     }
 
-    div.place-holder-toolbar {
+    div.place-holder-toolbar, .buorg {
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
-      height: 64px;
+      min-height: 60px;
       background-color: #009688;
       color: #FFFFFF;
+      font-size: 20px;
+    }
+
+    .buorg div {
+      margin: 12px 0 12px 0;
     }
 
     div.place-holder-fab {
@@ -540,6 +545,20 @@
     return target;
   };
 </script>
+
+<script> 
+var $buoop = {vs:{i:10,f:30,o:25,s:6},c:2,reminder:0,text:'Sorry! Your browser (%s) is out of date and cannot display this website, in addition of presenting security flaws. Please <a%s>update</a>. (&nbsp;&nbsp;◠‿◠)',text_fr:'Désolé ! Votre navigateur (%s) est dépassé et ne peut afficher correctement ce site, en plus de présenter des risques de sécurité. Merci de le <a%s>mettre à jour</a>. (&nbsp;&nbsp;◠‿◠)',test:true,
+  onshow: function() {
+    document.querySelector('#webapp').style.display = 'none';
+  }}; 
+  function $buo_f(){ 
+   var e = document.createElement("script"); 
+   e.src = "//browser-update.org/update.min.js"; 
+   document.body.appendChild(e);
+  };
+  try {document.addEventListener("DOMContentLoaded", $buo_f,false)}
+  catch(e){window.attachEvent("onload", $buo_f)}
+</script> 
 
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
