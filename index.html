@@ -26,18 +26,17 @@
   <!-- Thanks to https://github.com/geelen/x-gif for the snippet -->
   <script>
   if ('registerElement' in document
-    && 'createShadowRoot' in HTMLElement.prototype
     && 'import' in document.createElement('link')
     && 'content' in document.createElement('template')) {
     // We're using a browser with native WC support!
   } else {
-    document.write('<script src="webcomponents/webcomponentsjs/webcomponents-lite.min.js"><\/script>');
+    document.write('<script src="webcomponents/webcomponentsjs/webcomponents-lite.min.js" async><\/script>');
   }
   </script>
   
   <!-- browser-update.org -->
   <script> 
-    var $buoop = {vs:{i:10,f:30,o:25,s:6},c:2,reminder:0,text:'Sorry! Your browser (%s) is out of date and cannot display this website, in addition of presenting security flaws. Please <a%s>update</a>. (&nbsp;&nbsp;◠‿◠)',text_fr:'Désolé ! Votre navigateur (%s) est dépassé et ne peut afficher correctement ce site, en plus de présenter des risques de sécurité. Merci de le <a%s>mettre à jour</a>. (&nbsp;&nbsp;◠‿◠)',
+    var $buoop = {vs:{i:10,f:30,o:25,s:6},c:2,reminder:0,text:'Sorry! Your browser (%s) is out of date and cannot display this website, in addition of presenting security flaws. Please <a%s>update</a>. (&nbsp;&nbsp;^‿^)',text_fr:'Désolé ! Votre navigateur (%s) est dépassé et ne peut afficher correctement ce site, en plus de présenter des risques de sécurité. Merci de le <a%s>mettre à jour</a>. (&nbsp;&nbsp;^‿^)',
     onshow: function() {
       document.querySelector('#webapp').style.display = 'none';
     }}; 
@@ -51,28 +50,9 @@
   </script> 
   
   <!-- Html imports -->
-  <link rel="import" href="webcomponents/iron-icon/iron-icon.html">
-  <link rel="import" href="webcomponents/iron-icons/iron-icons.html">
+  <link rel="import" href="elements.html" async>
 
-  <link rel="import" href="webcomponents/fullscreen-api/fullscreen-api.html">
-  <link rel="import" href="webcomponents/github-card/github-card.html">
-
-  <link rel="import" href="webcomponents/more-routing/more-routing.html">
-
-  <link rel="import" href="webcomponents/neon-animation/neon-animated-pages.html">
-  <link rel="import" href="webcomponents/neon-animation/neon-animations.html">
-  <link rel="import" href="webcomponents/neon-animation/neon-animatable-behavior.html">
-
-  <link rel="import" href="webcomponents/paper-button/paper-button.html">
-  <link rel="import" href="webcomponents/paper-drawer-panel/paper-drawer-panel.html">
-  <link rel="import" href="webcomponents/paper-fab/paper-fab.html">
-  <link rel="import" href="webcomponents/paper-header-panel/paper-header-panel.html">
-  <link rel="import" href="webcomponents/paper-icon-button/paper-icon-button.html">
-  <link rel="import" href="webcomponents/paper-material/paper-material.html">
-  <link rel="import" href="webcomponents/paper-menu/paper-menu.html">
-  <link rel="import" href="webcomponents/paper-styles/paper-styles-classes.html">
-  <link rel="import" href="webcomponents/paper-toolbar/paper-toolbar.html">
-  
+  <!-- CSS Styles -->
   <style>
     body, html {
       font-family: Roboto, 'Noto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -87,7 +67,7 @@
       top: 0;
       left: 0;
       right: 0;
-      min-height: 60px;
+      min-height: 64px;
       background-color: #009688;
       color: #FFFFFF;
       font-size: 20px;
@@ -109,39 +89,6 @@
   </style>
   
   <style is="custom-style">
-    body, html {
-      font-family: Roboto, 'Noto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      margin: 0;
-      -webkit-touch-callout: none;
-      -webkit-tap-highlight-color: rgba(0,0,0,0);
-      overflow: hidden;
-    }
-
-    div.place-holder-toolbar, .buorg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      min-height: 60px;
-      background-color: #009688;
-      color: #FFFFFF;
-      font-size: 20px;
-    }
-
-    .buorg div {
-      margin: 12px 0 12px 0;
-    }
-
-    div.place-holder-fab {
-      position: absolute;
-      bottom: 16px;
-      right: 16px;
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      background-color: #FF5252;
-    }
-
     :root {
       --dark-primary-color: #00796B;
       --default-primary-color: #009688;
@@ -325,6 +272,8 @@
   </style>
 
 </head>
+
+<!-- Markup -->
 <body class="fullbleed">
 
 <div class="place-holder-toolbar"></div>
@@ -380,7 +329,7 @@
 
         <paper-toolbar>
           <paper-icon-button id="paperToggle" icon="menu" class="unselectable" paper-drawer-toggle></paper-icon-button>
-          <span class="flex paper-font-headline unselectable">Welcome!&nbsp;&nbsp;&nbsp;(&nbsp;&nbsp;◠‿◠)</span>
+          <span class="flex paper-font-headline unselectable">Welcome!&nbsp;&nbsp;&nbsp;(&nbsp;&nbsp;^‿^)</span>
           <paper-icon-button icon="{{fsIcon}}" on-click="toggleFullscreen" hidden$="{{fsHidden}}"></paper-icon-button>
         </paper-toolbar>
 
