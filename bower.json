@@ -4,7 +4,7 @@
   "authors": [
     "Vincent Guillou <vin.guillou@gmail.com>"
   ],
-  "description": "A Web Components-based GitHub page, illustrating Web Components. ",
+  "description": "A Web Components-based GitHub page, illustrating Web Components.",
   "keywords": [],
   "main": "index.html",
   "license": "MIT",
@@ -15,13 +15,11 @@
     "url": "git://github.com/vguillou/vguillou.github.io.git"
   },
   "dependencies": {
+    "polymer": "Polymer/polymer#^1.2",
 	  "iron-elements": "PolymerElements/iron-elements#^1.0",
     "paper-elements": "PolymerElements/paper-elements#^1.0",
-    "platinum-elements": "PolymerElements/platinum-elements#^1.0.1",
+    "platinum-elements": "PolymerElements/platinum-elements#^1.0",
     "neon-elements": "PolymerElements/neon-elements#^1.0",
-    "github-card": "ds82/polymer-github-card#^0.2.1",
-    
-    
-    "web-animations-js": "web-animations/web-animations-js#2.1.0"
+    "github-card": "ds82/polymer-github-card#^0.2"
   }
 }
