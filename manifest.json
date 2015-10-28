@@ -1,6 +1,6 @@
 {
-  "short_name": "Web App with Polymer",
-  "name": "Single-page Web App with WebComponents and Polymer",
+  "short_name": "vguillou",
+  "name": "vguillou @ GitHub pages",
   "icons": [
     {
       "src": "images/icon-0-75x-36.png",
@@ -39,8 +39,8 @@
       "density": 4.0
     }
   ],
-  "background_color": "#EEEEEE",
-  "theme_color": "#00BCD4",
+  "background_color": "#F5F5F5",
+  "theme_color": "#009688",
   "start_url": "./index.html",
   "display": "standalone"
 }

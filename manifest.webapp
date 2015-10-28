@@ -1,0 +1,13 @@
+{
+  "name": "vguillou @ GitHub pages",
+  "description": "vguillou @ GitHub pages",
+  "launch_path": "/",
+  "icons": {
+    "128": "/images/icon-128.png"
+  },
+  "developer": {
+    "name": "Vincent Guillou",
+    "url": "https://github.com/vguillou"
+  },
+  "default_locale": "en"
+}
