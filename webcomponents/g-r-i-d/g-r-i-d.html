@@ -1,15 +1,21 @@
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="grid-behavior.html">
+<link rel="import" href="../neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../neon-animation/neon-animatable-behavior.html">
+<link rel="import" href="../neon-animation/animations/cascaded-animation.html">
+<link rel="import" href="../neon-animation/animations/transform-animation.html">
+<link rel="import" href="../neon-animation/animations/fade-out-animation.html">
 
 <!--
-A simple, configurable, responsive and adaptive grid layout.
+A simple animated, configurable, responsive and adaptive grid layout.
 The adaptive breakpoints are defined by the minimum width of the columns.
 Gutter size, row height, grid items aspect-ratio and maximum width are
 all easily manageable.
-Note that it is achieved with a column direction flexbox that wraps. 
+For a slimmed down version of `<g-r-i-d>`, with less dependencies, please
+use `<slim-g-r-i-d>` (included).
+Note that the grid is achieved with a column direction flexbox that wraps.
 
-Exemple: A grid with square 150px items, separated by 4px gutters. 
+Example: A grid with square 150px items, separated by 4px gutters. 
 
     <g-r-i-d min-column-width="150" gutter="4" row-height="100cw">
       <div class="item"></div>
@@ -19,6 +25,15 @@ Exemple: A grid with square 150px items, separated by 4px gutters.
       <div class="item"></div>
     </g-r-i-d>
 
+### Styling
+
+The following custom properties and mixins are available for stylingt:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--grid-layout` | Mixin applied to the grid layout (flexbox).<br/>Particularly interesting to control how the items are justified.<br/>(e.g.: `justify-content: center;`). | `{}`
+
+@group g-r-i-d
 @element g-r-i-d
 @demo demo/index.html
 -->
@@ -26,181 +41,172 @@ Exemple: A grid with square 150px items, separated by 4px gutters.
   <template>
     <style>
       :host {
+        box-sizing: content-box;
+      }
+      :host(:not(.controlled-width)) {
+        display: inherit;
+        width: calc(100% - var(--grid-outter-padding-border));
+      }
+      :host(.display-center) {
         display: table;
         margin: 0 auto;
       }
       :host > #container {
         @apply(--layout-horizontal);
         @apply(--layout-wrap);
-        max-width: var(--grid-max-width);
+        @apply(--grid-layout);
         padding: 0;
+      }
+      :host > #container.controlled-width {
+        max-width: var(--grid-max-width);
       }
       :host > #container > ::content > * {
         @apply(--layout-flex-none);
         width: var(--grid-column-width);
+        min-width: var(--grid-column-min-width);
         max-width: var(--grid-column-max-width);
         height: var(--grid-row-height);
         margin: var(--grid-gutter);
         box-sizing: border-box;
       }
-      :host([no-outer-gutter]) > #container {
-        margin: calc(var(--grid-gutter) * -1);
-      },
       :host([columns="1"]) > #container {
         max-width: none;
-        margin: 0 var(--grid-gutter);
       }
-      :host([columns="1"]) > #container > ::content > * {
-        width: calc(100% - 2 * var(--grid-gutter))  !important;
-        min-width: initial !important;
+      :host([columns="1"]:not(.controlled-width)) > #container > ::content > *,
+      :host([columns="1"][responsive-when-narrow]) > #container > ::content > * {
         max-width: none;
+        width: calc(100% - 2 * var(--grid-gutter))  !important;
+      }
+      :host([columns="1"][responsive-when-narrow]) > #container > ::content > * {
+        min-width: initial !important;
+      }
+      :host([no-outer-gutter]) > #container {
+        margin: calc(var(--grid-gutter) * -1);
+      }
+      :host > #container.not-shown {
+        display: none !important;
+        opacity: 0 !important;
       }
     </style>
     <div id="container">
-      <content></content>
+      <content id="content"></content>
     </div>
   </template>
 
   <script>
   (function() {
-    'use strict';  
+    'use strict';
     Polymer({
       is: 'g-r-i-d',
-      behaviors: [Polymer.IronResizableBehavior],
+      behaviors: [Polymer.GridBehavior,Polymer.NeonAnimationRunnerBehavior,Polymer.NeonAnimatableBehavior],
       properties: {
         /**
-         * The effective number of columns of the grid.
-         * Read-only.
+         * Flag controlling the appearance/disappearance of the grid.
+         * Triggers the animation.
          */
-        columns: {
-          type: Number,
+        shown: {
+          type: Boolean,
+          value: true,
           notify: true,
           reflectToAttribute: true,
-          readOnly: true
+          observer: '_shownChanged'
         },
         /**
-         * The minimun width of the columns in px.
+         * The appearance/disappearance animations configuration.
+         * Standard neon-animation definition.
+         * By default, entry animation is a cascade, exit animation
+         * translates all the grid down.
+         * For any combined animation (such as cascade) configuration,
+         * the nodes` property will be automatically set with the items
+         * of the grid. In other cases, the `node` will be set with
+         * the grid's container only if it's undefined.
          */
-        minColumnWidth: {
-          type: Number,
-          value: 300,
-          observer: 'refresh'
-        },
-        /**
-         * The height of the rows.
-         * By default (or if `rowHeight` is `undefined`), each row
-         * adapts it's height to it's content.
-         * `rowHeight` can also be fixed with 2 units of measure:
-         * pixels (px) and percentage of column width (cw).
-         * Example :
-         * <ul>
-         * <li>undefined => Each row adapts it's height to it's content.</li>
-         * <li>'150px' => All rows are 150px in height.</li>
-         * <li>'100cw' => Row height is equal to column width: grid items are squared.</li>
-         * <li>'50cw' => Row height is equal to half the column width:
-         * grid items are rectangular with a 2/1 aspact-ratio.</li>
-         * </ul>
-         */
-        rowHeight: {
-          type: String,
-          value: undefined,
-          observer: 'refresh'
-        },
-        /**
-         * The gutter width in px.
-         */
-        gutter: {
-          type: Number,
-          value: 4,
-          observer: 'refresh'
-        },
-        /**
-         * The maximum number of columns to display.
-         */
-        maxColumnNumber: {
-          type: Number,
-          value: undefined,
-          observer: 'refresh'
-        },
-        /**
-         * The maximum width of the columns in px.
-         * Only works in conjunction with `maxColumnNumber` to limit
-         * the total width and number of column of the grid.
-         * Is *not* applied when the number of columns is inferior
-         * to `maxColumnNumber`.
-         */
-        maxColumnWidth: {
-          type: Number,
-          value: undefined,
-          observer: 'refresh'
-        },
-        /**
-         * Removes the outer gutter.
-         */
-        noOuterGutter: {
-          type: Boolean,
-          value: false,
-          reflectToAttribute: true,
-          observer: 'refresh'
-        },
+        animationConfig: {
+          value: function() {
+            return {
+              'entry': [{
+                name: 'cascaded-animation',
+                animation: 'transform-animation',
+                transformFrom: 'translateY(100vh)',
+                transformTo: 'none'
+              }],
+              'exit': [{
+                name: 'transform-animation',
+                transformFrom: 'none',
+                transformTo: 'translateY(100vh)'
+              }, {
+                name: 'fade-out-animation'
+              }]
+            };
+          }
+        }
       },
       listeners: {
-        'iron-resize': 'refresh'
+        'neon-animation-finish': '_onNeonAnimationFinish'
       },
-
       /**
-       * Triggers the refresh of all the mensuration of the grid.
-       * Call if you modify the CSS width, padding or margin properties of the element.
+       * Computes the delay between each itesm for combined animations
+       * (such as the default cascaded animation).
+       * Default is 750ms / number of items.
+       * You can override this function to customize this delay.
        */
-      refresh: function() {
-        this._updateLayout(this.minColumnWidth, this.rowHeight, this.gutter, this.maxColumnWidth, this.maxColumnNumber, this.noOuterGutter);
+      computeNodeDelay: function(itemsNumber, timing) {
+        return (Math.round(750 / itemsNumber));
       },
-
-      attached: function() {
-        this.async(function() {
-          this._updateLayout(this.minColumnWidth, this.rowHeight, this.gutter, this.maxColumnWidth, this.maxColumnNumber, this.noOuterGutter);
-        }, 10);
-      },
-      _updateLayout: function(minColumnWidth, rowHeight, gutter, maxColumnWidth, maxColumnNumber, noOuterGutter) {
-        this._width = this.$.container.clientWidth;
-        var colNumber = Math.floor(Math.max(1, (this._width + (noOuterGutter ? 2 * this.gutter : 0)) / (this.minColumnWidth + 2 * this.gutter || 1)));
-        this._setColumns(this.maxColumnNumber > 0 ? Math.min(colNumber, maxColumnNumber) : colNumber);
-        this._updateCustomStyles();
-      },
-      _updateCustomStyles: function() {
-        var maxWidth, maxColumnWidth = 'none';
-        var rowHeight = 'initial';
-        if (this.maxColumnWidth > 0 && this.maxColumnNumber > 0) {
-          maxWidth = (this.maxColumnNumber * this.maxColumnWidth) + (2 * this.maxColumnNumber * this.gutter) + 'px';
-          if (this.columns == this.maxColumnNumber) {
-            maxColumnWidth = this.maxColumnWidth + 'px';
-          }
+      /**
+       * Reveals the grid (with animation).
+       */
+      show: function() {
+        if (!this.shown) {
+          this.shown = true;
+          return;
         }
-
-        var colWidth = (this._width - ((2 * this.columns)) * this.gutter) / this.columns;
-
-        if (this.rowHeight) {
-          // rowHeight in 'cw' (column width percentage)
-          if (this.rowHeight.substr(this.rowHeight.length-2, this.rowHeight.length-1) === 'cw') {
-            rowHeight = this.rowHeight.substr(0, this.rowHeight.length-2);
-            if (isNaN(rowHeight)) {
-              throw 'rowHeight "' + this.rowHeight + '" is invalid.';
-            } else {
-              rowHeight = (Number(rowHeight) / 100 * colWidth) + 'px';
-            }
-          } else {
-            // rowHeight in any other unit
-            rowHeight = this.rowHeight;
-          }
+        if (this.animationConfig && this.animationConfig['entry']) {
+          this.animationConfig['entry'] = [].concat(this.animationConfig['entry']);
+          this.animationConfig['entry'].forEach(this._setAnimationConfigTargets.bind(this));
+          this.cancelAnimation();
+          this.playAnimation('entry');
+          this.async(function() {
+            this.toggleClass('not-shown', false, this._getGridContainer());
+          }, 50);
         }
-
-        this.updateStyles({
-          '--grid-column-width': colWidth + 'px',
-          '--grid-row-height': rowHeight,
-          '--grid-gutter': this.gutter + 'px',
-          '--grid-max-width': maxWidth,
-          '--grid-column-max-width': maxColumnWidth
-        });
+      },
+      /**
+       * Hides the grid (with animation).
+       */
+      hide: function() {
+        if (this.shown) {
+          this.shown = false;
+          return;
+        }
+        if (this.animationConfig && this.animationConfig['exit']) {
+          this.animationConfig['exit'] = [].concat(this.animationConfig['exit']);
+          this.animationConfig['exit'].forEach(this._setAnimationConfigTargets.bind(this));
+          this.cancelAnimation();
+          this.playAnimation('exit');
+        }
+      },
+      _setAnimationConfigTargets: function(animationConfig) {
+        if (animationConfig) {
+          animationConfig.node = animationConfig.node || this._getGridContainer();
+          animationConfig.nodes = Array.prototype.slice.call(this.itemsNodes);
+          animationConfig.nodeDelay = this.computeNodeDelay(animationConfig.nodes.length, animationConfig.timing);
+        }
+      },
+      _shownChanged: function() {
+        if (this.shown) {
+          this.show();
+        } else {
+          this.hide();
+        }
+      },
+      _onNeonAnimationFinish: function() {
+        if (!this.shown) {
+          this.toggleClass('not-shown', true, this._getGridContainer());
+        }
+      },
+      _getGridContainer: function() {
+        return this.$.container;
       }
     });
   })();
