@@ -21,7 +21,7 @@ The features that are absent here are :
         display: inherit;
         width: calc(100% - var(--grid-outter-padding-border));
       }
-      :host(.display-center) {
+      :host(.controlled-width) {
         display: table;
         margin: 0 auto;
       }
@@ -37,8 +37,6 @@ The features that are absent here are :
       :host > #container > ::content > * {
         @apply(--layout-flex-none);
         width: var(--grid-column-width);
-        min-width: var(--grid-column-min-width);
-        max-width: var(--grid-column-max-width);
         height: var(--grid-row-height);
         margin: var(--grid-gutter);
         box-sizing: border-box;
@@ -46,13 +44,9 @@ The features that are absent here are :
       :host([columns="1"]) > #container {
         max-width: none;
       }
-      :host([columns="1"]:not(.controlled-width)) > #container > ::content > *,
-      :host([columns="1"][responsive-when-narrow]) > #container > ::content > * {
+      :host([columns="1"][responsive-when-narrow]:not(.controlled-width)) > #container > ::content > * {
         max-width: none;
         width: calc(100% - 2 * var(--grid-gutter))  !important;
-      }
-      :host([columns="1"][responsive-when-narrow]) > #container > ::content > * {
-        min-width: initial !important;
       }
       :host([no-outer-gutter]) > #container {
         margin: calc(var(--grid-gutter) * -1);
