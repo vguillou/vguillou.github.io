@@ -1,0 +1,270 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../../bower_components/parallax-element/parallax-scroller-behavior.html">
+<link rel="import" href="../../bower_components/parallax-element/parallax-layers.html">
+<link rel="import" href="../../styles/shared-styles.html">
+
+<dom-module id="header-panel-main">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      paper-scroll-header-panel {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+
+        /* scroller of the panel */
+        --paper-scroll-header-container: {
+          display: -ms-flexbox;
+          display: -webkit-flex;
+          display: flex;
+          margin: 0;
+          padding: 0;
+
+
+          /* Every CSS properties that flatten perspective
+           * (such as -webkit-overflow-scrolling: touch;) *must* be avoided
+           * for the scroller, as it breaks the perspective.
+           */
+          -webkit-overflow-scrolling: auto;
+
+          /* for vertical scrolling */
+          -webkit-flex-direction: column;
+          flex-direction: column;
+          overflow-y: auto;
+          overflow-x: hidden;
+
+          /* FYI, this should be applied for horizontal scrolling, instead of the 4 preceiding lines */
+          /*
+          overflow-y: hidden;
+          overflow-x: auto;
+          */
+        };
+      }
+
+      #parallaxSection,
+      #pages,
+      .content {
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-flex-direction: column;
+        flex-direction: column;
+
+        -webkit-overflow-scrolling: auto;
+      }
+
+      /* demo and layer style */
+
+      parallax-layers {
+        min-height: 400px;
+        z-index: -1;
+      }
+
+      parallax-layers > .parallax-layer {
+        background-image: url("doge.jpg");
+        background-position: 50% 50%;
+        background-repeat: no-repeat;
+        background-size: cover;
+        color: white;
+      }
+    
+      div.no-parallax {
+        min-height: 500px;
+        z-index: 0;
+        background: white;
+        border-style: solid;
+        border-width: 5px;
+        border-color: black;
+    }
+    </style>
+
+    <!-- Main Area -->
+    <paper-scroll-header-panel main id="headerPanelMain" condenses keep-condensed-header on-paper-header-transform="headerTransform">
+
+      <!-- Main Toolbar -->
+      <paper-toolbar id="mainToolbar" class="tall">
+        <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
+        <span class="flex"></span>
+
+        <!-- Toolbar icons -->
+        <paper-icon-button icon="refresh"></paper-icon-button>
+        <paper-icon-button icon="search"></paper-icon-button>
+
+        <!-- Application name -->
+        <div class="middle middle-container center horizontal layout">
+          <div class="app-name">Polymer Starter Kit</div>
+        </div>
+
+        <!-- Application sub title -->
+        <div class="bottom bottom-container center horizontal layout">
+          <div class="bottom-title paper-font-subhead">The future of the web today</div>
+        </div>
+
+      </paper-toolbar>
+
+      <!-- Main Content -->
+      <div class="content">
+        <iron-pages id="pages" attr-for-selected="data-route" selected="{{route}}">
+
+          <section id="parallaxSection" data-route="home">
+            
+            <!-- Content (Must not be embed in a parent div: The scroller must be the direct parent of all <parallax-layers> -->
+            <template is="dom-repeat" items="{{sections}}">
+
+              <template is="dom-if" if="{{isNormalSection(item)}}">
+                <div class="no-parallax     layout vertical center-center">
+                  [[item.label]]
+                </div>
+              </template>
+
+             <template is="dom-if" if="{{!isNormalSection(item)}}">
+                <parallax-layers style$="{{computeSectionZindex(item)}}">
+                  <div depth$="[[item.depth]]" class="parallax-layer fullbleed     layout vertical center-center">
+                    [[item.label]]
+                  </div>
+                </parallax-layers>
+              </template>
+
+            </template>
+
+            <div style="background-color: #fafafa;">
+              <paper-material elevation="1">
+                <my-greeting></my-greeting>
+
+                <p class="paper-font-subhead">You now have:</p>
+                <my-list></my-list>
+
+                <p class="paper-font-body2">Looking for more Web App layouts? Check out our <a href="https://github.com/PolymerElements/app-layout-templates">layouts</a> collection. You can also <a href="http://polymerelements.github.io/app-layout-templates/">preview</a> them live.</p>
+              </paper-material>
+              <paper-material elevation="1">
+                <p class="paper-font-body2">This is another card.</p>
+              </paper-material>
+
+              <paper-material elevation="1" class="paper-font-body2">
+                <h1 id="license">License</h1>
+                <p>Everything in this repo is BSD style license unless otherwise specified.</p>
+                <p>Copyright (c) 2015 The Polymer Authors. All rights reserved.</p>
+                <p>Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:</p>
+                <ul>
+                <li>Redistributions of source code must retain the above copyright
+                notice, this list of conditions and the following disclaimer.</li>
+                <li>Redistributions in binary form must reproduce the above
+                copyright notice, this list of conditions and the following disclaimer
+                in the documentation and/or other materials provided with the
+                distribution.</li>
+                <li>Neither the name of Google Inc. nor the names of its
+                contributors may be used to endorse or promote products derived from
+                this software without specific prior written permission.</li>
+                </ul>
+                <p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
+              </paper-material>
+            </div>
+
+          </section>
+
+          <section data-route="users">
+            <paper-material elevation="1">
+              <h2 class="page-title">Users</h2>
+              <p>This is the users section</p>
+              <a href$="{{baseUrl}}users/Addy">Addy</a><br>
+              <a href$="{{baseUrl}}users/Rob">Rob</a><br>
+              <a href$="{{baseUrl}}users/Chuck">Chuck</a><br>
+              <a href$="{{baseUrl}}users/Sam">Sam</a>
+            </paper-material>
+          </section>
+
+          <section data-route="user-info">
+            <paper-material elevation="1">
+              <h2 class="page-title">User: {{params.name}}</h2>
+              <div>This is {{params.name}}'s section</div>
+            </paper-material>
+          </section>
+
+          <section data-route="contact">
+            <paper-material elevation="1">
+              <h2 class="page-title">Contact</h2>
+              <p>This is the contact section</p>
+            </paper-material>
+          </section>
+
+        </iron-pages>
+      </div>
+    </paper-scroll-header-panel>
+  </template>
+  <script>
+    Polymer({
+      is: 'header-panel-main',
+
+      behaviors: [Polymer.ParallaxScrollerBehavior],
+
+      properties: {
+        route: {
+          type: String,
+          notify: true
+        },
+
+        sections: {
+          type: Array,
+          value: function() {
+            return [{label:'Normal div', depth:0},
+              {label:'wow parallax', depth:-0.3},
+              {label:'much normal div', depth:0},
+              {label:'yum foreground', depth:0.2},
+              {label:'so normal div', depth:0},
+              {label:'very parallax', depth:-1}];
+          }
+        }
+      },
+
+      ready: function() {
+        // The header-panel's scroller must be the parallax scroller 
+        this.scroller = this.$.headerPanelMain.scroller;
+      },
+
+      isNormalSection: function(section) {
+        return section.depth === 0;
+      },
+
+      computeSectionZindex: function(section) {
+        return 'z-index:' + (section.depth <= 0 ? -1 : 1) + ';';
+      },
+
+      // Main area's paper-scroll-header-panel custom condensing transformation of
+      // the appName in the middle-container and the bottom title in the bottom-container.
+      // The appName is moved to top and shrunk on condensing. The bottom sub title
+      // is shrunk to nothing on condensing.
+      headerTransform: function(e) {
+        var appName = Polymer.dom(this.root).querySelector('#mainToolbar .app-name');
+        var middleContainer = Polymer.dom(this.root).querySelector('#mainToolbar .middle-container');
+        var bottomContainer = Polymer.dom(this.root).querySelector('#mainToolbar .bottom-container');
+        var detail = e.detail;
+        var heightDiff = detail.height - detail.condensedHeight;
+        var yRatio = Math.min(1, detail.y / heightDiff);
+        // appName max size when condensed. The smaller the number the smaller the condensed size.
+        var maxMiddleScale = 0.50;
+        var auxHeight = heightDiff - detail.y;
+        var auxScale = heightDiff / (1 - maxMiddleScale);
+        var scaleMiddle = Math.max(maxMiddleScale, auxHeight / auxScale + maxMiddleScale);
+        var scaleBottom = 1 - yRatio;
+
+        // Move/translate middleContainer
+        Polymer.Base.transform('translate3d(0,' + yRatio * 100 + '%,0)', middleContainer);
+
+        // Scale bottomContainer and bottom sub title to nothing and back
+        Polymer.Base.transform('scale(' + scaleBottom + ') translateZ(0)', bottomContainer);
+
+        // Scale middleContainer appName
+        Polymer.Base.transform('scale(' + scaleMiddle + ') translateZ(0)', appName);
+      }
+    });
+  </script>
+</dom-module>
