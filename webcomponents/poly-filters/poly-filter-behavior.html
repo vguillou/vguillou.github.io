@@ -1,0 +1,322 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<script>
+(function() {
+  'use strict';
+  /**
+   * `Polymer.PolyFilterBehavior` is a behavior implementing a fast and customizable solution
+   * for client-side filtering of arrays, made with and for Polymer.
+   *
+   * @polymerBehavior Polymer.PolyFilterBehavior
+   */
+  Polymer.PolyFilterBehavior = {
+
+    properties: {
+
+      /**
+       * Array ot items (Object or not) to filter.
+       */
+      arrayToFilter: {
+        type: Array,
+        value: function() {
+          return [];
+        }
+      },
+
+      /**
+       * Tokenized and flattened `arrayToFilter` to boost filtering performance.
+       */
+      _processedArray: {
+        type: Array,
+        readOnly: true
+      },
+
+      /**
+       * The output : All the items of `arrayToFilter` that survived filtering.
+       */
+      filteredArray: {
+        type: Array,
+        readOnly: true,
+        notify: true
+      },
+
+      /**
+       * The String used to filter the collection of items `arrayToFilter`.
+       */
+      filter: {
+        type: String,
+        value: ''
+      },
+
+      /**
+       * Minimum length of the `filter` String to be taken into account.
+       */
+      filterMinLength: {
+        type: Number,
+        value: 2
+      },
+
+      /**
+       * Debounce delay (in `ms`) before filtering when the `filter` String is changed.
+       */
+      filterDebounceDelay: {
+        type: Number,
+        value: 200
+      },
+
+      /**
+       * List of the item's properties to take into account for the filtering.
+       * If empty, item's in `arrayToFilter` will be filtered based on ``all`` their properties.
+       *
+       * Example:
+       * If the items in `arrayToFilter` represents countries with these properties :
+       *     
+       *     {'code': 'FR', 'name': 'France', 'language': 'French'}
+       *     
+       * and you only want to filter your array based on the `name' and `code`, you must set
+       * `itemPropertiesToFilter` to :
+       *     
+       *     ['code', 'name']
+       */
+      itemPropertiesToFilter: {
+        type: Array,
+        value: function() {
+          return [];
+        }
+      },
+
+      /**
+       * Maximum depth (number) of sub-properties in items of `arrayToFilter` to consider
+       * when filtering.
+       *
+       * Example:
+       * If the items in `arrayToFilter` are objet like these :
+       *     
+       *     {'lastname': 'foo',
+       *      'job': 
+       *      {'title': 'bartender',
+       *       'company':
+       *       {'name': 'foobar',
+       *        'address': '1 foobar street'
+       *       }
+       *      }
+       *     }
+       *     
+       * and `filterMaxDepth` is set to `1`, the company's name and address
+       * can never be inspected during filtering, but the job title can be.
+       */
+      filterMaxDepth: {
+        type: Number,
+        value: 1
+      },
+
+      /**
+       * RegExp used to tokenize `filter` and each properties of the items
+       * to filter (`arrayToFilter`).
+       * @type {RegExp}
+       */
+      filterTokenizerRegExp: {
+        type: RegExp,
+        value: function() {
+          return /[.?!,\\/ |-]/ig;
+        }
+      },
+
+      /**
+       * Array of words that should be ignored during the filtering process.
+       * All the stop-words MUST be in lower case.
+       */
+      stopWords: {
+        type: Array,
+        value: function() {
+          return [];
+        }
+      },
+
+      /**
+       * Case insensitive Logical OR operator.
+       *
+       * Example:
+       * If the logical OR operator is set to 'or' and the `filter` is 'united ki or wede',
+       * then a filtered country list will retain both 'United Kingdom' and 'Sweden'.
+       */
+      logicalOr: {
+        type: String,
+        value: 'or'
+      },
+
+      /**
+       * Maximum number of items processed before the browser is given a chance to 'relax'.
+       * Increase this value for faster processing, but at the risk of freezing the browser.
+       * Decrease it if you deal with very large objects and the browser is freezing during
+       * filtering or pre-processing.
+       */
+      _batchProcessNumber: {
+        type: Number,
+        value: 50
+      }
+    },
+
+    observers: [
+      '_processArray(arrayToFilter, itemPropertiesToFilter, filterTokenizerRegExp, filterMaxDepth, stopWords)',
+      '_generateFilteredArray(filter, _processedArray, filterMinLength, filterDebounceDelay, logicalOr)'
+    ],
+
+    /**
+     * Actual filtering function.
+     */
+    _generateFilteredArray: function(filter, _processedArray, filterMinLength, filterDebounceDelay, logicalOr) {
+      if (!this.filterTokenizerRegExp) {
+        throw 'filterTokenizerRegExp must not be undefined';
+      }
+      this.stopWords = this.stopWords || [];
+
+      this.debounce('_generateFilteredArray' + this.localName, function() {
+        //console.time('_generateFilteredArray ' + filter);
+        if (filter && filter.length >= (filterMinLength || 2)) {
+          var result = [], itemTokens, j = 0, length = this.arrayToFilter.length;
+          // Breaking the filter/query on the logical OR to produce all tokens
+          var filterParts = logicalOr ? filter.toLowerCase().split(logicalOr.toLowerCase()) : [filter];
+          var filterPart, filterPartsTokens = [];
+          for (var i = 0, l = filterParts.length; i < l; i++) {
+            filterPart = filterParts[i].trim();
+            if (filterPart) {
+              filterPartsTokens.push(this._processValue(filterPart, this.filterTokenizerRegExp, this.stopWords));
+            }
+          }
+
+          var process = function() {
+            for (; j < length; j++) {
+              // Actual filtering process: Instead of directly filtering the `arrayToFilter`, we traverse
+              // the preprocessed `_processedArray` to speed things up considerably.
+              itemTokens = _processedArray[j];
+              if (filterPartsTokens.some(function(filterTokens) {
+                return filterTokens.every(function(token) {
+                  return token && itemTokens.some(function(value) {
+                    return value.indexOf(token) > -1;
+                  });
+                });
+              })) {
+                result.push(this.arrayToFilter[j]);
+              }
+              if (j + 1 === length) {
+                // All items processed, set the result
+                this._setFilteredArray(result);
+              }
+              else if (j % this._batchProcessNumber === 0) {
+                this.async(process, 5);
+              }
+            }
+          }.bind(this);
+          process();
+        } else {
+          this._setFilteredArray(this.arrayToFilter);
+        }
+      }, !isNaN(filterDebounceDelay) && filterDebounceDelay > -1 ? filterDebounceDelay : 200);
+    },
+
+    /**
+     * From a given `arrayToFilter`, produce a 'twin' array of by breaking specified
+     * item's properties into a flattened array of normalized tokens without stop-words.
+     */
+    _processArray: function(arrayToFilter, itemPropertiesToFilter, filterTokenizerRegExp, filterMaxDepth, stopWords) {
+      if (!filterTokenizerRegExp) {
+        throw 'filterTokenizerRegExp must not be undefined';
+      }
+      if (!(filterMaxDepth > -1)) {
+        throw 'filterMaxDepth (' + filterMaxDepth + ') must be a valid number >= 0';
+      }
+      itemPropertiesToFilter = itemPropertiesToFilter || [];
+      stopWords = stopWords || [];
+      if (arrayToFilter) {
+        var result = [], item, i = 0, length = arrayToFilter.length;
+        var process = function() {
+          for (; i < length; i++) {
+            item = arrayToFilter[i];
+            if (item) {
+              result.push(this._processItem(item, itemPropertiesToFilter, filterTokenizerRegExp, 0, filterMaxDepth, stopWords));
+            }
+            if (i + 1 === length) {
+              // All items processed, set the result
+              this._set_processedArray(result);
+            }
+            else if (i % this._batchProcessNumber === 0) {
+              this.async(process, 5);
+            }
+          }
+        }.bind(this);
+        process();
+      }
+    },
+
+    /**
+     * Break specified item's properties into a flattened array of
+     * normalized tokens without stop-words.
+     */
+    _processItem: function(item, itemPropertiesToFilter, filterTokenizerRegExp, depth, filterMaxDepth, stopWords) {
+      if (typeof item === 'string' || typeof item === 'number' || typeof item === 'boolean') {
+        return this._processValue(item, filterTokenizerRegExp, stopWords);
+      } else {
+        var flattenedItemTokens = [];
+        if (item) {
+          if (item.constructor === Array) {
+            for (var i = 0, l = item.length; i < l; i++) {
+              flattenedItemTokens = this._concat(flattenedItemTokens, this._processItem(item[i], itemPropertiesToFilter, filterTokenizerRegExp, depth + 1, filterMaxDepth, stopWords));
+            }
+          }
+          else if (depth <= filterMaxDepth) {
+            var filterAllProps = !itemPropertiesToFilter || !itemPropertiesToFilter.length;
+            for (var propName in item) {
+              if (!filterAllProps && itemPropertiesToFilter.indexOf(propName) < 0) {
+                continue;
+              } else {
+                flattenedItemTokens = this._concat(flattenedItemTokens, this._processItem(item[propName], itemPropertiesToFilter, filterTokenizerRegExp, depth + 1, filterMaxDepth, stopWords));
+              }
+            }
+          }
+        }
+        return flattenedItemTokens;
+      }
+    },
+
+    /**
+     * Break a given value into normalized tokens without stop-words.
+     */
+    _processValue: function(value, filterTokenizerRegExp, stopWords) {
+      // Safety checks
+      if (value === undefined || value === null || (value === NaN)) {
+        return undefined;
+      }
+      // Split value into tokens
+      var tokens = ('' + value).toLowerCase().split(filterTokenizerRegExp);
+      // Processing token, removing empty ones and stop words
+      var tt, me = this;
+      tokens = tokens.reduce(function(memo, t) {
+        tt = me._processToken(t);
+        if (tt && stopWords.indexOf(tt) < 0) {
+          memo.push(tt);
+        }
+        return memo;
+      }, []);
+      return tokens;
+    },
+
+    /**
+     * Normalize a token.
+     */
+    _processToken: function(token) {
+      return token.trim();
+    },
+
+    /**
+     * Safely concat two arrays.
+     */
+    _concat: function(dest, values) {
+      if (values) {
+        return dest.concat(values);
+      }
+      return dest;
+    }
+  };
+})();
+</script>
