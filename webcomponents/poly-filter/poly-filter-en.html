@@ -3,16 +3,18 @@
 
 <!--
 A fast and customizable solution for client side filtering of arrays, made with and for Polymer.
+Works with languages that do not use diacritics, such as english (see `poly-filter-diacritic` or
+`poly-filter-diacritic-behavior` for diacritics handling).
 
 Example:
 
-    <poly-filter
+    <poly-filter-en
       filter="[[myFilterOrQueryToSearchFor]]"
       array-to-filter="[[myArrayToFilter]]"
       filtered-array="{{myArrayAfterItWasFiltered}}"
       stop-words="[[arrayOfWordsToIgnore]]"
       logical-or="or">
-    </poly-filter>
+    </poly-filter-en>
 
 ### Notes
 
@@ -22,8 +24,8 @@ consider using the `poly-filter-behavior` directly for maximum performances.
 If you want your filter/search to ignore accents and other character modifiers,
 use `poly-filter-diacritic` or `poly-filter-diacritic-behavior` instead.
 
-@group poly-filters
-@element poly-filter
+@group poly-filter
+@element poly-filter-en
 @demo demo/index.html
 -->
 <script>
@@ -31,7 +33,7 @@ use `poly-filter-diacritic` or `poly-filter-diacritic-behavior` instead.
   'use strict';
   Polymer({
 
-    is: 'poly-filter',
+    is: 'poly-filter-en',
   
     behaviors: [
       Polymer.PolyFilterBehavior
