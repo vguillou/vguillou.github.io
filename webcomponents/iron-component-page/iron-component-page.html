@@ -541,9 +541,6 @@ documentation page including demos (if available).
 
           this._iframe = document.createElement('iframe');
           this._iframe.src = demoSrc;
-          this._iframe.setAttribute('allowfullscreen', '');
-          this._iframe.setAttribute('webkitallowfullscreen', '');
-          this._iframe.setAttribute('mozallowfullscreen', '');
           Polymer.dom(this.$.demo).appendChild(this._iframe);
         },
 
