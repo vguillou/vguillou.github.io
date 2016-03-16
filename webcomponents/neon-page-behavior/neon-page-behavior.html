@@ -314,19 +314,17 @@ and the `sharedElements` to use for the transition TO a given page__ by followin
 __`sharedElements` + value representing the page to transition from/to + `Entry` or `Exit`__, all normalized to become a valid javascript variable name.
 (ie if `pageValue`='home-alone' and entering this page from the page 'home-alone', the `sharedElementsHomeAloneEntry` property will be used if it is defined, `sharedElementsHomeAlone` otherwise and `sharedElements` if none of the 2 aforementioned properties are defined).
 
+### Usefull to know:
+- Under the hood, this behavior swaps the `animationConfig` and `sharedElements` properties of your page with the page-specific ones (for example `animationConfigMyPage` and `sharedElementsMyPage`) for the duration of the transition.
+- A direct consequence of this implementation is that if you need to setup dynamic transitions, for example by using the clicked element of a list as the target node of an animation, you must modify the page-specific `animationConfig` and `sharedElements` (for example `animationConfigMyPage` and `sharedElementsMyPage`) and not the global `animationConfig` and `sharedElements` directly.
 
-## Setup Overlay page
+
+
+## Setup an Overlay page
 
 __`NeonPageBehavior` offers a solution to declaratively setup overlay pages__, simply by adding the `overlay-page` attribute to your page(s).
 This will allow the page to be displayed over the previously selected one (which will be given the `background-page` attribute).
 No styling (other than setting the `z-index` to appear on top) is done, so this remains entirely up to the developer.
-
-This feature comes with a few limitations however :
-- It is not possible to display nested overlay pages (this is a pretty bad UX practice).
-- For overlay pages to be displayed properly, __all__ children of the
-[`<neon-animated-pages>`](https://github.com/PolymerElements/neon-animation#page-transitions)
-must be including the `NeonPageBehavior`.
-- An overlay page is styled to appear on top of the others by setting its CSS `z-index` property (to `1001`). You must ensure no element in a background page has a higher `z-index`.
 
 #### Example
 
@@ -337,6 +335,14 @@ _index.html_
   <overlay-page name="overlayPage" overlay-page></overlay-page>
 </neon-animated-pages>
 ```
+
+### Usefull to know:
+- It is not possible to display nested overlay pages (this is a pretty bad UX practice).
+- For overlay pages to be displayed properly, __all__ children (pages) of the
+[`<neon-animated-pages>`](https://github.com/PolymerElements/neon-animation#page-transitions)
+must be including the `NeonPageBehavior`.
+- An overlay page is styled to appear on top of the others by setting its CSS `z-index` property (to `1001`). You must ensure no element in a background page has a higher `z-index`.
+- If a page transitions to a `background-page` state (ie is displayed under an overlay page), the hypothetical `sharedElements` of this transition will be hidden automatically, until the page stops being a `background-page`. You may set the `backgroundPageShowsSharedElements` attribute if you want to prevent this (you probably do not, as the `sharedElements` will then awkwardly "pop" back after the transition).
 
 @homepage https://github.com/vguillou/neon-page-behavior
 @demo demo/index.html
@@ -382,9 +388,9 @@ _index.html_
 
     properties: {
       /**
-       * Flag automatically set to `true` only if this page is the one selected, ie currently
+       * Attribute automatically set only if this page is the one selected, ie currently
        * displayed. If an overlay page is being displayed over another page, only the overlay
-       * page has this flag set to `true`.
+       * page has this flag set.
        */
       selectedPage: {
         type: Boolean,
@@ -395,7 +401,7 @@ _index.html_
       },
 
       /**
-       * Set to `true` if you want the page to be an overlay page,
+       * Set this attribute if you want the page to be an overlay page,
        * meaning that the previous page will stay visible behind it.
        */
       overlayPage: {
@@ -404,7 +410,7 @@ _index.html_
       },
 
       /**
-       * Flag automatically set to `true` only if this page is displayed in the background,
+       * Attribute automatically set only if this page is displayed in the background,
        * under an overlay page.
        */
       backgroundPage: {
@@ -416,8 +422,23 @@ _index.html_
       },
 
       /**
-       * Flag automatically set to `true` only if this page was being displayed in the background
-       * and won't be after the next transition.
+       * `backgroundPageShowsSharedElements`
+       *
+       * If a page transitions to a `background-page` state (ie is displayed under an overlay page), 
+       * the hypothetical `sharedElements` of this transition will be hidden automatically, until
+       * the page stops being a `background-page`.
+       *
+       * Set this attribute if you want to prevent this (you probably do not want to do that,
+       * as the `sharedElements` will then awkwardly "pop" back after the transition).
+       */
+      backgroundPageShowsSharedElements: {
+        type: Boolean,
+        value: false
+      },
+
+      /**
+       * Flag automatically set only if this page was being displayed in the background
+       * and automatically unset after the transition.
        */
       _wasBackgroundPage: {
         type: Boolean,
@@ -469,17 +490,17 @@ _index.html_
     attached: function() {
       if (this.parentElement.localName === 'neon-animated-pages') {
         // Initialize the handler
-        this._boundIronSelectHandler = this._pageChanged.bind(this);
-        this._boundNeonAnimationFinishedHandler = this._neonAnimationFinished.bind(this);
-        this.parentElement.addEventListener('iron-select', this._boundIronSelectHandler);
-        this.parentElement.addEventListener('neon-animation-finish', this._boundNeonAnimationFinishedHandler);
+        this._boundPageChangedHandler = this._pageChanged.bind(this);
+        this._boundTransitionFinishedHandler = this._transitionFinished.bind(this);
+        this.parentElement.addEventListener('selected-item-changed', this._boundPageChangedHandler);
+        this.parentElement.addEventListener('neon-animation-finish', this._boundTransitionFinishedHandler);
       }
     },
 
     detached: function() {
       if (this.parentElement.localName === 'neon-animated-pages') {
-        this.parentElement.removeEventListener('iron-select', this._boundIronSelectHandler);
-        this.parentElement.removeEventListener('neon-animation-finish', this._boundNeonAnimationFinishedHandler);
+        this.parentElement.removeEventListener('selected-item-changed', this._boundPageChangedHandler);
+        this.parentElement.removeEventListener('neon-animation-finish', this._boundTransitionFinishedHandler);
       }
     },
 
@@ -570,7 +591,8 @@ _index.html_
      * sets the `animationConfig` to be used according to the original and destination pages.
      */
     _pageChanged: function(event) {
-      if (event && event.target === this.parentElement) {
+      if (Polymer.dom(event).rootTarget === this.parentElement && this.parentElement.selectedItem) {
+
         // transitionPageValue is the page we transition from or to.
         // Set to null we might get an undefined in case of the initial transition
         var transitionPageValue = null, transitionPage, eventToFire;
@@ -661,7 +683,7 @@ _index.html_
     /**
      * Called when the displayed page has been changed. Fires 'finish' events.
      */
-    _neonAnimationFinished: function(event) {
+    _transitionFinished: function(event) {
       var eventToFire;
       if (event.detail.toPage === this) {
         eventToFire = 'entry-animation-finish';
@@ -685,6 +707,7 @@ _index.html_
 
       if (eventToFire) {
         this._fireNeonPageEvent(eventToFire, this._getPageValue(event.detail.fromPage), event.detail.fromPage, this._getPageValue(event.detail.toPage), event.detail.toPage);
+        this._restoreDefaultAnimationConfig();
       }
       this._set_wasBackgroundPage(false);
     },
@@ -718,10 +741,18 @@ _index.html_
     },
 
     /**
+     * Restore the default animation configuration and shared elements.
+     */
+    _restoreDefaultAnimationConfig: function() {
+      this.animationConfig = this._defaultAnimationConfig;
+      this.sharedElements = this._defaultSharedElements;
+    },
+
+    /**
      * Change the CSS `visibility` property of a set of sharedElements.
      */
     _toggleSharedElementsVisibility: function(sharedElements, visible) {
-      if (sharedElements) {
+      if (sharedElements && !this.backgroundPageShowsSharedElements) {
         for (var sharedId in sharedElements) {
           if (sharedElements.hasOwnProperty(sharedId) && sharedElements[sharedId] && sharedElements[sharedId].style) {
             sharedElements[sharedId].style.visibility = visible ? '' : 'hidden';
