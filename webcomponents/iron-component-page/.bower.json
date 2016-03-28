@@ -13,7 +13,6 @@
     "type": "git",
     "url": "git://github.com/PolymerElements/iron-component-page.git"
   },
-  "version": "1.1.5",
   "private": true,
   "license": "http://polymer.github.io/LICENSE.txt",
   "dependencies": {
@@ -35,14 +34,14 @@
   },
   "main": "iron-component-page.html",
   "ignore": [],
-  "homepage": "https://github.com/PolymerElements/iron-component-page",
-  "_release": "1.1.5",
+  "homepage": "https://github.com/vguillou/iron-component-page",
+  "_release": "f1ccd5711a",
   "_resolution": {
-    "type": "version",
-    "tag": "v1.1.5",
-    "commit": "904fada3ae25a016eafcdbe71fe934d165f1dafb"
+    "type": "branch",
+    "branch": "add-fullscreen-demo-capabilities",
+    "commit": "f1ccd5711ad812248d34775b8208686cd38f3e3c"
   },
-  "_source": "git://github.com/PolymerElements/iron-component-page.git",
-  "_target": "^1.1.4",
-  "_originalSource": "PolymerElements/iron-component-page"
+  "_source": "git://github.com/vguillou/iron-component-page.git",
+  "_target": "add-fullscreen-demo-capabilities",
+  "_originalSource": "vguillou/iron-component-page"
 }
