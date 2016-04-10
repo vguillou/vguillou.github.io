@@ -325,7 +325,7 @@ documentation page including demos (if available).
            */
           transitive: {
             type: Boolean,
-            value: false
+            value: true
           },
 
           /** The Hydrolysis element descriptors that have been loaded. */
@@ -660,9 +660,13 @@ documentation page including demos (if available).
         },
 
         _analyzerChanged: function() {
-          var analyzer = this._analyzer;
-          this._setDocElements(analyzer && analyzer.elements ? analyzer.elements : []);
-          this._setDocBehaviors(analyzer && analyzer.behaviors ? analyzer.behaviors : []);
+          var docElements, docBehaviors, analyzer = this._analyzer;
+          if (analyzer) {
+            docElements = analyzer.elementsForFolder(this.base);
+            docBehaviors = analyzer.behaviorsForFolder(this.base);
+          }
+          this._setDocElements(docElements || []);
+          this._setDocBehaviors(docBehaviors || []);
 
           if (!this._findDescriptor(this.active)) {
             this.active = this._getDefaultActive();
