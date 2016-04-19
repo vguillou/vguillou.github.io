@@ -8,7 +8,6 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../paper-behaviors/paper-inky-focus-behavior.html">
 
 <!--
@@ -163,6 +162,13 @@ Custom property | Description | Default
         if (this.hasRipple()) {
           this._ripple.uiUpAction();
         }
+      },
+
+      _createRipple: function() {
+        var ripple = Polymer.PaperRippleBehavior._createRipple();
+        ripple.id = 'ink';
+        ripple.setAttribute('center', '');
+        return ripple;
       }
     
       /**
