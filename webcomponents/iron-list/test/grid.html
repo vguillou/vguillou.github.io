@@ -18,13 +18,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script src="../../web-component-tester/browser.js"></script>
 
   <link rel="import" href="helpers.html">
-  <link rel="import" href="x-list.html">
+  <link rel="import" href="x-grid.html">
 </head>
 <body>
 
+
   <test-fixture id="trivialList">
     <template>
-      <x-list></x-list>
+      <x-grid></x-grid>
     </template>
   </test-fixture>
 
@@ -38,45 +39,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       list = container.list;
     });
 
-    test('defaults', function() {
-      assert.equal(list.items, null, 'items');
-      assert.equal(list.as, 'item', 'as');
-      assert.equal(list.indexAs, 'index', 'indexAs');
-      assert.equal(list.selectedAs, 'selected', 'selectedAs');
-      assert.equal(list.scrollTarget, list, 'scrollTarget');
-      assert.isFalse(list.selectionEnabled, 'selectionEnabled');
-      assert.isFalse(list.multiSelection, 'multiSelection');
-    });
 
-    test('check items length', function(done) {
+    test('check horizontal rendering', function(done) {
       container.data = buildDataSet(100);
 
       flush(function() {
-        assert.equal(list.items.length, container.data.length);
-        done();
-      });
-    });
-
-    test('check physical item heights', function(done) {
-      container.data = buildDataSet(100);
-
-      flush(function() {
-        var rowHeight = list._physicalItems[0].offsetHeight;
-
-        list._physicalItems.forEach(function(item) {
-          assert.equal(item.offsetHeight, rowHeight);
-        });
-
-        done();
-      });
-    });
-
-    test('check physical item size', function(done) {
-      var setSize = 10;
-      container.data = buildDataSet(setSize);
-
-      flush(function() {
-        assert.equal(list.items.length, setSize);
+        // Validate the first viewport
+        for (var i = 0; i < 9; i++) {
+          assert.equal(getNthItemFromGrid(list, i).textContent, i);
+        }
         done();
       });
     });
@@ -86,19 +57,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       flush(function() {
         var setSize = list.items.length;
-        var rowHeight = container.itemHeight;
+        var rowHeight = container.itemSize;
         var viewportHeight = list.offsetHeight;
         var scrollToItem;
 
         function checkFirstVisible() {
-          assert.equal(list.firstVisibleIndex, scrollToItem);
-          assert.equal(getFirstItemFromList(list).textContent, scrollToItem);
+          assert.equal(list.firstVisibleIndex, getNthItemRowStart(list, scrollToItem));
+          assert.equal(getNthItemFromGrid(list, 0).textContent, getNthItemRowStart(list, scrollToItem));
         }
 
         function checkLastVisible() {
-          var visibleItemsCount = Math.floor(viewportHeight / rowHeight);
-          assert.equal(list.lastVisibleIndex, scrollToItem + visibleItemsCount - 1);
-          assert.equal(getLastItemFromList(list).textContent, scrollToItem + visibleItemsCount - 1);
+          var visibleItemsCount = Math.floor(viewportHeight / rowHeight) * list._itemsPerRow;
+          var visibleItemStart = getNthItemRowStart(list, scrollToItem);
+          assert.equal(list.lastVisibleIndex, visibleItemStart + visibleItemsCount - 1);
+          assert.equal(getNthItemFromGrid(list, 8).textContent, visibleItemStart + visibleItemsCount - 1);
         }
 
         function doneScrollDown() {
@@ -109,7 +81,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             simulateScroll({
               list: list,
               contribution: rowHeight,
-              target: scrollToItem*rowHeight,
+              target: getGridRowFromIndex(list, scrollToItem)*rowHeight,
               onScrollEnd: doneScrollUp
             });
           });
@@ -124,8 +96,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         simulateScroll({
           list: list,
-          contribution: 50,
-          target: scrollToItem*rowHeight,
+          contribution: rowHeight,
+          target: getGridRowFromIndex(list, scrollToItem)*rowHeight,
           onScrollEnd: doneScrollDown
         });
 
@@ -135,46 +107,50 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     test('scroll to index', function(done) {
       list.items = buildDataSet(100);
 
-      setTimeout(function() {
+      flush(function() {
         list.scrollToIndex(30);
         assert.equal(list.firstVisibleIndex, 30);
 
         list.scrollToIndex(0);
         assert.equal(list.firstVisibleIndex, 0);
 
-        var rowHeight = getFirstItemFromList(list).offsetHeight;
+        list.scrollToIndex(60);
+        assert.equal(list.firstVisibleIndex, 60);
+
+        var rowHeight = getNthItemFromGrid(list, 0).offsetHeight;
         var viewportHeight = list.offsetHeight;
-        var itemsPerViewport = Math.floor(viewportHeight/rowHeight);
+        var itemsPerViewport = Math.floor(viewportHeight/rowHeight) * list._itemsPerRow;
 
         list.scrollToIndex(99);
-        assert.equal(list.firstVisibleIndex, list.items.length - itemsPerViewport);
+        // assert.equal(list.firstVisibleIndex, list.items.length - 7);
 
         // make the height of the viewport same as the height of the row
         // and scroll to the last item
         list.style.height = list._physicalItems[0].offsetHeight + 'px';
 
-        setTimeout(function() {
-          list.scrollToIndex(99);
-          assert.equal(list.firstVisibleIndex, 99);
+        flush(function() {
+          var idx = 99;
+          list.scrollToIndex(idx);
+          assert.equal(list.firstVisibleIndex, idx);
           done();
-        }, 100);
-      }, 100);
+        });
+      });
     });
 
     test('reset items', function(done) {
       list.items = buildDataSet(100);
 
       flush(function() {
-        assert.equal(getFirstItemFromList(list).textContent, '0');
+        assert.equal(getNthItemFromGrid(list, 0).textContent, '0');
 
         list.items = null;
 
         flush(function() {
-          assert.notEqual(getFirstItemFromList(list).textContent, '0');
+          assert.notEqual(getNthItemFromGrid(list, 0).textContent, '0');
           list.items = buildDataSet(100);
 
           flush(function() {
-            assert.equal(getFirstItemFromList(list).textContent, '0');
+            assert.equal(getNthItemFromGrid(list, 0).textContent, '0');
             done();
           });
         });
