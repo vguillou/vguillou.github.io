@@ -1,0 +1,163 @@
+<!doctype html>
+<html>
+<head>
+  <title>mutation-observer-behavior</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+
+  <link rel="import" href="test-element.html">
+
+  </style>
+</head>
+<body>
+
+  <test-fixture id="basic">
+    <template>
+      <test-element>
+        <span>hola!</span>
+        <div id="alreadyInsertedDiv" class="toInsert">
+          <p>Div already inserted</p>
+          <div id="nestedDiv"></div>
+        </div>
+      </test-element>
+    </template>
+  </test-fixture>
+
+<script>
+var domParamArray = window.location.search.split('dom=');
+suite('<mutation-observer-behavior>' + (domParamArray.length === 2 ? ' dom=' + domParamArray[1] : ''), function() {
+
+  suite('basic', function() {
+    var testElement;
+    var alreadyInsertedDiv;
+    var nestedDiv;
+
+    setup(function() {
+      testElement = fixture('basic');
+      alreadyInsertedDiv = Polymer.dom(testElement).querySelector('#alreadyInsertedDiv');
+      nestedDiv = Polymer.dom(testElement).querySelector('#nestedDiv');
+    });
+
+    test('append div to local DOM does not trigger a \'dom-mutation\' event', function(done) {
+      testElement.addEventListener('dom-mutation', function(e) {
+        assert.fail('\'dom-mutation\' event triggered', '\'dom-mutation\' not triggered');
+      });
+      testElement.changeLocalDomAttribute();
+      setTimeout(done, 1000);
+    });
+
+    test('append div to light DOM', function(done) {
+      var mutDesc = addDivToLightDom(testElement, 'toInsert');
+
+      testElement.addEventListener('dom-mutation', function(e) {
+        checkEvent(e, [mutDesc]);
+        done();
+      });
+    });
+
+    test('nest div to light DOM', function(done) {
+      var mutDesc = addDivToLightDom(alreadyInsertedDiv, 'toInsert');
+
+      testElement.addEventListener('dom-mutation', function(e) {
+        checkEvent(e, [mutDesc]);
+        done();
+      });
+    });
+
+    test('add attribute to light DOM', function(done) {
+      var mutDesc = addAttributeToLightDom(alreadyInsertedDiv);
+
+      testElement.addEventListener('dom-mutation', function(e) {
+        checkEvent(e, [mutDesc]);
+        done();
+      });
+    });
+
+    test('add attribute to nested div in light DOM', function(done) {
+      var mutDesc = addAttributeToLightDom(nestedDiv);
+
+      testElement.addEventListener('dom-mutation', function(e) {
+        checkEvent(e, [mutDesc]);
+        done();
+      });
+    });
+
+    test('debounce events and agregate mutations', function(done) {
+      var eventCount = 0;
+      var mut1Desc = addAttributeToLightDom(alreadyInsertedDiv);
+      var mut2Desc = addDivToLightDom(testElement, 'toInsert');
+
+      testElement.addEventListener('dom-mutation', function(e) {
+        eventCount++;
+        expect(eventCount).to.be.equal(1);
+        checkEvent(e, [
+            mut1Desc,
+            mut2Desc
+          ]);
+        setTimeout(done, 1000);
+      });
+    });
+  });
+
+  var addDivToLightDom = function(targetParent, clazz) {
+    var divToAdd = document.createElement('div');
+    divToAdd.classList.add(clazz);
+    divToAdd.textContent = 'Newly inserted div';
+    targetParent.appendChild(divToAdd);
+    return {
+      type: 'childList',
+      target: targetParent,
+      addedNodes: [divToAdd],
+      removedNodes: []
+    };
+  };
+
+  var addAttributeToLightDom = function(targetDiv) {
+    var attributeChanged = {name: 'test-attr', value: '42'};
+    targetDiv.setAttribute(attributeChanged.name, attributeChanged.value);
+    return {
+      type: 'attributes',
+      target: targetDiv,
+      attribute: attributeChanged
+    };
+  };
+  
+  var checkEvent = function(event, mutationsDescriptors) {
+    expect(event).to.not.be.an('undefined');
+    expect(event).to.not.be.a('null');
+    expect(event.detail).to.be.an('Array');
+    expect(event.detail.length).to.be.equal(mutationsDescriptors.length);
+
+    var i, mut, mutDesc;
+    for (i = 0; i < event.detail.length; i++) {
+      mut = event.detail[i];
+      mutDesc = mutationsDescriptors[i];
+      expect(mut).to.be.a('MutationRecord');
+      expect(mut.type).to.be.equal(mutDesc.type);
+      expect(mut.target).to.be.equal(mutDesc.target);
+
+      if (mut.type === 'attributes') {
+        expect(mut.attributeName).to.be.equal(mutDesc.attribute.name);
+        expect(mut.target.getAttribute(mut.attributeName)).to.be.equal(mutDesc.attribute.value);
+      }
+      else if (mut.type === 'childList') {
+        var j;
+        expect(mut.addedNodes.length).to.be.equal(mutDesc.addedNodes.length);
+        for (j = 0; j < mut.addedNodes; j++) {
+          expect(mutDesc.addedNodes.indexOf(mut.addedNodes[j])).to.be.above(-1);
+        }
+        expect(mut.removedNodes.length).to.be.equal(mutDesc.removedNodes.length);
+        for (j = 0; j < mut.removedNodes; j++) {
+          expect(mutDesc.removedNodes.indexOf(mut.removedNodes[j])).to.be.above(-1);
+        }
+      }
+    }
+  };
+});
+</script>
+
+</body>
+</html>

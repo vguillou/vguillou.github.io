@@ -1,0 +1,26 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../mutation-observer-behavior.html">
+
+<dom-module id="test-element">
+  <template>
+    <div id="myLocalDiv"></div>
+    <content id="myContent" select=".toInsert"></content>
+  </template>
+
+  <script>
+  (function() {
+    'use strict';
+    Polymer({
+      is: 'test-element',
+
+      behaviors: [
+        Polymer.MutationObserverBehavior
+      ],
+
+      changeLocalDomAttribute: function() {
+        this.$.myLocalDiv.setAttribute('test-attr', 42);
+      }
+    });
+  })();
+  </script>
+</dom-module>
