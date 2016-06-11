@@ -1,8 +1,9 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="../mutation-observer-behavior/mutation-observer-behavior.html">
 <!--
 A Polymer element providing a declarative way to swipe DOM elements, display underlay while doing so and trigger some action when the swiping is done.
-Integrates seemlessly with the &lt;iron-list&gt; element.
+Integrates seamlessly with the &lt;iron-list&gt; element.
 
 Example:
 
@@ -185,7 +186,7 @@ Attribute | Description | Default
        *         direction // {Number} The direction of the action
        *           // along it's axis (either `1` or `-1`)
        *       },
-       *       swipe: { // The triggering swipe gesture
+       *       gesture: { // The triggering swipe gesture
        *         axis, // {String} The axis of the action
        *           // (either `x` or `y`)
        *         direction, // {Number} The direction of the action
@@ -237,20 +238,7 @@ Attribute | Description | Default
           type: Boolean,
           value: false,
           reflectToAttribute: true,
-          observer: '_updateScrollDirection'
-        },
-
-        /**
-         * The swipe target node will only allow to scroll horizontally by default (along the `x` axis).
-         * It is possible to override this by setting this property, with one of `x`, `y`, `none`, or `all`.
-         * If you only need to swipe horizontally, it is recommended to keep this property set to `y`,
-         * and if you only need to swipe vertically, to `x`.
-         * You can also refer to https://www.polymer-project.org/1.0/docs/devguide/gesture-events for more informations.
-         */
-        scrollDirection: {
-          type: String,
-          value: 'y',
-          observer: '_updateScrollDirection'
+          observer: '_refreshActions'
         },
 
         /**
@@ -335,30 +323,37 @@ Attribute | Description | Default
         /**
          * Data describing the ongoing swipe gesture.
          */
-        _swipe: {
+        _gesture: {
           type: Object,
           value: null
         }
       },
 
-      get _actionsMap() {
-        var actionsMap = {};
-        // Build a model for every action declared in the light DOM
-        this.getContentChildren('#actions').forEach(function(el) {
-          this._ACTIONS_CONFIG.forEach(function(config) {
-            if (el.hasAttribute(config.attr)) {
-              actionsMap[config.id] = this._actionFactory(config.id, el);
-            }
-          }, this);
-        }, this);
-        return actionsMap;
+      behaviors: [
+        Polymer.IronResizableBehavior,
+        Polymer.MutationObserverBehavior
+      ],
+
+      listeners: {
+        'iron-resize': '_onResize',
+        'dom-mutation': '_refreshActions'
       },
 
       ready: function() {
+        // mutation observer setup
+        this._mutationOptions = {childList: true, subtree: true, attributes: true, characterData: false,
+          attributeFilter: this._ACTIONS_CONFIG.map(
+            function(config) {return config.attr;})
+        };
+        this._mutationFilter = function(mutation) {
+          return this._mutationIsChildList(mutation, this.$.actions) ||
+            this._mutationIsChildAttributes(mutation, this.$.actions);
+        };
+
         this.target = this.$.swipeTarget;
         this.listen(this.target, 'track', '_onTrack');
         this.listen(this.target, 'transitionend', '_onTransitionEnd');
-        this._updateScrollDirection();
+        this._refreshActions();
       },
 
       detached: function() {
@@ -387,8 +382,6 @@ Attribute | Description | Default
        * the item is being activated
        */
       activateAction: function(actionId, animate) {
-        // Cache the size of the swipeable node
-        this._measureTarget();
         this._animateActivation = animate;
         // Compute to action details
         var actionToActivate = this._actionsMap[actionId];
@@ -397,8 +390,7 @@ Attribute | Description | Default
         if (activatedId === toActivateId) {
           // Already activated => nothing to do
           return;
-        }
-        else if (!toActivateId && activatedId) {
+        } else if (!toActivateId && activatedId) {
           // No action to activate, let's just reset the one currently activated
           this.reset(animate);
         } else {
@@ -426,7 +418,7 @@ Attribute | Description | Default
       },
 
       _onActivatedActionIdChange: function(newValue, oldValue) {
-        if (newValue !== oldValue && !this._activatedActionIdAlreadyChanged) {
+        if (!this._activatedActionIdAlreadyChanged) {
           if (!newValue) {
             this.reset(false);
           } else {
@@ -434,6 +426,37 @@ Attribute | Description | Default
           }
         }
         this._activatedActionIdAlreadyChanged = false;
+      },
+
+      _onResize: function() {
+        this.debounce('_refreshActions', this._refreshActions, 100);
+      },
+
+      _refreshActions: function() {
+        if (this.target && this._ACTIONS_CONFIG) {
+          // Cache the size of the swipeable node.
+          this._targetHeight = this.target.offsetHeight;
+          this._targetWidth = this.target.offsetWidth;
+
+          var action, map = {}, canSwipeX = false, canSwipeY = false;
+          // Build a model for every action declared in the light DOM
+          this.getContentChildren('#actions').forEach(function(el) {
+            this._ACTIONS_CONFIG.forEach(function(config) {
+              if (el.hasAttribute(config.attr)) {
+                action = this._actionFactory(config.id, el);
+                map[config.id] = action;
+                canSwipeX = canSwipeX || action.axis === 'x';
+                canSwipeY = canSwipeY || action.axis === 'y';
+              }
+            }, this);
+          }, this);
+          this._actionsMap = map;
+
+          // Computing which scroll direction(s) is/are allowed
+          this.setScrollDirection(
+            this.gestureDisabled || (!canSwipeX && !canSwipeY) ? 'all' :
+            (!canSwipeX ? 'x' : (!canSwipeY ? 'y' : 'none')), this.target);
+        }
       },
 
       _actionFactory: function(actionId, actionNode) {
@@ -455,13 +478,6 @@ Attribute | Description | Default
           (actionId === Polymer.SwipeAction.ACTION_LEFT || actionId === Polymer.SwipeAction.ACTION_UP) ? -1 : 1);
       },
 
-      /**
-       * Computes the swiping direction
-       */
-      _getSwipingDirection: function(e, axis) {
-        return e.detail['d' + axis] > 0 ? 1 : -1;
-      },
-
       _getActionId: function(axis, direction) {
         if (direction > 0) {
           return axis === 'x' ? Polymer.SwipeAction.ACTION_RIGHT : Polymer.SwipeAction.ACTION_DOWN;
@@ -470,16 +486,11 @@ Attribute | Description | Default
         }
       },
 
-      _updateScrollDirection: function() {
-        this.setScrollDirection(this.gestureDisabled ? 'all' : this.scrollDirection, this.target);
-      },
-
       /**
-       * Cache the size of the swipeable node.
+       * Computes the swiping direction
        */
-      _measureTarget: function() {
-        this._targetHeight = this.target.offsetHeight;
-        this._targetWidth = this.target.offsetWidth;
+      _getSwipingDirection: function(e, axis) {
+        return e.detail['d' + axis] > 0 ? 1 : -1;
       },
 
       /**
@@ -507,15 +518,13 @@ Attribute | Description | Default
       },
 
       _swipeStart: function(e) {
-        // Cache the size of the element depending on the swipe direction
-        this._measureTarget();
         // Set the swipe axis when starting: it must not change once set for the current swipe
-        this._swipe = {axis: Math.abs(e.detail.dx) > Math.abs(e.detail.dy) ? 'x' : 'y'};
-        var oppositeAxis = this._swipe.axis ==='x' ? 'y' : 'x';
-        this._swipe.direction = this._getSwipingDirection(e, this._swipe.axis);
-        this._swipe.lastTimestamp = Date.now();
+        this._gesture = {axis: Math.abs(e.detail.dx) > Math.abs(e.detail.dy) ? 'x' : 'y'};
+        var oppositeAxis = this._gesture.axis ==='x' ? 'y' : 'x';
+        this._gesture.direction = this._getSwipingDirection(e, this._gesture.axis);
+        this._gesture.lastTimestamp = Date.now();
         // Initialize the action
-        this._updateActions(this._swipe.axis, this._swipe.direction);
+        this._updateActions(this._gesture.axis, this._gesture.direction);
         // Prevent the swipe if one of the following conditions is met:
         // - no swipe action is found for the gesture 
         // - the gesture is diagonal (this is most likely a weird scroll gesture)
@@ -526,25 +535,25 @@ Attribute | Description | Default
           return;
         }
         // Translate to element
-        this._applyGestureTranslation(e.detail['d' + this._swipe.axis], this._swipe.axis);
+        this._applyGestureTranslation(e.detail['d' + this._gesture.axis], this._gesture.axis);
       },
 
       _swipeUpdate: function(e) {
-        var newSwipingDirection = this._getSwipingDirection(e, this._swipe.axis);
-        var track = e.detail['d' + this._swipe.axis];
+        var newSwipingDirection = this._getSwipingDirection(e, this._gesture.axis);
+        var track = e.detail['d' + this._gesture.axis];
         // If the swiping direction changes, the action to display may also have changed
-        if (newSwipingDirection != this._swipe.direction) {
-          this._swipe.direction = newSwipingDirection;
-          this._updateActions(this._swipe.axis, this._swipe.direction);
+        if (newSwipingDirection != this._gesture.direction) {
+          this._gesture.direction = newSwipingDirection;
+          this._updateActions(this._gesture.axis, this._gesture.direction);
           this.target.style.opacity = 1;
         }
         // Cache the last track delta to assess the swipe speed when the 'track end' event is fired
         var newTimestamp = Date.now();
-        this._swipe.lastDelta = e.detail['dd' + this._swipe.axis];
-        this._swipe.lastDeltaDuration = newTimestamp - this._swipe.lastTimestamp;
-        this._swipe.lastTimestamp = newTimestamp;
+        this._gesture.lastDelta = e.detail['dd' + this._gesture.axis];
+        this._gesture.lastDeltaDuration = newTimestamp - this._gesture.lastTimestamp;
+        this._gesture.lastTimestamp = newTimestamp;
         // Translate
-        this._applyGestureTranslation(track, this._swipe.axis);
+        this._applyGestureTranslation(track, this._gesture.axis);
         // Fade it as well if it is required
         if (this._currentAction.fade) {
           this.target.style.opacity = 1 - (Math.abs(track) / this._currentAction.size);
@@ -552,7 +561,7 @@ Attribute | Description | Default
       },
 
       _swipeEnd: function(e) {
-        var absTranslation = Math.abs(e.detail['d' + this._swipe.axis]);
+        var absTranslation = Math.abs(e.detail['d' + this._gesture.axis]);
         var transition;
         // If exactly swiped away (tracked futher than the size of the action, without rubberBandAttr effect),
         // we don't need any transition
@@ -560,10 +569,10 @@ Attribute | Description | Default
           transition = '';
         }
         // Swipe the item all the way if it was fast.
-        else if (absTranslation < this._currentAction.size && (this._swipe.lastDelta * this._swipe.direction) > this._SWIPE_SPEED_THREASHOLD) {
+        else if (absTranslation < this._currentAction.size && (this._gesture.lastDelta * this._gesture.direction) > this._SWIPE_SPEED_THREASHOLD) {
           transition = 'all ';
           transition += Math.floor(Math.min(200,
-            (this._currentAction.size - absTranslation) / (this._swipe.lastDelta * this._swipe.direction) * this._swipe.lastDeltaDuration));
+            (this._currentAction.size - absTranslation) / (this._gesture.lastDelta * this._gesture.direction) * this._gesture.lastDeltaDuration));
           transition += 'ms linear';
         }
         // Slide all the way off (left/right) if we're 50% total size
@@ -584,12 +593,11 @@ Attribute | Description | Default
        */
       _updateActions: function(axis, direction) {
         var actionId = this._getActionId(axis, direction);
-        var actionsMap = this._actionsMap;
         // Get the Action matching the action identifier
-        this._currentAction = actionsMap[actionId];
+        this._currentAction = this._actionsMap[actionId];
         // Toggle visibility for the resolved action
-        for (actionId in actionsMap) {
-          Polymer.dom(actionsMap[actionId].node).classList.remove('visible-action');
+        for (actionId in this._actionsMap) {
+          Polymer.dom(this._actionsMap[actionId].node).classList.remove('visible-action');
         }
         if (this._currentAction) {
           Polymer.dom(this._currentAction.node).classList.add('visible-action');
@@ -643,7 +651,7 @@ Attribute | Description | Default
           this._willBeSwipedAway = false;
           this._changeActivatedAction(this._currentAction);
           // Fire activation event
-          this.fire('swiped-away', {action: this._currentAction, swipe: this._swipe});
+          this.fire('swiped-away', {action: this._currentAction, gesture: this._gesture});
           return;
         }
         // If the target node won't be swiped away, then it will be snaped back,
@@ -651,7 +659,7 @@ Attribute | Description | Default
         else if (Polymer.dom(this.target).classList.contains('snap-back')) {
           this._changeActivatedAction(undefined);
           // Fire cancelation event
-          this.fire('swipe-canceled', {action: this._currentAction, swipe: this._swipe});
+          this.fire('swipe-canceled', {action: this._currentAction, gesture: this._gesture});
         }
       },
 
@@ -676,7 +684,7 @@ Attribute | Description | Default
         this._setActivatedAction(action);
         // Set correct values to bindable attributes and do some cleanup
         this.target.style.transition = '';
-        this._swipe = undefined;
+        this._gesture = undefined;
         this._setIsSwipedAway(!!action);
         this._setIsSwiping(false);
       },
@@ -714,14 +722,14 @@ Attribute | Description | Default
         var absTrack = Math.abs(track);
         // The rubber band effect spans at least 3.5 times the rubber band area size
         var rubberBandTrackLength = Math.max(
-          this._swipe.direction * (this._currentAction.size + this._currentAction.rubberBand),
+          this._gesture.direction * (this._currentAction.size + this._currentAction.rubberBand),
           3.5 * this._currentAction.rubberBand
         );
         var actionSizePlusRubberBandTrack = rubberBandTrackLength + this._currentAction.size;
 
         // Rubber band if swiped past the boundary if the swipe-action
         if (absTrack > this._currentAction.size && absTrack < actionSizePlusRubberBandTrack) {
-          return this._swipe.direction * this._rubberBand(
+          return this._gesture.direction * this._rubberBand(
             absTrack,
             this._currentAction.size,
             rubberBandTrackLength,
@@ -733,9 +741,9 @@ Attribute | Description | Default
           // Fire an event when reaching the limit of the rubber band effect
           if (!this._currentAction.maxRubberBandReached) {
             this._currentAction.maxRubberBandReached = true;
-            this.fire('swipe-rubber-band-limit', {action: this._currentAction, swipe: this._swipe});
+            this.fire('swipe-rubber-band-limit', {action: this._currentAction, gesture: this._gesture});
           }
-          return this._swipe.direction * (this._currentAction.size + this._currentAction.rubberBand);
+          return this._gesture.direction * (this._currentAction.size + this._currentAction.rubberBand);
         }
         // Otherwise, just return the unadulterated track position
         return track;

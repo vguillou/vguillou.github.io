@@ -119,8 +119,6 @@
      */
     _mutationCallback: function(mutations) {
       this._currentMutations = this._currentMutations.concat(mutations);
-
-      console.log(mutations);
       this.debounce('_mutationCallback', function() {
         // Pre fitler unwanted local DOM mutations
         var children = Polymer.dom(this).getEffectiveChildNodes();

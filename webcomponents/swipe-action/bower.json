@@ -4,7 +4,7 @@
   "authors": [
     "Vincent Guillou <vin.guillou@gmail.com>"
   ],
-  "description": "An element providing a declarative way to swipe DOM elements, display underlay while doing so and trigger some action when the swiping is done.",
+  "description": "An element providing a declarative way to swipe DOM elements, display underlay and trigger some action when the swiping is done.",
   "main": [
     "swipe-action.html"
   ],
@@ -34,7 +34,8 @@
   "homepage": "https://vguillou.github.io/webcomponents/swipe-action",
   "dependencies": {
     "polymer": "Polymer/polymer#^1.0.0",
-    "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#^1.0.0"
+    "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#^1.0.0",
+    "mutation-observer-behavior": "vguillou/mutation-observer-behavior#^1.0.0"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
