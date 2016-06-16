@@ -43,6 +43,15 @@
       },
 
       /**
+       * Set to true to pause the mutation observer.
+       */
+      _mutationObserverPaused: {
+        type: Boolean,
+        value: false,
+        observer: '_observe'
+      },
+
+      /**
        * <a href="https://developer.mozilla.org/fr/docs/Web/API/MutationObserver#MutationObserverInit">Mutation options.</a>
        */
       _mutationOptions: {
@@ -99,8 +108,10 @@
       } else {
         this._disconnect();
       }
-      this._mutationObserver.observe(this, this._mutationOptions);
-      this._set_mutationObserverConnected(true);
+      if (!this._mutationObserverPaused && this._mutationOptions) {
+        this._mutationObserver.observe(this, this._mutationOptions);
+        this._set_mutationObserverConnected(true);
+      }
     },
 
     /**
