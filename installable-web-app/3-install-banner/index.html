@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#9f00a7">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#40aa54">
+    <meta name="msapplication-TileColor" content="#00a300">
+    <meta name="msapplication-TileImage" content="/mstile-144x144.png">
+
+    <title>My Web App</title>
+
+    <script type="text/javascript">
+      (function(a,b,c,d,e){if(c in b&&b[c]){var g,f=a.location;f.pathname===d||(g=f.search.slice(1).split("&")).length&&g[g.length-1]===e||(f.href=d);var h,i=/^(a|html)$/i;a.addEventListener("click",function(a){for(h=a.target;!i.test(h.nodeName);)h=h.parentNode;"href"in h&&(chref=h.href).replace(f.href,"").indexOf("#")&&(!/^[a-z\+\.\-]+:/i.test(chref)||0===chref.indexOf(f.protocol+"//"+f.host))&&(a.preventDefault(),f.href=h.href+(h.href.indexOf("?")>-1?"&":"?")+e)},!1)}})(document,window.navigator,"standalone","/index.html","ios_homescreen=1");
+
+      /**
+       * Registering a service worker, if the browser provides support
+       */
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+            // Registration was successful
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          }).catch(function(err) {
+            // registration failed :(
+            console.log('ServiceWorker registration failed: ', err);
+          });
+        });
+      }
+      /**
+       * end
+       */
+    </script>
+
+    <style>
+      body {
+       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+     }
+    </style>
+
+  </head>
+  <body>
+
+    <h1>Home page</h1>
+
+    <p>IOS standalone mode : <b id="webapp_ios">OFF</b></p>
+    <p>W3C standalone mode : <b id="webapp_manifest">OFF</b></p>
+
+    <a href="/about.html">About page</a>
+
+    <script type="text/javascript">
+      // Detect IOS standalone mode
+      if (window.navigator.standalone) {
+        document.querySelector('#webapp_ios').innerHTML = 'ON';
+      }
+
+      // Detect a Webapp defined via a standard manifest (using the parameter added in the `starturl`)
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        document.querySelector('#webapp_manifest').innerHTML = 'ON';
+      }
+    </script>
+
+  </body>
+</html>
