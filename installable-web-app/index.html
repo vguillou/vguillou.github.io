@@ -18,14 +18,14 @@
     <title>My Web App</title>
 
     <script type="text/javascript">
-      (function(a,b,c,d,e){if(c in b&&b[c]){var g,f=a.location;f.pathname===d||(g=f.search.slice(1).split("&")).length&&g[g.length-1]===e||(f.href=d);var h,i=/^(a|html)$/i;a.addEventListener("click",function(a){for(h=a.target;!i.test(h.nodeName);)h=h.parentNode;"href"in h&&(chref=h.href).replace(f.href,"").indexOf("#")&&(!/^[a-z\+\.\-]+:/i.test(chref)||0===chref.indexOf(f.protocol+"//"+f.host))&&(a.preventDefault(),f.href=h.href+(h.href.indexOf("?")>-1?"&":"?")+e)},!1)}})(document,window.navigator,"standalone","/index.html","ios_homescreen=1");
+      (function(a,b,c,d,e){if(c in b&&b[c]){var g,f=a.location;f.pathname!==d&&(!(g=f.search.slice(1).split("&")).length||g.indexOf(e)<0)&&(f.href=d);var h,i=/^(a|html)$/i;a.addEventListener("click",function(a){for(h=a.target;!i.test(h.nodeName);)h=h.parentNode;"href"in h&&(chref=h.href).replace(f.href,"").indexOf("#")&&(!/^[a-z\+\.\-]+:/i.test(chref)||0===chref.indexOf(f.protocol+"//"+f.host))&&(a.preventDefault(),f.href=h.href+(h.href.indexOf("?")>-1?"&":"?")+e)},!1)}})(document,window.navigator,"standalone","/index.html","ios_homescreen=1");
 
       /**
        * Registering a service worker, if the browser provides support
        */
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
-          navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+          navigator.serviceWorker.register('/installable-web-app/service-worker.js').then(function(registration) {
             // Registration was successful
             console.log('ServiceWorker registration successful with scope: ', registration.scope);
           }).catch(function(err) {
