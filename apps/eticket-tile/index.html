@@ -5,17 +5,16 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="theme-color" content="#43A047">
-
-    <link rel="stylesheet" href="icon-style.css"></head>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="shortcut icon" href="/favicon.ico">
 
     <title>E-ticket tile</title>
 
     <style>
-      /* Font and bg color */
       html, body {
         font-family: Helvetica, Arial, sans-serif;
-        font-weight: 300;
-        font-size: 0.87em; /* 0.81em is looking good */
+        font-size: medium;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         text-rendering: optimizeLegibility;
@@ -32,17 +31,42 @@
         display: table-cell;
         text-align: center;
         vertical-align: middle;
+        max-width: 1056px;
+        padding: 16px;
       }
-
+      .content > * {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .logo, .store-link, .store-link img {
+        width: 240px;
+        border: 0;
+      }
+      p {
+        max-width: 1024;
+      }
     </style>
   </head>
 
   <body>
+    <a href="https://github.com/vguillou/eticket-tile"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
 
     <div class="content">
+
+      <img class="logo" src="img/logo.png" alt="E-ticket tile logo" />
+
       <h1>E-ticket tile</h1>
 
-      <p>Under construction...</p>
+      <h2>A Quick Settings tile for easy e-ticket scanning</h2>
+
+      <p>
+        Bored of your device's screen being to dim and constantly rotating when scanning your e-tickets ? This Quick Settings tile for Android 6 and up is made for you:
+        It will let you lock the screen rotation and ramp up the brightness in an instant, and then restore your screen rotation setting and favourite brightness once the scanning process is over.
+      </p>
+
+      <p>Other than the tile itself, you will find a comprehensive guide to enable it in a flash.</p>
+
+      <a class="store-link" href='https://play.google.com/store/apps/details?id=me.vguillou.etickettile&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
     </div>
 
   </body>
