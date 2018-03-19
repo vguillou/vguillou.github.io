@@ -3,8 +3,45 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
-    <link rel="stylesheet" href="style.css">
-    <script src="script.js"></script>
+    <style type="text/css">
+        body {
+            background: #e2e1e0;
+        }
+
+        ul {
+            list-style: none;
+            text-align: center;
+            padding: 0;
+        }
+
+        li {
+            display: inline-block;
+            position: relative;
+            width: 80%;
+            height: 100px;
+            margin: 10px 0;
+        }
+
+        li > span {
+            display: block;
+            width: 100%;
+            height: 100px;
+            background: white;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        }
+
+        .state-after {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 9999;
+        }
+
+        .animate-on-transforms {
+            transition: transform 1s ease-in-out;
+        }
+    </style>
 </head>
 
 <body>
@@ -38,6 +75,61 @@
         </li>
     </ul>
     <button onclick="reset()" style="position: fixed; bottom: 10px; right: 10px;">Reset</button>
+
+
+    <script>
+        function doAnimate(event) {
+            var el = event.currentTarget;
+
+            // Get the first position.
+            var first = el.getBoundingClientRect();
+
+            // Now set the element to the last position.
+            el.classList.add('state-after');
+
+            // Read again. This forces a sync
+            // layout, so be careful.
+            var last = el.getBoundingClientRect();
+
+            // You can do this for other computed
+            // styles as well, if needed. Just be
+            // sure to stick to compositor-only
+            // props like transform and opacity
+            // where possible.
+            var invertTranslateY = first.top - last.top;
+            var invertScaleX = first.width / window.innerWidth;
+
+            // Invert.
+            el.style.transform = 'translateY(' + invertTranslateY + 'px) scaleX(' + invertScaleX + ')';
+
+            // Wait for the next frame so we
+            // know all the style changes have
+            // taken hold.
+            requestAnimationFrame(function() { // Replace by setTimeout(function(){}, 10) for it to work in Firefox, which seems to have a broken requestAnimationFrame implementation
+                // Switch on animations.
+                el.classList.add('animate-on-transforms');
+
+                // GO GO GOOOOOO!
+                el.style.transform = '';
+            });
+
+            // Capture the end with transitionend
+            el.addEventListener('transitionend', tidyUpAnimations(el));
+        }
+
+        function tidyUpAnimations(el) {
+            return function () {
+                // Remove the transition, should be there only during the animation
+                el.classList.remove('animate-on-transforms');
+            };
+        }
+
+        function reset() {
+            document.querySelectorAll('li > span').forEach(function (el) {
+                el.classList.remove('state-after');
+            })
+        }
+    </script>
 </body>
 
 </html>
