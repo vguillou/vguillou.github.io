@@ -1,0 +1,40 @@
+body {
+    background: #e2e1e0;
+}
+
+ul {
+    list-style-type: none;
+    list-style: none;
+    text-align: center;
+    padding: 0;
+}
+
+li {
+    display: inline-block;
+    position: relative;
+    width: 80%;
+    height: 100px;
+    margin: 10px 0;
+}
+
+li > span {
+    position: absolute;
+    background: white;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+.state-after {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+.animate-on-transforms {
+    transition: transform 1s ease-in-out;
+}
