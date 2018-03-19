@@ -33,11 +33,13 @@ self.addEventListener('fetch', event => {
         // Respond from the cache if possible
         caches.match(event.request).then(cachedResponse => {
             if (cachedResponse) {
+                console.log('Serving from cache: ' + event.request.url);
                 return cachedResponse;
             }
 
             // Otherwise do the actual fetch and cache the response
             return caches.open(RUNTIME).then(cache => {
+                console.log('No cache hit, fetching: ' + event.request.url);
                 return fetch(event.request).then(response => {
                     // Put a copy of the response in the runtime cache.
                     return cache.put(event.request, response.clone()).then(() => {
