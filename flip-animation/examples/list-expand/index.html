@@ -3,6 +3,7 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <meta charset="utf-8" />
     <style type="text/css">
         body {
             background: #e2e1e0;
@@ -76,14 +77,15 @@
     </ul>
     <button onclick="reset()" style="position: fixed; cursor: pointer; z-index: 99999; bottom: 10px; right: 10px; z-index: 9999;">Reset</button>
 
-    <script src="/flip.iife.js"></script>
+    <script src="/flip.js"></script>
 
     <script>
+        var flip = new Flip();
+
         function doAnimate(event) {
-            var target = event.target;
-            if (target.classList.contains('card')) {
-                var flip = new Flip();
-                flip.withClass(target, 'expanded')
+            var targetElement = event.target;
+            if (targetElement.classList.contains('card')) {
+                flip.withClass(targetElement, 'expanded')
                     .withTransition('500ms')
                     .go()
                     .then(() => console.log('Animation finished!'));
@@ -91,8 +93,8 @@
         }
 
         function reset() {
-            document.querySelectorAll('li > span.card').forEach(function (el) {
-                el.classList.remove('expanded');
+            document.querySelectorAll('li > span.card').forEach(function (element) {
+                element.classList.remove('expanded');
             })
         }
     </script>
