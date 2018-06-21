@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="initial-scale=1.0">
+  <style>
+    body {
+      font-family: sans-serif;
+      color: #393939;
+    }
+
+    li {
+      padding: 10px;
+      font-weight: bold;
+      color: #404040;
+      list-style: none;
+      padding-left: -150px;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0px;
+      margin: 0px;
+    }
+
+    button {
+      width: 100%;
+      height: 50px;
+      background-color: #2494E2;
+      border: none;
+      color: #fff;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Ermeo</h1>
+
+  <ul>
+  <h3>URL Scheme</h3>
+  <hr/>
+  <li>
+    <a href="ermeo://intervention?documentId=a13199bd01a1f545bec40d24&amp;assetName=5165052001">Link Pré-visite URL SCHEME</a>
+    <button onclick="location.href='ermeo://intervention?documentId=a13199bd01a1f545bec40d24&amp;assetName=5165052001'">Button Pré-visite URL SCHEME</button>
+  </li>
+  <h3>Deep Link Test</h3>
+  <hr/>
+  <li>
+    <a href="https://platform.ermeo.com/documents/a13199bd01a1f545bec40d24?assetName=5165052001">Link Pré-visite DEEP LINK</a>
+    <button onclick="location.href='https://platform.ermeo.com/documents/a13199bd01a1f545bec40d24?assetName=5165052001'">Button Pré-visite DEEP LINK</button>
+  </li>
+  </ul>
+
+
+  <h1>Movilizer client</h1>
+
+  <ul>
+  <h3>Starting Client</h3>
+  <hr/>
+  <li>
+    <p>this is meant to simply start the client, The client is expected to initially display the main menu</p>
+    <button onclick="location.href='movi-st-sb://?action=start&amp;callbackurl=https://vguillou.github.io/t/url-scheme/index.html'">start</button>
+  </li>
+  <h3>Open Screens</h3>
+  <hr/>
+  <li>
+    <p>this is meant to start the client to initially display the info screen. Once the info screen is left the client shuts down</p>
+    <button onclick="location.href='movi-st-sb://?action=info&amp;callbackurl=https://vguillou.github.io/t/url-scheme/index.html'">info</button>
+  </li>
+  <li>
+    <p>this is meant to start the client to initially display options screen. Once the option screen is left the client shuts down</p>
+    <button onclick="location.href='movi-st-sb://?action=options&amp;callbackurl=https://vguillou.github.io/t/url-scheme/index.html'">options</button>
+  </li>
+  <h3>Trigger Synchronizations</h3>
+  <hr/>
+  <li>
+    <p>this is mean to start the client and to trigger a full synchronization. The synchronization is expected to be ended in the sync done screen. After leaving the sync done screen the client shuts down.</p>
+    <button onclick="location.href='movi-st-sb://?action=sync&amp;callbackurl=https://vguillou.github.io/t/url-scheme/index.html'">sync</button>
+  </li>
+  <li>
+    <p>this is meant to to start the client and to trigger a full synchronization. Once the synchronization is completed the client has to shut down</p>
+    <button onclick="location.href='movi-st-sb://?action=syncsilent&amp;callbackurl=https://vguillou.github.io/t/url-scheme/index.html'">syncsilent</button>
+  </li>
+  <h3>Register to Participant</h3>
+  <hr/>
+  <li>
+    <p>this is meant to startup the client and to trigger a full synchronization. Partiticipant credentials are provided in this call so the client is also registered and in case a participant change is detected the client has to be wiped. After the synchronization
+      is completed the client is expected to shutdown by itself.</p>
+      <button onclick="location.href='movi-st-sb://?action=registersyncsilent&amp;1007442729&amp;0&amp;callbackurl=https://vguillou.github.io/t/url-scheme/index.html'">registersyncsilent</button>
+  </li>
+  <h3>Forcing Movelet</h3>
+  <hr/>
+  <li>
+    <p>is meant to start the client to execute a specified movelet. After executing the movelet the client shuts down. If the movelet can not be found the client shuts down too.</p>
+    <button onclick="location.href='movi-st-sb://?action=executeforce&amp;1&amp;callbackurl=https://vguillou.github.io/t/url-scheme/index.html'">executeforce</button>
+  </li>
+  <li>
+    <p>3211 <b>(Portal Courdavault PRD)</b></p>
+    <button onclick="location.href='movi-st-sb://?action=executeforce&amp;3211&amp;callbackurl=https://vguillou.github.io/t/url-scheme/index.html'">executeforce</button>
+  </li>
+  <li>
+    <p>327 <b>(Portal Equipe mobilité PRD)</b></p>
+    <button onclick="location.href='movi-st-sb://?action=executeforce&amp;327&amp;callbackurl=https://vguillou.github.io/t/url-scheme/index.html'">executeforce</button>
+  </li>
+  <h3>Forcing Category</h3>
+  <hr/>
+  <li>
+    <p>this is meant to start the client to initially display a provided category. In case the category is not found on the device, the client is expected to display the main menu. The client is expected to shut down once the category is left via back</p>
+    <button onclick="location.href='movi-st-sb://?action=category&amp;Client Capabilities&amp;callbackurl=https://vguillou.github.io/t/url-scheme/index.html'">category</button>
+  </li>
+  <h3>Digging deeper in Category</h3>
+  <hr/>
+  <li>
+    <p>this is meant to start the client to initially display a provided category. In case the category is not found the client shuts down. Otherwise the client is expected to shut down once the category is left via back</p>
+    <button onclick="location.href='movi-st-sb://?action=categoryforce&amp;Client Capabilities&amp;Features&amp;callbackurl=https://vguillou.github.io/t/url-scheme/index.html'">categoryforce</button>
+  </li>
+  <h3>Executing Movelet</h3>
+  <hr/>
+  <li>
+    <p>is meant to start the client to execute a specified movelet. After executing the movelet the client shuts down. If the movelet can not be found the client displays the main menu</p>
+    <button onclick="location.href='movi-st-sb://?action=execute&amp;1&amp;callbackurl=https://vguillou.github.io/t/url-scheme/index.html'">execute</button>
+  </li>
+  <li>
+    <p>3211 <b>(Portal Courdavault PRD)</b></p>
+    <button onclick="location.href='movi-st-sb://?action=execute&amp;3211&amp;callbackurl=https://vguillou.github.io/t/url-scheme/index.html'">execute</button>
+  </li>
+  <li>
+    <p>327 <b>(Portal Equipe mobilité PRD)</b></p>
+    <button onclick="location.href='movi-st-sb://?action=execute&amp;327&amp;callbackurl=https://vguillou.github.io/t/url-scheme/index.html'">execute</button>
+  </li>
+  <hr/>
+  <h3>CLIENT DATA WIPED? IF SO, CONTINUE</h3>
+  <hr/>
+  <h3>Register</h3>
+  <hr/>
+  <h4>Register to Participant open up Movelet</h4>
+  <li>
+      <p><b>(Equipe mobilité PRD)</b> is meant to register the client and synchronize. In case a participant change is detected first all data is wiped. After synchronization the client executes the specified movelet. If the movelet is not present, the client displays the main menu</p>
+      <button onclick="location.href='movi-st-sb://?action=registerexecute&amp;1007442729&amp;0&amp;1&amp;callbackurl=https://vguillou.github.io/t/url-scheme/index.html'">registerexecute</button>
+  </li>
+  <h3>CLIENT DATA WIPED? IF SO, CONTINUE</h3>
+  <h4>Register to Participant forced open up Movelet</h4>
+  <li>
+      <p><b>(Equipe mobilité PRD)</b> is meant to register the client and synchronize. In case a participant change is detected first all data is wiped. After synchronization the client executes the specified movelet. If the movelet is not present, the client shuts down,</p>
+      <button onclick="location.href='movi-st-sb://?action=registerexecuteforce&amp;1007442729&amp;0&amp;1&amp;callbackurl=https://vguillou.github.io/t/url-scheme/index.html'">registerexecuteforce</button>
+  </li>
+  <h3>CLIENT DATA WIPED? IF SO, CONTINUE</h3>
+  <h4>Register to Participant open up Category 2nd level</h4>
+  <li>
+      <p><b>(Equipe mobilité PRD)</b> this is meant to start the client and to synchronize. Partiticipant credentials are provided in this call so the client is also registered and in case a participant change is detected the client has to be wiped. In case the category is not found
+        on the device, the client is expected to display the main menu. After the synchronization is completed client is expected to display the provided category or in case the category is invalid to display the main menu.</p>
+        <button onclick="location.href='movi-st-sb://?action=registercategory&amp;1007442729&amp;0&amp;Client Capabilities&amp;Features&amp;callbackurl=https://vguillou.github.io/t/url-scheme/index.html'">registercategory</button>
+  </li>
+  <h3>CLIENT DATA WIPED? IF SO, CONTINUE</h3>
+  <h4>Register to Participant forced open up Movelet</h4>
+  <li>
+      <p><b>(Equipe mobilité PRD)</b> this is meant to start the client and to synchronize right away. Partiticipant credentials are provided in this call so the client is also registered and in case a participant change is detected the client has to be wiped. After the synchronization
+        is completed the client is expected to initially display a provided category. Otherwise the client is expected to shut down once the category is left via back</p>
+        <button onclick="location.href='movi-st-sb://?action=registercategoryforce&amp;1007442729&amp;0&amp;Client Capabilities&amp;Features&amp;Highlighting&amp;callbackurl=https://vguillou.github.io/t/url-scheme/index.html'">registercategoryforce</button>
+  </li>
+  <h3>CLIENT DATA WIPED? IF SO, CONTINUE</h3>
+  <h4>Register to Test AppGroup</h4>
+  <li>
+      <p>this is meant to simply register the client to a specific participant. Client starts, registers and shuts down.</p>
+      <button onclick="location.href='movi-st-sb://?action=register&amp;-32970&amp;&amp;callbackurl=https://vguillou.github.io/t/url-scheme/index.html'">register</button>
+  </li>
+  </ul>
+</body>
+
+</html>
