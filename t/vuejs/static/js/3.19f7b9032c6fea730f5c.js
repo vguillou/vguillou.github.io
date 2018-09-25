@@ -1,0 +1,2 @@
+webpackJsonp([3],{"5pV7":function(t,e){},wSMo:function(t,e,s){"use strict";Object.defineProperty(e,"__esModule",{value:!0});var n={render:function(){var t=this.$createElement,e=this._self._c||t;return e("v-layout",[e("v-flex",{attrs:{xs12:"",sm4:"","offset-sm3":"","pt-4":""}},[e("v-card",[e("v-card-title",{staticClass:"headline mb-0",staticStyle:{color:"#0097c1"}},[e("span",[this._v("Page Trois")])])],1)],1)],1)},staticRenderFns:[]};var a=s("VU/8")(null,n,!1,function(t){s("5pV7")},null,null);e.default=a.exports}});
+//# sourceMappingURL=3.19f7b9032c6fea730f5c.js.map

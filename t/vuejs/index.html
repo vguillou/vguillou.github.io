@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Put your name here</title>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
+<link href="/static/css/app.1e95767a5bacd442d545c3687905904e.css" rel="stylesheet"></head>
+
+<body>
+  <div id="app">
+  </div>
+  <!-- built files will be auto injected -->
+  <script>
+        if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').then(registration => {
+            console.log('SW registered: ', registration);
+          }).catch(registrationError => {
+            console.log('SW registration failed: ', registrationError);
+          });
+        });
+      }
+    </script>
+<script type="text/javascript" src="/static/js/manifest.7abceed49debd75f8b15.js"></script><script type="text/javascript" src="/static/js/vendor.d48105de2612412bd387.js"></script><script type="text/javascript" src="/static/js/app.7ab35c9463c5d7002c7d.js"></script></body>
+
+</html>
