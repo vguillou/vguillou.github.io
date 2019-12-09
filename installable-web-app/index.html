@@ -55,8 +55,13 @@
     <ul>
       <li>IOS standalone mode : <b id="webapp_ios">OFF</b></li>
       <li>W3C standalone mode : <b id="webapp_manifest">OFF</b></li>
-      <li>Storage estmate : <b id="storage_estimate">Not available</b>
-        <p id="storage_details"></p>
+      <li>Storage :
+        <ul>
+          <li>Persistent : <b id="storage_persistent">Not available</b></li>
+          <li>Estimate : <b id="storage_estimate">Not available</b>
+            <p id="storage_details"></p>
+          </li>
+        </ul>
       </li>
       <footer>
         <button onclick="addKeys()">Add keys</button>
@@ -97,13 +102,20 @@
 
       // Updates the storage usage estimate on screen
       function updateStorageEstimate() {
-        if ('storage' in navigator && 'estimate' in navigator.storage) {
-        navigator.storage.estimate()
-          .then(function(estimate) {
-            document.querySelector('#storage_estimate').innerHTML = 'Using ' + bytesToString(estimate.usage) + ' out of ' + bytesToString(estimate.quota);
-            if ('usageDetails' in estimate)
-              document.querySelector('#storage_details').innerHTML = usageDetailsToString(estimate.usageDetails);
-          });
+        if ('storage' in navigator) {
+          if ('persist' in navigator.storage) {
+            navigator.storage.persist().then(granted => {
+              document.querySelector('#storage_persistent').innerHTML = granted ? 'Yes' : 'No';
+            });
+          }
+          if ('estimate' in navigator.storage) {
+          navigator.storage.estimate()
+            .then(function(estimate) {
+              document.querySelector('#storage_estimate').innerHTML = 'Using ' + bytesToString(estimate.usage) + ' out of ' + bytesToString(estimate.quota);
+              if ('usageDetails' in estimate)
+                document.querySelector('#storage_details').innerHTML = usageDetailsToString(estimate.usageDetails);
+            });
+          }
         }
       }
 
