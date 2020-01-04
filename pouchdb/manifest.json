@@ -1,0 +1,20 @@
+{
+    "name": "My Web App",
+    "short_name": "My Web App",
+    "start_url": "/pouchdb/index.html",
+    "icons": [
+        {
+            "src": "/pouchdb/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/pouchdb/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#1b00a3",
+    "background_color": "#1b00a3",
+    "display": "standalone"
+}
