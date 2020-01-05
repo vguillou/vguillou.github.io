@@ -1,6 +1,6 @@
 {
-    "name": "My Web App",
-    "short_name": "My Web App",
+    "name": "PouchDB test",
+    "short_name": "PouchDB test",
     "start_url": "/pouchdb/index.html",
     "icons": [
         {
