@@ -11,7 +11,7 @@
             _PouchDB = require('pouchdb');
         }
     } catch(e) {
-        if (!window) throw Error(CONSOLE_PREFIX + ' Not a browser environment');
+        if (!window) throw Error(CONSOLE_PREFIX + 'Not a browser environment');
         if (!window.PouchDB) throw Error(CONSOLE_PREFIX + 'PouchDB not found');
         if (window[MODULE_NAME]) throw Error(CONSOLE_PREFIX + 'Module already defined in the global window');
         _PouchDB = window.PouchDB;
@@ -19,20 +19,30 @@
     }
 
     // The actual PourchDB tester
+    var _localDBPath;
+    var _remoteDBPath;
+    var _remoteDBOptions;
     var _localDB;
     var _remoteDB;
     var _hostHtmlElement;
+    var _liveSyncHandler;
+    var _liveSyncChangeCount;
     var _syncReplicateRemoteToLocalDBBtn;
     var _syncReplicateLocalToRemoteDBBtn;
     var _syncStatusEl;
+    var _modifyFirstDocOnLocalDBBtn;
+    var _modifyFirstDocOnRemoteDBBtn;
     var _addDocumentsToLocalDBBtn;
     var _addDocumentsToRemoteDBBtn;
     var _removeDocumentsFromLocalDBBtn;
     var _removeDocumentsFromRemoteDBBtn;
-    var _isAddingOrRemovingDocuments = false;
+    var _destroyLocalDBBtn;
+    var _destroyRemoteDBBtn;
+    var _stopPollingInfo = false;
 
     function _errorHandler(e) {
         console.error(CONSOLE_PREFIX, e);
+        alert(CONSOLE_PREFIX + (e ? (e.reason || JSON.stringify(e)) : 'Unknown error'));
     }
 
     function _uuid() {
@@ -43,18 +53,28 @@
         return (prefix ? prefix + ' - ' : '') + 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eleifend mi sit amet nibh suscipit, a rhoncus diam pellentesque. In euismod eros et accumsan cursus. Suspendisse eu auctor ex. Mauris feugiat lacus metus, ac dictum odio lacinia vitae. Maecenas pretium metus nunc. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse at metus id ante mollis scelerisque. In eu consequat est. Sed vel nibh in felis consectetur commodo. Sed et ultricies tortor, non suscipit nunc. Sed vitae cursus odio. Pellentesque luctus ante vitae quam vehicula, ac interdum felis fringilla. Suspendisse potenti. Donec eu libero nec leo auctor pellentesque sed vitae tellus. Vestibulum feugiat venenatis nisl. Cras in semper libero. Praesent eu risus id nunc tristique viverra. Quisque tristique diam velit, eu sollicitudin ligula aliquet non. Vivamus sagittis lorem libero, non elementum odio egestas a. Quisque libero eros, consequat et ipsum id, pretium convallis felis. Donec tincidunt mattis sem, eu rutrum sem suscipit nec. Aenean porttitor urna at imperdiet molestie. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Praesent feugiat ligula iaculis ex commodo scelerisque. Nulla facilisi. Suspendisse accumsan ut sem nec luctus. Nunc tempor commodo nisl quis fermentum. Sed tristique eget nunc in auctor. Nunc sodales nibh et augue efficitur mattis. Ut fermentum orci eget dignissim rhoncus. Cras sagittis risus nibh, eu bibendum nulla luctus et. Curabitur et eros et tellus bibendum dictum in nec urna. Phasellus quis dui imperdiet turpis tempus hendrerit. Duis vulputate tempor est vel viverra. Maecenas lacus neque, molestie at scelerisque et, tempor vel augue. Integer ex ipsum, ullamcorper non imperdiet vitae, placerat eu dolor. Donec non feugiat ex, nec tincidunt urna. Donec vel lobortis sem, id scelerisque felis. Ut consectetur pretium hendrerit. Cras a nisl ipsum. Aenean id ligula pulvinar, laoreet nisi eu, mattis augue. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Suspendisse ut cursus ante. Donec nisl mi, ultrices vitae justo quis, ultricies vestibulum felis. Curabitur vitae neque ut massa mattis aliquam fermentum eu odio. Donec faucibus ligula lorem, maximus aliquet orci pulvinar a. Donec eu mi pretium, cursus lacus ut, mollis lacus. Aenean augue nisi, elementum quis lorem vitae, viverra rutrum eros. Aliquam pellentesque tempus congue. Aliquam erat volutpat. Morbi ultricies elementum metus, ut scelerisque purus venenatis et. Etiam risus nunc, faucibus cursus odio ullamcorper, vestibulum ornare velit. Suspendisse rutrum rutrum justo, eget pharetra eros. Maecenas eget lectus eget dolor varius eleifend eget ut magna. Donec lobortis convallis egestas. Nulla rutrum est non nulla malesuada, vel eleifend mauris finibus. Pellentesque id nisi tellus. Nullam vitae risus lacinia, dignissim orci sit amet, gravida elit. Sed dapibus lorem arcu, eu feugiat mi imperdiet eu. Praesent est lectus, accumsan sed nulla vel, lobortis vehicula urna. Etiam diam massa, dignissim ac mollis sit amet, egestas quis arcu. Cras sit amet leo massa. Phasellus maximus, massa sit amet lobortis porttitor, justo odio cursus ante, sed porta neque tellus sed sapien. Proin aliquam cursus leo, vel tempus orci tincidunt quis. Suspendisse consequat massa non mi fermentum egestas. Morbi tristique venenatis urna id tempor. Nulla sollicitudin lacinia nunc, at dictum mi facilisis vitae. Sed ipsum ante, sodales eu molestie vel, pharetra sed ex. Nam vulputate accumsan volutpat. Mauris risus sem, auctor vitae ullamcorper a, mollis sit amet nisl. Praesent ac hendrerit lacus. Nam commodo mattis neque in porttitor. Mauris magna orci, sagittis at nibh nec, efficitur ultricies ex. Cras odio eros, aliquam non orci quis, tempor faucibus diam. Aenean aliquam velit sed justo tincidunt, in tincidunt est tempor. Donec nec nulla malesuada, molestie ipsum eu, scelerisque orci. Mauris non eros et eros malesuada euismod in nec ipsum. Fusce faucibus nulla in leo pellentesque elementum. Nam varius tincidunt sapien a rhoncus. Proin non ligula est. Suspendisse bibendum metus a ullamcorper interdum. Etiam sed volutpat dolor, eu maximus erat. Aliquam erat volutpat. Fusce pharetra tellus ut est ullamcorper fringilla. Mauris rutrum ultrices lacinia. Mauris viverra gravida porta. Quisque imperdiet cursus ultricies. Mauris tristique turpis sed nisl laoreet, sed blandit nulla venenatis. Quisque eu posuere metus. Mauris laoreet, risus eu semper efficitur, nisi sem interdum urna, non facilisis ante nibh a est. Cras quis arcu faucibus, commodo dolor ac, lobortis purus. Aliquam erat volutpat. Morbi mattis justo non consectetur blandit. Donec dictum nunc id enim blandit mattis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed finibus congue dolor sed mollis. Sed id sodales metus, eu egestas nisl. Nulla in velit vel eros euismod lobortis ac vel ipsum. Donec maximus tellus libero, ac gravida nisi semper vitae. Duis elit metus, pellentesque ac arcu nec, aliquam pharetra eros. Quisque pharetra purus at ex venenatis placerat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean hendrerit porttitor arcu, non efficitur metus. Nunc mattis erat sed dui auctor, a sodales est lobortis. Phasellus laoreet erat sed leo varius faucibus. Integer tincidunt pharetra lobortis. Integer cursus sem sit amet mattis iaculis. Nullam mi nunc, accumsan ac erat venenatis, malesuada vestibulum sem. Fusce efficitur leo metus, ac luctus metus semper nec. Donec semper, erat in dictum hendrerit, sapien elit tempus nisi, a semper nibh nunc nec libero. In tempor vel nulla ut elementum. Aliquam sit amet sem at elit aliquam dapibus. Curabitur posuere tempor porttitor. Proin et venenatis ipsum. Cras convallis nec augue at iaculis.';
     }
 
-    // Print storage information
     function _bytesToString(bytesCount) {
-        const kCoef = Math.pow(2, 10);
-        const mCoef = Math.pow(kCoef, 2);
-        const gCoef = Math.pow(kCoef, 3);
+        var kCoef = Math.pow(2, 10);
+        var mCoef = Math.pow(kCoef, 2);
+        var gCoef = Math.pow(kCoef, 3);
         if (bytesCount < kCoef) return bytesCount + 'b';
         if (bytesCount < mCoef) return (bytesCount / kCoef).toFixed(2) + 'kb';
         if (bytesCount < gCoef) return (bytesCount / mCoef).toFixed(2) + 'mb';
         return (bytesCount / gCoef).toFixed(2) + 'gb';
     }
 
+    // Create DBs
+
+    function _getLocalDB() {
+        return new _PouchDB(_localDBPath, { auto_compaction: true });
+    }
+
+    function _getRemoteDB() {
+        return new _PouchDB(_remoteDBPath, _remoteDBOptions);
+    }
+
     // Fetch and displays DB info in console and HTML
+    
     function _refreshDBInfo(db, htmlElementId) {
         return db.info()
             .then(function(result) {
@@ -87,47 +107,49 @@
     function _enableSyncButtons(enable) {
         if (_syncReplicateRemoteToLocalDBBtn) _syncReplicateRemoteToLocalDBBtn.disabled = !enable;
         if (_syncReplicateLocalToRemoteDBBtn) _syncReplicateLocalToRemoteDBBtn.disabled = !enable;
+        _destroyLocalDBBtn.disabled = !enable;
+        if (_destroyRemoteDBBtn) _destroyRemoteDBBtn.disabled = !enable;
     }
 
-    function _onSyncChange(info) {
+    function _onSyncChange(change) {
         // handle change
         var progress;
         // Remote => Local
         if (info.pending) progress = ((info.docs_read / (info.docs_read + info.pending)) * 100).toFixed(0) + '%';
         else progress = 'Sent ' + info.docs_written + ' docs';
-        console.info('[pouchdb] Replication change. progress: ' + progress, info);
+        console.info(CONSOLE_PREFIX + 'Replication change. progress: ' + progress, info);
         _syncStatusEl.innerHTML = 'Sync ongoing 💪 [' + progress + ']';
     }
 
-    function _onSyncPaused(err) {
+    function _onSyncPaused(info) {
         // replication paused (e.g. replication up to date, user went offline)
-        console.info('[pouchdb] Replication paused', err);
+        console.warn(CONSOLE_PREFIX + 'Replication paused', info);
         _syncStatusEl.innerHTML = 'Sync paused! 😒';
     }
 
-    function _onSyncActive() {
+    function _onSyncActive(info) {
         // replicate resumed (e.g. new changes replicating, user went back online)
-        console.info('[pouchdb] Replication active');
+        console.info(CONSOLE_PREFIX + 'Replication active', info);
         _syncStatusEl.innerHTML = 'Sync active 😊';
     }
 
     function _onSyncDenied(err) {
         // a document failed to replicate (e.g. due to permissions)
-        console.info('[pouchdb] Replication denied', err);
+        console.error(CONSOLE_PREFIX + 'Replication denied', err);
         _syncStatusEl.innerHTML = 'Sync denied! 😱';
         _enableSyncButtons(true);
     }
 
     function _onSyncComplete(info) {
         // handle complete
-        console.info('[pouchdb] Replication complete', info);
+        console.info(CONSOLE_PREFIX + 'Replication complete', info);
         _syncStatusEl.innerHTML = 'Sync complete! 😍';
         _enableSyncButtons(true);
     }
 
     function _onSyncError(err) {
         // handle error
-        console.info('[pouchdb] Replication error', err);
+        console.error(CONSOLE_PREFIX + 'Replication error', err);
         _syncStatusEl.innerHTML = 'Sync error! 😓';
         _enableSyncButtons(true);
     }
@@ -158,7 +180,60 @@
         }
     }
 
-    // Add documents to DB
+    // Live Sync DBs
+
+    function _startLiveSync() {
+        if (_remoteDB) {
+            _enableSyncButtons(false);
+            _syncStatusEl.innerHTML = '🔄 Live Sync is on! 🤠';
+            _liveSyncChangeCount = 0;
+            _liveSyncHandler = _localDB.sync(_remoteDB, {
+                    live: true,
+                    retry: true
+                }).on('change', function (change) {
+                    _liveSyncChangeCount++;
+                    console.info(CONSOLE_PREFIX + '🔄 Live Sync change n°' + _liveSyncChangeCount, change);
+                    _syncStatusEl.innerHTML = '🔄 Live Sync change n°' + _liveSyncChangeCount + ' 😬';
+                }).on('paused', function (info) {
+                    // replication was paused, usually because of a lost connection
+                    console.info(CONSOLE_PREFIX + '🔄 Live Sync paused', info);
+                    _syncStatusEl.innerHTML = '🔄 Live Sync waiting for changes... 😎 ('+ _liveSyncChangeCount +')';
+                }).on('active', function (info) {
+                    // replication was resumed
+                    console.info(CONSOLE_PREFIX + '🔄 Live Replication active again', info);
+                    _syncStatusEl.innerHTML = '🔄 Live Sync active again! 😊';
+                }).on('error', function (err) {
+                    // totally unhandled error (shouldn't happen)
+                    console.error(CONSOLE_PREFIX + '🔄 Live Sync error', err);
+                    _syncStatusEl.innerHTML = '🔄 Live Sync active again! 😓';
+                    _enableSyncButtons(true);
+                });
+            console.info(CONSOLE_PREFIX + '🔄 Live Sync started.');
+        }
+    }
+
+    function _stopLiveSync() {
+        if (_liveSyncHandler) _liveSyncHandler.cancel();
+        _enableSyncButtons(true);
+        console.info(CONSOLE_PREFIX + '🔄 Live Sync canceled.');
+        _syncStatusEl.innerHTML = '🔄 Live Sync canceled! 🥶';
+    }
+
+    function _onLiveSyncCbChanged(event) {
+        if (event.target.checked) _startLiveSync();
+        else _stopLiveSync();
+    }
+
+    // Update documents
+
+    function _enableUpdateAddRemoveDocumentsButtons(enable) {
+        _modifyFirstDocOnLocalDBBtn.disabled = !enable;
+        if (_modifyFirstDocOnRemoteDBBtn) _modifyFirstDocOnRemoteDBBtn.disabled = !enable;
+        _addDocumentsToLocalDBBtn.disabled = !enable;
+        if (_addDocumentsToRemoteDBBtn) _addDocumentsToRemoteDBBtn.disabled = !enable;
+        _removeDocumentsFromLocalDBBtn.disabled = !enable;
+        if (_removeDocumentsFromRemoteDBBtn) _removeDocumentsFromRemoteDBBtn.disabled = !enable;
+    }
 
     function _newDocument() {
         return {
@@ -168,17 +243,44 @@
         };
     }
 
-    function _enableAddingOrRemovingDocumentsButtons(enable) {
-        _addDocumentsToLocalDBBtn.disabled = !enable;
-        if (_addDocumentsToRemoteDBBtn) _addDocumentsToRemoteDBBtn.disabled = !enable;
-        _removeDocumentsFromLocalDBBtn.disabled = !enable;
-        if (_removeDocumentsFromRemoteDBBtn) _removeDocumentsFromRemoteDBBtn.disabled = !enable;
+    function _modifyFirstDoc(db) {
+        _stopPollingInfo = true;
+        _enableUpdateAddRemoveDocumentsButtons(false);
+
+        db.allDocs({ limit: 1, include_docs: true })
+            .then(function(result) {
+                console.debug(CONSOLE_PREFIX, result);
+                if (result && result.rows && result.rows.length) {
+                    var updatedDoc = result.rows[0].doc;
+                    updatedDoc.lorem = _lorem(Math.random());
+                    updatedDoc.ipsum = _lorem(Math.random());
+                    return db.put(updatedDoc);
+                }
+            })
+            .then(function() {
+                console.info(CONSOLE_PREFIX + 'Done updating document.');
+            })
+            .catch(_errorHandler)
+            .then(function() {
+                _stopPollingInfo = false;
+                _enableUpdateAddRemoveDocumentsButtons(true);
+            })
     }
+
+    function _modifyFirstDocOnLocalDB() {
+        _modifyFirstDoc(_localDB);
+    }
+
+    function _modifyFirstDocOnRemoteDB() {
+        if (_remoteDB) _modifyFirstDoc(_remoteDB);
+    }
+
+    // Add documents to DB
 
     function _addDocuments(db, documentCount) {
         var i = documentCount;
-        _isAddingOrRemovingDocuments = true;
-        _enableAddingOrRemovingDocumentsButtons(false);
+        _stopPollingInfo = true;
+        _enableUpdateAddRemoveDocumentsButtons(false);
 
         var newDocs = [];
         while (i) {
@@ -186,14 +288,14 @@
             i--;
         }
 
-        return db.bulkDocs(deletedDocs)
+        return db.bulkDocs(newDocs)
             .then(function() {
-                console.info(CONSOLE_PREFIX + ' Done adding documents.');
+                console.info(CONSOLE_PREFIX + 'Done adding documents.');
             })
             .catch(_errorHandler)
             .then(function() {
-                _isAddingOrRemovingDocuments = false;
-                _enableAddingOrRemovingDocumentsButtons(true);
+                _stopPollingInfo = false;
+                _enableUpdateAddRemoveDocumentsButtons(true);
             });
     }
 
@@ -208,8 +310,8 @@
     // Remove random documents from DB
 
     function _removeDocuments(db, documentCount) {
-        _isAddingOrRemovingDocuments = true;
-        _enableAddingOrRemovingDocumentsButtons(false);
+        _stopPollingInfo = true;
+        _enableUpdateAddRemoveDocumentsButtons(false);
 
         db.allDocs({ limit: documentCount, include_docs: true })
             .then(function(result) {
@@ -223,12 +325,12 @@
                 }
             })
             .then(function() {
-                console.info(CONSOLE_PREFIX + ' Done removing documents.');
+                console.info(CONSOLE_PREFIX + 'Done removing documents.');
             })
             .catch(_errorHandler)
             .then(function() {
-                _isAddingOrRemovingDocuments = false;
-                _enableAddingOrRemovingDocumentsButtons(true);
+                _stopPollingInfo = false;
+                _enableUpdateAddRemoveDocumentsButtons(true);
             })
     }
 
@@ -238,6 +340,45 @@
     
     function _removeDocumentsFromRemoteDB(documentCount) {
         return _removeDocuments(_remoteDB, documentCount);
+    }
+
+    // Destroy DBs
+
+    function _destroy(db) {
+        _stopPollingInfo = true;
+        _enableUpdateAddRemoveDocumentsButtons(false);
+        _enableSyncButtons(false);
+        
+        return db.destroy()
+            .then(function() {
+                console.info(CONSOLE_PREFIX + 'DB detroyed.');
+            })
+            .catch(_errorHandler)
+            .then(function() {
+                _stopPollingInfo = false;
+                _enableUpdateAddRemoveDocumentsButtons(true);
+                _enableSyncButtons(true);
+            });
+    }
+
+    function _destroyLocalDB() {
+        if (confirm('You are about to destroy your Local DB. Proceed?')) {
+            _destroy(_localDB)
+                .then(function() {
+                    _localDB = _getLocalDB();
+                })
+                .catch(_errorHandler);
+        }
+    }
+
+    function _destroyRemoteDB() {
+        if ( confirm( 'You are about to destroy the Remote DB. Proceed?' ) ) {
+            _destroy(_remoteDB)
+                .then(function() {
+                    if (_remoteDBPath) _remoteDB = _getRemoteDB();
+                })
+                .catch(_errorHandler);
+        }
     }
 
     var pouchDBTester = {
@@ -250,51 +391,73 @@
          * @param {number} refreshInterval (Optional) Refresh interval to print info about the local and remote DBs, in seconds
          */
         start: function(localDBPath, remoteDBPath, remoteDBOptions, hostHtmlElement, refreshInterval) {
-            _localDB = new _PouchDB(localDBPath, { auto_compaction: true });
-            if (remoteDBPath) _remoteDB = new _PouchDB(remoteDBPath, remoteDBOptions);
+            _localDBPath = localDBPath;
+            _remoteDBPath = remoteDBPath;
+            _remoteDBOptions = remoteDBOptions;
+            _localDB = _getLocalDB();
+            if (_remoteDBPath) _remoteDB = _getRemoteDB();
             _hostHtmlElement = hostHtmlElement;
             if (!_isModule && _hostHtmlElement) {
-                _hostHtmlElement.innerHTML = '<h2>PouchDB tester:</h2>\n' +
+                _hostHtmlElement.innerHTML = '<h3><u>PouchDB tester:</u></h3>\n' +
                     '<ul>\n' +
-                        '<li style="list-style: none;">\n' +
-                            (_remoteDB ? '<button id="' + MODULE_NAME + '_syncReplicateRemoteToLocalDBBtn" onclick="' + MODULE_NAME + '_onSyncReplicateRemoteToLocalDBBtn()">🔄 Sync Remote =&gt; Local</button>\n' : '') +
-                            (_remoteDB ? '<button id="' + MODULE_NAME + '_syncReplicateLocalToRemoteDBBtn" onclick="' + MODULE_NAME + '_onSyncReplicateLocalToRemoteDBBtn()">🔄 Sync Remote &lt;= Local</button>\n' : '') +
+                        '<li style="list-style: none; margin-bottom: 10px;">\n' +
+                            (_remoteDB ? '<button id="' + MODULE_NAME + '_syncReplicateRemoteToLocalDBBtn" onclick="' + MODULE_NAME + '_onSyncReplicateRemoteToLocalDBBtn()" style="min-width: 212px;">🔄 Sync Remote =&gt; Local</button>\n' : '') +
+                            (_remoteDB ? '<button id="' + MODULE_NAME + '_syncReplicateLocalToRemoteDBBtn" onclick="' + MODULE_NAME + '_onSyncReplicateLocalToRemoteDBBtn()" style="min-width: 212px;">🔄 Sync Remote &lt;= Local</button>\n' : '') +
+                            (_remoteDB ? '<div><span style="margin: 10px;">Live Sync</span><input id="' + MODULE_NAME + '_syncReplicateLocalToRemoteDBCb" type="checkbox" onchange="' + MODULE_NAME + '_onLiveSyncCbChanged(event)"/></div>\n' : '') +
                         '</li>\n' +
-                        '<li style="list-style: none;">\n' +
+                        '<li style="list-style: none; margin-bottom: 10px;">\n' +
                             '<b id="' + MODULE_NAME + '_syncStatusEl" style="color: blue;"></b>\n' +
                         '</li>\n' +
-                        '<li>Local DB : <b id="' + MODULE_NAME + '_local_info">Unknown</b></li>\n' +
-                        (_remoteDB ? '<li>Remote DB : <b id="' + MODULE_NAME + '_remote_info">Unknown</b></li>\n' : '') +
-                        '<li style="list-style: none;">\n' +
-                            '<button id="' + MODULE_NAME + '_addDocumentsToLocalDBBtn" onclick="' + MODULE_NAME + '_onAddDocumentsToLocalDB(1000)">➕ Add 1000 docs to Local</button>\n' +
-                            (_remoteDB ? '<button id="' + MODULE_NAME + '_addDocumentsToRemoteDBBtn" onclick="' + MODULE_NAME + '_onAddDocumentsToRemoteDB(100)">➕ Add 100 docs to Remote</button>\n' : '') +
+                        '<li style="margin-bottom: 10px;">Local DB : <b id="' + MODULE_NAME + '_local_info">Unknown</b></li>\n' +
+                        (_remoteDB ? '<li style="none; margin-bottom: 10px;">Remote DB : <b id="' + MODULE_NAME + '_remote_info">Unknown</b></li>\n' : '') +
+                        
+                        '<li style="list-style: none; margin-bottom: 10px;">\n' +
+                            '<button id="' + MODULE_NAME + '_modifyFirstDocOnLocalDBBtn" onclick="' + MODULE_NAME + '_onModifyFirstDocOnLocalDB()" style="min-width: 212px;">✏️ Random Local update of first doc</button>\n' +
+                            (_remoteDB ? '<button id="' + MODULE_NAME + '_modifyFirstDocOnRemoteDBBtn" onclick="' + MODULE_NAME + '_onModifyFirstDocOnRemoteDB()" style="min-width: 212px;">✏️ Random Remote update of first doc</button>\n' : '') +
                         '</li>\n' +
-                        '<li style="list-style: none;">\n' +
-                            '<button id="' + MODULE_NAME + '_removeDocumentsFromLocalDBBtn" onclick="' + MODULE_NAME + '_onRemoveDocumentsFromLocalDB(100)">❌ Remove 100 docs from Local</button>\n' +
-                            (_remoteDB ? '<button id="' + MODULE_NAME + '_removeDocumentsFromRemoteDBBtn" onclick="' + MODULE_NAME + '_onRemoveDocumentsFromRemoteDB(10)">❌ Remove 10 docs from Remote</button>\n' : '') +
+                        '<li style="list-style: none; margin-bottom: 10px;">\n' +
+                            '<button id="' + MODULE_NAME + '_addDocumentsToLocalDBBtn" onclick="' + MODULE_NAME + '_onAddDocumentsToLocalDB(100)" style="min-width: 212px;">➕ Add 100 docs to Local</button>\n' +
+                            (_remoteDB ? '<button id="' + MODULE_NAME + '_addDocumentsToRemoteDBBtn" onclick="' + MODULE_NAME + '_onAddDocumentsToRemoteDB(10)" style="min-width: 212px;">➕ Add 10 docs to Remote</button>\n' : '') +
+                        '</li>\n' +
+                        '<li style="list-style: none; margin-bottom: 10px;">\n' +
+                            '<button id="' + MODULE_NAME + '_removeDocumentsFromLocalDBBtn" onclick="' + MODULE_NAME + '_onRemoveDocumentsFromLocalDB(100)" style="min-width: 212px;">❌ Remove 100 docs from Local</button>\n' +
+                            (_remoteDB ? '<button id="' + MODULE_NAME + '_removeDocumentsFromRemoteDBBtn" onclick="' + MODULE_NAME + '_onRemoveDocumentsFromRemoteDB(10)" style="min-width: 212px;">❌ Remove 10 docs from Remote</button>\n' : '') +
+                        '</li>\n' +
+                        '<li style="list-style: none; margin-bottom: 10px;">\n' +
+                            '<button id="' + MODULE_NAME + '_destroyLocalDBBtn" onclick="' + MODULE_NAME + '_onDestroyLocalDB()" style="min-width: 212px;">🗑 Destroy Local</button>\n' +
+                            (_remoteDB ? '<button id="' + MODULE_NAME + '_destroyRemoteDBBtn" onclick="' + MODULE_NAME + '_onDestroyRemoteDB()" style="min-width: 212px;">🗑 Destroy Remote</button>\n' : '') +
                         '</li>\n' +
                     '</ul>';
                 
                 _syncReplicateRemoteToLocalDBBtn = document.getElementById(MODULE_NAME + '_syncReplicateRemoteToLocalDBBtn');
                 _syncReplicateLocalToRemoteDBBtn = document.getElementById(MODULE_NAME + '_syncReplicateLocalToRemoteDBBtn');
                 _syncStatusEl = document.getElementById(MODULE_NAME + '_syncStatusEl');
+                _modifyFirstDocOnLocalDBBtn = document.getElementById(MODULE_NAME + '_modifyFirstDocOnLocalDBBtn');
+                _modifyFirstDocOnRemoteDBBtn = document.getElementById(MODULE_NAME + '_modifyFirstDocOnRemoteDBBtn');
                 _addDocumentsToLocalDBBtn = document.getElementById(MODULE_NAME + '_addDocumentsToLocalDBBtn');
                 _addDocumentsToRemoteDBBtn = document.getElementById(MODULE_NAME + '_addDocumentsToRemoteDBBtn');
                 _removeDocumentsFromLocalDBBtn = document.getElementById(MODULE_NAME + '_removeDocumentsFromLocalDBBtn');
                 _removeDocumentsFromRemoteDBBtn = document.getElementById(MODULE_NAME + '_removeDocumentsFromRemoteDBBtn');
+                _destroyLocalDBBtn = document.getElementById(MODULE_NAME + '_destroyLocalDBBtn');
+                _destroyRemoteDBBtn = document.getElementById(MODULE_NAME + '_destroyRemoteDBBtn');
                 window[MODULE_NAME + '_onSyncReplicateRemoteToLocalDBBtn'] = _syncReplicationRemoteToLocalDB;
                 window[MODULE_NAME + '_onSyncReplicateLocalToRemoteDBBtn'] = _syncReplicationLocalToRemoteDB;
+                window[MODULE_NAME + '_onLiveSyncCbChanged'] = _onLiveSyncCbChanged;
+                window[MODULE_NAME + '_onModifyFirstDocOnLocalDB'] = _modifyFirstDocOnLocalDB;
+                window[MODULE_NAME + '_onModifyFirstDocOnRemoteDB'] = _modifyFirstDocOnLocalDB;
                 window[MODULE_NAME + '_onAddDocumentsToLocalDB'] = _addDocumentsToLocalDB;
                 window[MODULE_NAME + '_onAddDocumentsToRemoteDB'] = _addDocumentsToRemoteDB;
                 window[MODULE_NAME + '_onRemoveDocumentsFromLocalDB'] = _removeDocumentsFromLocalDB;
                 window[MODULE_NAME + '_onRemoveDocumentsFromRemoteDB'] = _removeDocumentsFromRemoteDB;
+                window[MODULE_NAME + '_onDestroyLocalDB'] = _destroyLocalDB;
+                window[MODULE_NAME + '_onDestroyRemoteDB'] = _destroyRemoteDB;
             }
 
             _refreshLocalDBInfo();
             _refreshRemoteDBInfo();
             if (refreshInterval > 0) {
                 setInterval(function() {
-                    if (!_isAddingOrRemovingDocuments) {
+                    if (!_stopPollingInfo) {
                         _refreshLocalDBInfo();
                         _refreshRemoteDBInfo()
                     }
