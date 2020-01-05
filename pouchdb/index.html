@@ -193,7 +193,7 @@
           .on('error', function(err) {
               // handle error
               console.info('[pouchdb] Replication error', err);
-              document.querySelector('#storage_details').innerHTML = 'Sync error! :-(';
+              syncPouchDBBtn.innerHTML = 'Sync error! :-(';
               syncPouchDBBtn.disabled = false;
           });
       }
