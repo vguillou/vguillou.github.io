@@ -42,6 +42,7 @@
     </script>
 
     <script src="//cdn.jsdelivr.net/npm/pouchdb@7.1.1/dist/pouchdb.min.js"></script>
+    <script src="./js/pouchdb-tester.js"></script>
 
     <style>
       body {
@@ -65,18 +66,7 @@
           </li>
         </ul>
       </li>
-      <li>PouchDB :
-        <ul>
-          <li style="list-style: none;">
-            <button id="syncPouchDBBtn" onclick="syncPouchDB()">Sync remote =&gt; local</button>
-          </li>
-          <li>Local DB : <b id="pouch_info_local">Unknown</b></li>
-          <li>Remote DB : <b id="pouch_info_remote">Unknown</b></li>
-          <li style="list-style: none;">
-            <button id="addDocumentsBtn" onclick="addDocuments(1000)">Add 1000 Documents</button>
-          </li>
-        </ul>
-      </li>
+      <li id="PouchDBTesterHost"></li>
     </ul>
 
     <script type="text/javascript">
@@ -133,113 +123,17 @@
 
       // PouchDB
 
-      var dbName = 'people';
-      var localDB = new PouchDB(dbName);
-      var remoteDB = new PouchDB('https://68f4937c-cf60-483d-bb7c-f534b0ceb44b-bluemix.cloudantnosqldb.appdomain.cloud/' + dbName, {
+      var localDBPath = 'github-test';
+      var remoteDBPath = 'https://68f4937c-cf60-483d-bb7c-f534b0ceb44b-bluemix.cloudantnosqldb.appdomain.cloud/' + localDBPath;
+      var remoteDBOptions = {
         auth: {
-          username: 'entsemdquedichadeforyour',
-          password: '9c150f507065e32ea22217534a002c3ae40f3183'
+          username: 'iedsingettenteduatlyforg',
+          password: '7505a544e9d16f6d509b79a90544ab8a32296184'
         }
-      });
-      var syncPouchDBBtn = document.getElementById('syncPouchDBBtn');
-      
-      function refreshDBInfo(db, htmlElementId) {
-        return db.info()
-          .then(function(result) {
-            console.info(result);
-            var info = [];
-            if (result.adapter) info.push(result.adapter + ' adapter');
-            if (typeof result.doc_count === 'number') info.push(result.doc_count + ' docs');
-            if (typeof result.data_size === 'number') info.push(bytesToString(result.data_size));
-            document.getElementById(htmlElementId).innerHTML = info.join(' | ');
-          })
-          .catch(console.error);
       }
+      var hostHtmlElement = document.getElementById('PouchDBTesterHost');
 
-      refreshDBInfo(localDB, 'pouch_info_local');
-      refreshDBInfo(remoteDB, 'pouch_info_remote');
-      setInterval(function() { if (!isAddingDocuments) refreshDBInfo(localDB, 'pouch_info_local') }, 3000 );
-      // setInterval(function() { if (!isAddingDocuments) refreshDBInfo(remoteDB, 'pouch_info_remote') }, 10000 );
-
-      function syncPouchDB() {
-        syncPouchDBBtn.disabled = true;
-        localDB.replicate.from(remoteDB)
-          .on('change', function(info) {
-              // handle change
-              console.info('[pouchdb] Replication change', info);
-          })
-          .on('paused', function(err) {
-              // replication paused (e.g. replication up to date, user went offline)
-              console.info('[pouchdb] Replication paused', err);
-              syncPouchDBBtn.innerHTML = 'Sync paused';
-          })
-          .on('active', function() {
-              // replicate resumed (e.g. new changes replicating, user went back online)
-              console.info('[pouchdb] Replication active');
-              syncPouchDBBtn.innerHTML = 'Sync active...';
-          })
-          .on('denied', function(err) {
-              // a document failed to replicate (e.g. due to permissions)
-              console.info('[pouchdb] Replication denied', err);
-              syncPouchDBBtn.innerHTML = 'Sync denied';
-              syncPouchDBBtn.disabled = false;
-          })
-          .on('complete', function(info) {
-              // handle complete
-              console.info('[pouchdb] Replication complete', info);
-              syncPouchDBBtn.innerHTML = 'Sync complete!';
-              syncPouchDBBtn.disabled = false;
-          })
-          .on('error', function(err) {
-              // handle error
-              console.info('[pouchdb] Replication error', err);
-              syncPouchDBBtn.innerHTML = 'Sync error! :-(';
-              syncPouchDBBtn.disabled = false;
-          });
-      }
-
-      // Add more local Documents to PouchDB
-
-      var addDocumentsBtn = document.getElementById('addDocumentsBtn');
-      var addDocumentsRunCount = 0;
-      var isAddingDocuments = false;
-
-      function addDocument(docNumber) {
-        const doc = {
-          _id: (()=>([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,a=>(a^Math.random()*16>>a/4).toString(16)))(),
-          nb: 'test-' + docNumber,
-          lorem: docNumber + ' - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eleifend mi sit amet nibh suscipit, a rhoncus diam pellentesque. In euismod eros et accumsan cursus. Suspendisse eu auctor ex. Mauris feugiat lacus metus, ac dictum odio lacinia vitae. Maecenas pretium metus nunc. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse at metus id ante mollis scelerisque. In eu consequat est. Sed vel nibh in felis consectetur commodo. Sed et ultricies tortor, non suscipit nunc. Sed vitae cursus odio. Pellentesque luctus ante vitae quam vehicula, ac interdum felis fringilla. Suspendisse potenti. Donec eu libero nec leo auctor pellentesque sed vitae tellus. Vestibulum feugiat venenatis nisl. Cras in semper libero. Praesent eu risus id nunc tristique viverra. Quisque tristique diam velit, eu sollicitudin ligula aliquet non. Vivamus sagittis lorem libero, non elementum odio egestas a. Quisque libero eros, consequat et ipsum id, pretium convallis felis. Donec tincidunt mattis sem, eu rutrum sem suscipit nec. Aenean porttitor urna at imperdiet molestie. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Praesent feugiat ligula iaculis ex commodo scelerisque. Nulla facilisi. Suspendisse accumsan ut sem nec luctus. Nunc tempor commodo nisl quis fermentum. Sed tristique eget nunc in auctor. Nunc sodales nibh et augue efficitur mattis. Ut fermentum orci eget dignissim rhoncus. Cras sagittis risus nibh, eu bibendum nulla luctus et. Curabitur et eros et tellus bibendum dictum in nec urna. Phasellus quis dui imperdiet turpis tempus hendrerit. Duis vulputate tempor est vel viverra. Maecenas lacus neque, molestie at scelerisque et, tempor vel augue. Integer ex ipsum, ullamcorper non imperdiet vitae, placerat eu dolor. Donec non feugiat ex, nec tincidunt urna. Donec vel lobortis sem, id scelerisque felis. Ut consectetur pretium hendrerit. Cras a nisl ipsum. Aenean id ligula pulvinar, laoreet nisi eu, mattis augue. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Suspendisse ut cursus ante. Donec nisl mi, ultrices vitae justo quis, ultricies vestibulum felis. Curabitur vitae neque ut massa mattis aliquam fermentum eu odio. Donec faucibus ligula lorem, maximus aliquet orci pulvinar a. Donec eu mi pretium, cursus lacus ut, mollis lacus. Aenean augue nisi, elementum quis lorem vitae, viverra rutrum eros. Aliquam pellentesque tempus congue. Aliquam erat volutpat. Morbi ultricies elementum metus, ut scelerisque purus venenatis et. Etiam risus nunc, faucibus cursus odio ullamcorper, vestibulum ornare velit. Suspendisse rutrum rutrum justo, eget pharetra eros. Maecenas eget lectus eget dolor varius eleifend eget ut magna. Donec lobortis convallis egestas. Nulla rutrum est non nulla malesuada, vel eleifend mauris finibus. Pellentesque id nisi tellus. Nullam vitae risus lacinia, dignissim orci sit amet, gravida elit. Sed dapibus lorem arcu, eu feugiat mi imperdiet eu. Praesent est lectus, accumsan sed nulla vel, lobortis vehicula urna. Etiam diam massa, dignissim ac mollis sit amet, egestas quis arcu. Cras sit amet leo massa. Phasellus maximus, massa sit amet lobortis porttitor, justo odio cursus ante, sed porta neque tellus sed sapien. Proin aliquam cursus leo, vel tempus orci tincidunt quis. Suspendisse consequat massa non mi fermentum egestas. Morbi tristique venenatis urna id tempor. Nulla sollicitudin lacinia nunc, at dictum mi facilisis vitae. Sed ipsum ante, sodales eu molestie vel, pharetra sed ex. Nam vulputate accumsan volutpat. Mauris risus sem, auctor vitae ullamcorper a, mollis sit amet nisl. Praesent ac hendrerit lacus. Nam commodo mattis neque in porttitor. Mauris magna orci, sagittis at nibh nec, efficitur ultricies ex. Cras odio eros, aliquam non orci quis, tempor faucibus diam. Aenean aliquam velit sed justo tincidunt, in tincidunt est tempor. Donec nec nulla malesuada, molestie ipsum eu, scelerisque orci. Mauris non eros et eros malesuada euismod in nec ipsum. Fusce faucibus nulla in leo pellentesque elementum. Nam varius tincidunt sapien a rhoncus. Proin non ligula est. Suspendisse bibendum metus a ullamcorper interdum. Etiam sed volutpat dolor, eu maximus erat. Aliquam erat volutpat. Fusce pharetra tellus ut est ullamcorper fringilla. Mauris rutrum ultrices lacinia. Mauris viverra gravida porta. Quisque imperdiet cursus ultricies. Mauris tristique turpis sed nisl laoreet, sed blandit nulla venenatis. Quisque eu posuere metus. Mauris laoreet, risus eu semper efficitur, nisi sem interdum urna, non facilisis ante nibh a est. Cras quis arcu faucibus, commodo dolor ac, lobortis purus. Aliquam erat volutpat. Morbi mattis justo non consectetur blandit. Donec dictum nunc id enim blandit mattis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed finibus congue dolor sed mollis. Sed id sodales metus, eu egestas nisl. Nulla in velit vel eros euismod lobortis ac vel ipsum. Donec maximus tellus libero, ac gravida nisi semper vitae. Duis elit metus, pellentesque ac arcu nec, aliquam pharetra eros. Quisque pharetra purus at ex venenatis placerat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean hendrerit porttitor arcu, non efficitur metus. Nunc mattis erat sed dui auctor, a sodales est lobortis. Phasellus laoreet erat sed leo varius faucibus. Integer tincidunt pharetra lobortis. Integer cursus sem sit amet mattis iaculis. Nullam mi nunc, accumsan ac erat venenatis, malesuada vestibulum sem. Fusce efficitur leo metus, ac luctus metus semper nec. Donec semper, erat in dictum hendrerit, sapien elit tempus nisi, a semper nibh nunc nec libero. In tempor vel nulla ut elementum. Aliquam sit amet sem at elit aliquam dapibus. Curabitur posuere tempor porttitor. Proin et venenatis ipsum. Cras convallis nec augue at iaculis.',
-        }
-        console.debug('Adding document', doc);
-        return localDB.put(doc)
-          .then(console.debug)
-          .catch(console.error);
-      }
-
-      function addDocuments(documentCountPerRun) {
-        isAddingDocuments = true;
-        addDocumentsBtn.disabled = true;
-        addDocumentsRunCount++;
-        var i = documentCountPerRun;
-        var promiseChain = Promise.resolve();
-
-        while (i) {
-          var docNumber = addDocumentsRunCount * documentCountPerRun + i;
-          promiseChain = promiseChain.then(function() {
-            return addDocument(docNumber);
-          });
-          if (i % 100 === 0) {
-            promiseChain = promiseChain.then(function() { refreshDBInfo(localDB, 'pouch_info_local') });
-          }
-          i--;
-        }
-
-        return promiseChain.then(function() {
-          isAddingDocuments = false;
-          addDocumentsBtn.disabled = false;
-          console.info('Done adding documents.');
-        });
-      }
+      PouchDBTester.start(localDBPath, remoteDBPath, remoteDBOptions, hostHtmlElement, 5);
     </script>
 
   </body>
