@@ -42,6 +42,8 @@
     </script>
 
     <script src="//cdn.jsdelivr.net/npm/pouchdb@7.1.1/dist/pouchdb.min.js"></script>
+    <script src="./js/standalone-tester.js"></script>
+    <script src="./js/storage-tester.js"></script>
     <script src="./js/pouchdb-tester.js"></script>
 
     <style>
@@ -56,70 +58,21 @@
     <h1>PouchDB test</h1>
 
     <ul>
-      <li>iOS standalone mode : <b id="webapp_ios">OFF</b></li>
-      <li>W3C standalone mode : <b id="webapp_manifest">OFF</b></li>
-      <li>Storage :
-        <ul>
-          <li>Persistent : <b id="storage_persistent">Not available</b></li>
-          <li>Estimate : <b id="storage_estimate">Not available</b>
-            <p id="storage_details"></p>
-          </li>
-        </ul>
-      </li>
+      <li id="StandaloneTesterHost"></li>
+      
+      <li id="StorageTesterHost"></li>
+      
       <li id="PouchDBTesterHost"></li>
     </ul>
 
     <script type="text/javascript">
-      // Detect IOS standalone mode
-      if (window.navigator.standalone) {
-        document.querySelector('#webapp_ios').innerHTML = 'ON';
-      }
+      // Standalone
+      var standaloneTesterHostHtmlElement = document.getElementById('StandaloneTesterHost');
+      StandaloneTester.start(standaloneTesterHostHtmlElement);
 
-      // Detect a Webapp defined via a standard manifest (using the parameter added in the `starturl`)
-      if (window.matchMedia('(display-mode: standalone)').matches) {
-        document.querySelector('#webapp_manifest').innerHTML = 'ON';
-      }
-
-      // Print storage information
-      function bytesToString(bytesCount) {
-        const kCoef = Math.pow(2, 10);
-        const mCoef = Math.pow(kCoef, 2);
-        const gCoef = Math.pow(kCoef, 3);
-        if (bytesCount < kCoef) return bytesCount + 'b';
-        if (bytesCount < mCoef) return (bytesCount / kCoef).toFixed(2) + 'kb';
-        if (bytesCount < gCoef) return (bytesCount / mCoef).toFixed(2) + 'mb';
-        return (bytesCount / gCoef).toFixed(2) + 'gb';
-      }
-
-      // Transforms usage details to an HTML string
-      function usageDetailsToString(usageDetails) {
-        if (!usageDetails || !Object.keys(usageDetails).length) return 'No storage details';
-        return Object.entries(usageDetails)
-          .map(function([type, bytes]) { return '• ' + type + ': ' + bytesToString(bytes); })
-          .join('<br>');
-      }
-
-      // Updates the storage usage estimate on screen
-      function updateStorageEstimate() {
-        if ('storage' in navigator) {
-          if ('persist' in navigator.storage) {
-            navigator.storage.persist().then(granted => {
-              document.querySelector('#storage_persistent').innerHTML = granted ? 'Yes' : 'No';
-            });
-          }
-          if ('estimate' in navigator.storage) {
-          navigator.storage.estimate()
-            .then(function(estimate) {
-              document.querySelector('#storage_estimate').innerHTML = 'Using ' + bytesToString(estimate.usage) + ' out of ' + bytesToString(estimate.quota);
-              if ('usageDetails' in estimate)
-                document.querySelector('#storage_details').innerHTML = usageDetailsToString(estimate.usageDetails);
-            });
-          }
-        }
-      }
-
-      updateStorageEstimate();
-      setInterval(updateStorageEstimate, 3000);
+      // Storage
+      var storageTesterHostHtmlElement = document.getElementById('StorageTesterHost');
+      StorageTester.start(storageTesterHostHtmlElement, 3);
 
       // PouchDB
 
@@ -131,9 +84,8 @@
           password: '7505a544e9d16f6d509b79a90544ab8a32296184'
         }
       }
-      var hostHtmlElement = document.getElementById('PouchDBTesterHost');
-
-      PouchDBTester.start(localDBPath, remoteDBPath, remoteDBOptions, hostHtmlElement, 5);
+      var pouchdbTesterHostHtmlElement = document.getElementById('PouchDBTesterHost');
+      PouchDBTester.start(localDBPath, remoteDBPath, remoteDBOptions, pouchdbTesterHostHtmlElement, 5);
     </script>
 
   </body>
