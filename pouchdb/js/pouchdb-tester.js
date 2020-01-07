@@ -20,18 +20,18 @@
     }
 
     // The actual PourchDB tester
-    var LOCAL_DB_SIZE = 500;
     var LOCAL_ACTION_DOC_COUNT = 100;
     var REMOTE_ACTION_DOC_COUNT = 10;
 
     var _localDBPath;
     var _remoteDBPath;
     var _remoteDBOptions;
+    var _hostHtmlElement;
+    var _refreshInterval;
     var _localDB;
     var _remoteDB;
     var _localDBFirstDoc;
     var _remoteDBFirstDoc;
-    var _hostHtmlElement;
     var _liveSyncHandler;
     var _liveSyncChangeCount;
     var _syncReplicateRemoteToLocalDBBtn;
@@ -77,10 +77,32 @@
 
     // Create DBs
 
-    function _getLocalDB() {
+    function _onStart() {
+        var sizeSelect = document.getElementById(MODULE_NAME + '_localDBSizeSelect');
+        var localDBSize = sizeSelect.options[sizeSelect.selectedIndex].value;
+
+        document.getElementById(MODULE_NAME + '_testerStartFormEl').style.display = 'none';
+        document.getElementById(MODULE_NAME + '_testerContainerEl').style.display = 'table';
+
+        _localDB = _getLocalDB(localDBSize);
+        if (_remoteDBPath) _remoteDB = _getRemoteDB();
+        
+        _refreshLocalDBInfo();
+        _refreshRemoteDBInfo();
+        if (_refreshInterval > 0) {
+            setInterval(function() {
+                if (!_stopPollingInfo) {
+                    _refreshLocalDBInfo();
+                    _refreshRemoteDBInfo()
+                }
+            }, _refreshInterval * 1000 );
+        }
+    }
+
+    function _getLocalDB(size) {
         return new _PouchDB(_localDBPath, {
             auto_compaction: false,
-            size: LOCAL_DB_SIZE
+            size: size
         });
     }
 
@@ -451,13 +473,23 @@
             _localDBPath = localDBPath;
             _remoteDBPath = remoteDBPath;
             _remoteDBOptions = remoteDBOptions;
-            _localDB = _getLocalDB();
-            if (_remoteDBPath) _remoteDB = _getRemoteDB();
             _hostHtmlElement = hostHtmlElement;
+            _refreshInterval = refreshInterval;
             if (!_isModule && _hostHtmlElement) {
                 var html = '<h3>PouchDB tester:</h3>\n' +
-                    '<table style="width: 100%; text-align: center;">\n';
-                if (_remoteDB) {
+                    '<div id="' + MODULE_NAME + '_testerStartFormEl" style="text-align: center;">\n' +
+                    '    <span>Local DB size request:</span>\n' +
+                    '    <select id="' + MODULE_NAME + '_localDBSizeSelect">\n' +
+                    '        <option value="500">500 MB</option>\n' +
+                    '        <option value="100">100 MB</option>\n' +
+                    '        <option value="50">50 MB</option>\n' +
+                    '        <option value="10">10 MB</option>\n' +
+                    '        <option value="5">5 MB</option>\n' +
+                    '    </select>\n' +
+                    '    <button onclick="' + MODULE_NAME + '_onStart()" style="display: inline-block;">OK</button>\n' +
+                    '</div>\n' +
+                    '<table id="' + MODULE_NAME + '_testerContainerEl" style="display: none; width: 100%; text-align: center;">\n';
+                if (_remoteDBPath) {
                     html += 
                         '   <thead>\n' +
                         '       <tr>\n' +
@@ -472,44 +504,46 @@
                 _hostHtmlElement.innerHTML = html + 
                     '   <tbody>\n' +
                     '       <tr>\n' +
-                    '               <td style="font-weight: bolder; font-size: larger; color: green;">Local</td>\n' +
-                    (_remoteDB ? '  <td style="font-weight: bolder; font-size: larger; color: red;">Remote</td>\n' : '') +
+                    '                   <td style="font-weight: bolder; font-size: larger; color: green;">Local</td>\n' +
+                    (_remoteDBPath ? '  <td style="font-weight: bolder; font-size: larger; color: red;">Remote</td>\n' : '') +
                     '       </tr>\n' +
                     '       <tr>\n' +
-                    '               <td><span id="' + MODULE_NAME + '_local_info" style="font-weight: bold;">Unknown</span></td>\n' +
-                    (_remoteDB ? '  <td><span id="' + MODULE_NAME + '_remote_info" style="font-weight: bold;">Unknown</span></td>\n' : '') +
+                    '                   <td><span id="' + MODULE_NAME + '_local_info" style="font-weight: bold;">Unknown</span></td>\n' +
+                    (_remoteDBPath ? '  <td><span id="' + MODULE_NAME + '_remote_info" style="font-weight: bold;">Unknown</span></td>\n' : '') +
                     '       </tr>\n' +
                     '       <tr>\n' +
-                    (_remoteDB ? '  <td><button id="' + MODULE_NAME + '_syncReplicateLocalToRemoteDBBtn" onclick="' + MODULE_NAME + '_onSyncReplicateLocalToRemoteDBBtn()" style="min-width: 144px;">Sync Local ➡️ Remote</button></td>\n' : '') +
-                    (_remoteDB ? '  <td><button id="' + MODULE_NAME + '_syncReplicateRemoteToLocalDBBtn" onclick="' + MODULE_NAME + '_onSyncReplicateRemoteToLocalDBBtn()" style="min-width: 144px;">Sync Local ⬅️ Remote</button></td>\n' : '') +
+                    (_remoteDBPath ? '  <td><button id="' + MODULE_NAME + '_syncReplicateLocalToRemoteDBBtn" onclick="' + MODULE_NAME + '_onSyncReplicateLocalToRemoteDBBtn()" style="min-width: 144px;">Sync Local ➡️ Remote</button></td>\n' : '') +
+                    (_remoteDBPath ? '  <td><button id="' + MODULE_NAME + '_syncReplicateRemoteToLocalDBBtn" onclick="' + MODULE_NAME + '_onSyncReplicateRemoteToLocalDBBtn()" style="min-width: 144px;">Sync Local ⬅️ Remote</button></td>\n' : '') +
                     '       </tr>\n' +
                     '       <tr>\n' +
                     '               <td>\n' +
                     '                   <input id="' + MODULE_NAME + '_modifyFirstDocOnLocalDBTxt" type="text" value="" style="width: 80px;">\n' +
                     '                   <button id="' + MODULE_NAME + '_modifyFirstDocOnLocalDBBtn" onclick="' + MODULE_NAME + '_onModifyFirstDocOnLocalDB()" style="display: inline-block;" title="Modify 1st document on Local">✏️ 1st doc</button>\n' +
                     '               </td>\n' +
-                    (_remoteDB ? '  <td>\n' : '') +
-                    (_remoteDB ? '      <input id="' + MODULE_NAME + '_modifyFirstDocOnRemoteDBTxt" type="text" value="" style="width: 80px;">\n' : '') +
-                    (_remoteDB ? '      <button id="' + MODULE_NAME + '_modifyFirstDocOnRemoteDBBtn" onclick="' + MODULE_NAME + '_onModifyFirstDocOnRemoteDB()" title="Modify 1st document on Remote" style="display: inline-block;">✏️ 1st doc</button>\n' : '') +
-                    (_remoteDB ? '  </td>\n' : '') +
+                    (_remoteDBPath ? '  <td>\n' : '') +
+                    (_remoteDBPath ? '      <input id="' + MODULE_NAME + '_modifyFirstDocOnRemoteDBTxt" type="text" value="" style="width: 80px;">\n' : '') +
+                    (_remoteDBPath ? '      <button id="' + MODULE_NAME + '_modifyFirstDocOnRemoteDBBtn" onclick="' + MODULE_NAME + '_onModifyFirstDocOnRemoteDB()" title="Modify 1st document on Remote" style="display: inline-block;">✏️ 1st doc</button>\n' : '') +
+                    (_remoteDBPath ? '  </td>\n' : '') +
                     '       </tr>\n' +
                     '       <tr>\n' +
-                    '               <td><button id="' + MODULE_NAME + '_addDocumentsToLocalDBBtn" onclick="' + MODULE_NAME + '_onAddDocumentsToLocalDB(' + LOCAL_ACTION_DOC_COUNT + ')" style="min-width: 144px;">➕ ' + LOCAL_ACTION_DOC_COUNT + ' docs to Local</button></td>\n' +
-                    (_remoteDB ? '  <td><button id="' + MODULE_NAME + '_addDocumentsToRemoteDBBtn" onclick="' + MODULE_NAME + '_onAddDocumentsToRemoteDB(' + REMOTE_ACTION_DOC_COUNT + ')" style="min-width: 144px;">➕ ' + REMOTE_ACTION_DOC_COUNT + ' docs to Remote</button></td>\n' : '') +
+                    '                   <td><button id="' + MODULE_NAME + '_addDocumentsToLocalDBBtn" onclick="' + MODULE_NAME + '_onAddDocumentsToLocalDB(' + LOCAL_ACTION_DOC_COUNT + ')" style="min-width: 144px;">➕ ' + LOCAL_ACTION_DOC_COUNT + ' docs to Local</button></td>\n' +
+                    (_remoteDBPath ? '  <td><button id="' + MODULE_NAME + '_addDocumentsToRemoteDBBtn" onclick="' + MODULE_NAME + '_onAddDocumentsToRemoteDB(' + REMOTE_ACTION_DOC_COUNT + ')" style="min-width: 144px;">➕ ' + REMOTE_ACTION_DOC_COUNT + ' docs to Remote</button></td>\n' : '') +
                     '       </tr>\n' +
                     '       <tr>\n' +
-                    '               <td><button id="' + MODULE_NAME + '_removeDocumentsFromLocalDBBtn" onclick="' + MODULE_NAME + '_onRemoveDocumentsFromLocalDB(' + LOCAL_ACTION_DOC_COUNT + ')" style="min-width: 144px;">❌ ' + LOCAL_ACTION_DOC_COUNT + ' docs from Local</button></td>\n' +
-                    (_remoteDB ? '  <td><button id="' + MODULE_NAME + '_removeDocumentsFromRemoteDBBtn" onclick="' + MODULE_NAME + '_onRemoveDocumentsFromRemoteDB(' + REMOTE_ACTION_DOC_COUNT + ')" style="min-width: 144px;">❌ ' + REMOTE_ACTION_DOC_COUNT + ' docs from Remote</button></td>\n' : '') +
+                    '                   <td><button id="' + MODULE_NAME + '_removeDocumentsFromLocalDBBtn" onclick="' + MODULE_NAME + '_onRemoveDocumentsFromLocalDB(' + LOCAL_ACTION_DOC_COUNT + ')" style="min-width: 144px;">❌ ' + LOCAL_ACTION_DOC_COUNT + ' docs from Local</button></td>\n' +
+                    (_remoteDBPath ? '  <td><button id="' + MODULE_NAME + '_removeDocumentsFromRemoteDBBtn" onclick="' + MODULE_NAME + '_onRemoveDocumentsFromRemoteDB(' + REMOTE_ACTION_DOC_COUNT + ')" style="min-width: 144px;">❌ ' + REMOTE_ACTION_DOC_COUNT + ' docs from Remote</button></td>\n' : '') +
                     '       </tr>\n' +
                     '       <tr>\n' +
-                    '               <td><button id="' + MODULE_NAME + '_destroyLocalDBBtn" onclick="' + MODULE_NAME + '_onDestroyLocalDB()" style="min-width: 144px;">🗑 Destroy Local</button></td>\n' +
-                    (_remoteDB ? '  <td><button id="' + MODULE_NAME + '_destroyRemoteDBBtn" onclick="' + MODULE_NAME + '_onDestroyRemoteDB()" style="min-width: 144px;">🗑 Destroy Remote</button></td>\n' : '') +
+                    '                   <td><button id="' + MODULE_NAME + '_destroyLocalDBBtn" onclick="' + MODULE_NAME + '_onDestroyLocalDB()" style="min-width: 144px;">🗑 Destroy Local</button></td>\n' +
+                    (_remoteDBPath ? '  <td><button id="' + MODULE_NAME + '_destroyRemoteDBBtn" onclick="' + MODULE_NAME + '_onDestroyRemoteDB()" style="min-width: 144px;">🗑 Destroy Remote</button></td>\n' : '') +
                     '       </tr>\n' +
                     '       <tr>\n' +
                     '               <td><button id="' + MODULE_NAME + '_compactLocalDBBtn" onclick="' + MODULE_NAME + '_onCompactLocalDB()" style="min-width: 144px;">👌 Compact Local</button></td>\n' +
                     '       </tr>\n' +
                     '   </tbody>\n' +
                     '</table>';
+                
+                window[MODULE_NAME + '_onStart'] = _onStart;
                 
                 _syncReplicateRemoteToLocalDBBtn = document.getElementById(MODULE_NAME + '_syncReplicateRemoteToLocalDBBtn');
                 _syncReplicateLocalToRemoteDBBtn = document.getElementById(MODULE_NAME + '_syncReplicateLocalToRemoteDBBtn');
@@ -537,17 +571,6 @@
                 window[MODULE_NAME + '_onDestroyLocalDB'] = _destroyLocalDB;
                 window[MODULE_NAME + '_onDestroyRemoteDB'] = _destroyRemoteDB;
                 window[MODULE_NAME + '_onCompactLocalDB'] = _compactLocalDB;
-            }
-
-            _refreshLocalDBInfo();
-            _refreshRemoteDBInfo();
-            if (refreshInterval > 0) {
-                setInterval(function() {
-                    if (!_stopPollingInfo) {
-                        _refreshLocalDBInfo();
-                        _refreshRemoteDBInfo()
-                    }
-                }, refreshInterval * 1000 );
             }
         }
     }
