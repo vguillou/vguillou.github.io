@@ -108,12 +108,10 @@
     function _refreshLocalDBInfo() {
         _refreshDBInfo(_localDB, MODULE_NAME + '_local_info')
             .then(function(firstDoc) {
-                _localDBFirstDoc = firstDoc;
-                if (!_localDBFirstDoc && _modifyFirstDocOnLocalDBTxt.text !== '') {
-                    _modifyFirstDocOnLocalDBTxt.value = '';
-                } else if (_modifyFirstDocOnLocalDBTxt.value !== _localDBFirstDoc.text) {
-                    _modifyFirstDocOnLocalDBTxt.value = _localDBFirstDoc.text;
+                if ((_localDBFirstDoc ? !firstDoc : firstDoc) || (_localDBFirstDoc && firstDoc && _localDBFirstDoc.text !== firstDoc.text)) {
+                    _modifyFirstDocOnLocalDBTxt.value = firstDoc ? firstDoc.text : '';
                 }
+                _localDBFirstDoc = firstDoc;
             });
     };
 
@@ -121,12 +119,10 @@
     function _refreshRemoteDBInfo() {
         if (_remoteDB) _refreshDBInfo(_remoteDB, MODULE_NAME + '_remote_info')
             .then(function(firstDoc) {
-                _remoteDBFirstDoc = firstDoc;
-                if (!_remoteDBFirstDoc && _modifyFirstDocOnRemoteDBTxt.text !== '') {
-                    _modifyFirstDocOnRemoteDBTxt.value = '';
-                } else if (_modifyFirstDocOnRemoteDBTxt.value !== _remoteDBFirstDoc.text) {
-                    _modifyFirstDocOnRemoteDBTxt.value = _remoteDBFirstDoc.text;
+                if ((_remoteDBFirstDoc ? !firstDoc : firstDoc) || (_remoteDBFirstDoc && firstDoc && _remoteDBFirstDoc.text !== firstDoc.text)) {
+                    _modifyFirstDocOnRemoteDBTxt.value = firstDoc ? firstDoc.text : '';
                 }
+                _remoteDBFirstDoc = firstDoc;
             });
     }
 
