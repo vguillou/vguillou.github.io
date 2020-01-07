@@ -46,6 +46,7 @@
     var _removeDocumentsFromRemoteDBBtn;
     var _destroyLocalDBBtn;
     var _destroyRemoteDBBtn;
+    var _compactLocalDBBtn;
     var _stopPollingInfo = false;
 
     function _errorHandlerFactory(showAlert) {
@@ -76,7 +77,7 @@
     // Create DBs
 
     function _getLocalDB() {
-        return new _PouchDB(_localDBPath, { auto_compaction: true });
+        return new _PouchDB(_localDBPath, { auto_compaction: false });
     }
 
     function _getRemoteDB() {
@@ -133,6 +134,7 @@
         if (_syncReplicateLocalToRemoteDBBtn) _syncReplicateLocalToRemoteDBBtn.disabled = !enable;
         _destroyLocalDBBtn.disabled = !enable;
         if (_destroyRemoteDBBtn) _destroyRemoteDBBtn.disabled = !enable;
+        if (_compactLocalDBBtn) _compactLocalDBBtn.disabled = !enable;
     }
 
     function _onSyncChange(change) {
@@ -342,7 +344,7 @@
         }
     }
 
-    // Remove random documents from DB
+    // Remove last documents from DB
 
     function _removeDocuments(db, documentCount) {
         _stopPollingInfo = true;
@@ -379,6 +381,16 @@
             return _removeDocuments(_remoteDB, documentCount)
                 .then(_refreshRemoteDBInfo);
         }
+    }
+
+    // Compact DB
+
+    function _compactLocalDB() {
+        console.debug(CONSOLE_PREFIX + 'Start compacting local DB.');
+        _localDB.compact()
+            .then(function (result) {
+                console.info(CONSOLE_PREFIX + 'Done compacting local DB.', result);
+            }).catch(_errorHandlerFactory(true));
     }
 
     // Destroy DBs
@@ -464,32 +476,33 @@
                     (_remoteDB ? '  <td><span id="' + MODULE_NAME + '_remote_info" style="font-weight: bold;">Unknown</span></td>\n' : '') +
                     '       </tr>\n' +
                     '       <tr>\n' +
-                    (_remoteDB ? '  <td><button id="' + MODULE_NAME + '_syncReplicateLocalToRemoteDBBtn" onclick="' + MODULE_NAME + '_onSyncReplicateLocalToRemoteDBBtn()">Sync Local ➡️ Remote</button></td>\n' : '') +
-                    (_remoteDB ? '  <td><button id="' + MODULE_NAME + '_syncReplicateRemoteToLocalDBBtn" onclick="' + MODULE_NAME + '_onSyncReplicateRemoteToLocalDBBtn()">Sync Local ⬅️ Remote</button></td>\n' : '') +
+                    (_remoteDB ? '  <td><button id="' + MODULE_NAME + '_syncReplicateLocalToRemoteDBBtn" onclick="' + MODULE_NAME + '_onSyncReplicateLocalToRemoteDBBtn()" style="min-width: 144px;">Sync Local ➡️ Remote</button></td>\n' : '') +
+                    (_remoteDB ? '  <td><button id="' + MODULE_NAME + '_syncReplicateRemoteToLocalDBBtn" onclick="' + MODULE_NAME + '_onSyncReplicateRemoteToLocalDBBtn()" style="min-width: 144px;">Sync Local ⬅️ Remote</button></td>\n' : '') +
                     '       </tr>\n' +
                     '       <tr>\n' +
                     '               <td>\n' +
-                    '                   <span style="font-size: small;">1st doc:</span>\n' +
-                    '                   <input id="' + MODULE_NAME + '_modifyFirstDocOnLocalDBTxt" type="text" value="" style="width: 70px;">\n' +
-                    '                   <button id="' + MODULE_NAME + '_modifyFirstDocOnLocalDBBtn" onclick="' + MODULE_NAME + '_onModifyFirstDocOnLocalDB()" title="Modify 1st document on Local">✏️</button>\n' +
+                    '                   <input id="' + MODULE_NAME + '_modifyFirstDocOnLocalDBTxt" type="text" value="" style="width: 80px;">\n' +
+                    '                   <button id="' + MODULE_NAME + '_modifyFirstDocOnLocalDBBtn" onclick="' + MODULE_NAME + '_onModifyFirstDocOnLocalDB()" style="display: inline-block;" title="Modify 1st document on Local">✏️ 1st doc</button>\n' +
                     '               </td>\n' +
                     (_remoteDB ? '  <td>\n' : '') +
-                    (_remoteDB ? '      <span style="font-size: small;">1st doc:</span>\n' : '') +
-                    (_remoteDB ? '      <input id="' + MODULE_NAME + '_modifyFirstDocOnRemoteDBTxt" type="text" value="" style="width: 70px;">\n' : '') +
-                    (_remoteDB ? '      <button id="' + MODULE_NAME + '_modifyFirstDocOnRemoteDBBtn" onclick="' + MODULE_NAME + '_onModifyFirstDocOnRemoteDB()" title="Modify 1st document on Remote">✏️</button>\n' : '') +
+                    (_remoteDB ? '      <input id="' + MODULE_NAME + '_modifyFirstDocOnRemoteDBTxt" type="text" value="" style="width: 80px;">\n' : '') +
+                    (_remoteDB ? '      <button id="' + MODULE_NAME + '_modifyFirstDocOnRemoteDBBtn" onclick="' + MODULE_NAME + '_onModifyFirstDocOnRemoteDB()" title="Modify 1st document on Remote" style="display: inline-block;">✏️ 1st doc</button>\n' : '') +
                     (_remoteDB ? '  </td>\n' : '') +
                     '       </tr>\n' +
                     '       <tr>\n' +
-                    '               <td><button id="' + MODULE_NAME + '_addDocumentsToLocalDBBtn" onclick="' + MODULE_NAME + '_onAddDocumentsToLocalDB(' + LOCAL_ACTION_DOC_COUNT + ')">➕ ' + LOCAL_ACTION_DOC_COUNT + ' docs to Local</button></td>\n' +
-                    (_remoteDB ? '  <td><button id="' + MODULE_NAME + '_addDocumentsToRemoteDBBtn" onclick="' + MODULE_NAME + '_onAddDocumentsToRemoteDB(' + REMOTE_ACTION_DOC_COUNT + ')">➕ ' + REMOTE_ACTION_DOC_COUNT + ' docs to Remote</button></td>\n' : '') +
+                    '               <td><button id="' + MODULE_NAME + '_addDocumentsToLocalDBBtn" onclick="' + MODULE_NAME + '_onAddDocumentsToLocalDB(' + LOCAL_ACTION_DOC_COUNT + ')" style="min-width: 144px;">➕ ' + LOCAL_ACTION_DOC_COUNT + ' docs to Local</button></td>\n' +
+                    (_remoteDB ? '  <td><button id="' + MODULE_NAME + '_addDocumentsToRemoteDBBtn" onclick="' + MODULE_NAME + '_onAddDocumentsToRemoteDB(' + REMOTE_ACTION_DOC_COUNT + ')" style="min-width: 144px;">➕ ' + REMOTE_ACTION_DOC_COUNT + ' docs to Remote</button></td>\n' : '') +
                     '       </tr>\n' +
                     '       <tr>\n' +
-                    '               <td><button id="' + MODULE_NAME + '_removeDocumentsFromLocalDBBtn" onclick="' + MODULE_NAME + '_onRemoveDocumentsFromLocalDB(' + LOCAL_ACTION_DOC_COUNT + ')">❌ ' + LOCAL_ACTION_DOC_COUNT + ' docs from Local</button></td>\n' +
-                    (_remoteDB ? '  <td><button id="' + MODULE_NAME + '_removeDocumentsFromRemoteDBBtn" onclick="' + MODULE_NAME + '_onRemoveDocumentsFromRemoteDB(' + REMOTE_ACTION_DOC_COUNT + ')">❌ ' + REMOTE_ACTION_DOC_COUNT + ' docs from Remote</button></td>\n' : '') +
+                    '               <td><button id="' + MODULE_NAME + '_removeDocumentsFromLocalDBBtn" onclick="' + MODULE_NAME + '_onRemoveDocumentsFromLocalDB(' + LOCAL_ACTION_DOC_COUNT + ')" style="min-width: 144px;">❌ ' + LOCAL_ACTION_DOC_COUNT + ' docs from Local</button></td>\n' +
+                    (_remoteDB ? '  <td><button id="' + MODULE_NAME + '_removeDocumentsFromRemoteDBBtn" onclick="' + MODULE_NAME + '_onRemoveDocumentsFromRemoteDB(' + REMOTE_ACTION_DOC_COUNT + ')" style="min-width: 144px;">❌ ' + REMOTE_ACTION_DOC_COUNT + ' docs from Remote</button></td>\n' : '') +
                     '       </tr>\n' +
                     '       <tr>\n' +
-                    '               <td><button id="' + MODULE_NAME + '_destroyLocalDBBtn" onclick="' + MODULE_NAME + '_onDestroyLocalDB()">🗑 Destroy Local</button></td>\n' +
-                    (_remoteDB ? '  <td><button id="' + MODULE_NAME + '_destroyRemoteDBBtn" onclick="' + MODULE_NAME + '_onDestroyRemoteDB()">🗑 Destroy Remote</button></td>\n' : '') +
+                    '               <td><button id="' + MODULE_NAME + '_destroyLocalDBBtn" onclick="' + MODULE_NAME + '_onDestroyLocalDB()" style="min-width: 144px;">🗑 Destroy Local</button></td>\n' +
+                    (_remoteDB ? '  <td><button id="' + MODULE_NAME + '_destroyRemoteDBBtn" onclick="' + MODULE_NAME + '_onDestroyRemoteDB()" style="min-width: 144px;">🗑 Destroy Remote</button></td>\n' : '') +
+                    '       </tr>\n' +
+                    '       <tr>\n' +
+                    '               <td><button id="' + MODULE_NAME + '_compactLocalDBBtn" onclick="' + MODULE_NAME + '_onCompactLocalDB()" style="min-width: 144px;">👌 Compact Local</button></td>\n' +
                     '       </tr>\n' +
                     '   </tbody>\n' +
                     '</table>';
@@ -507,6 +520,7 @@
                 _removeDocumentsFromRemoteDBBtn = document.getElementById(MODULE_NAME + '_removeDocumentsFromRemoteDBBtn');
                 _destroyLocalDBBtn = document.getElementById(MODULE_NAME + '_destroyLocalDBBtn');
                 _destroyRemoteDBBtn = document.getElementById(MODULE_NAME + '_destroyRemoteDBBtn');
+                _compactLocalDBBtn = document.getElementById(MODULE_NAME + '_compactLocalDBBtn');
                 window[MODULE_NAME + '_onSyncReplicateRemoteToLocalDBBtn'] = _syncReplicationRemoteToLocalDB;
                 window[MODULE_NAME + '_onSyncReplicateLocalToRemoteDBBtn'] = _syncReplicationLocalToRemoteDB;
                 window[MODULE_NAME + '_onLiveSyncCbChanged'] = _onLiveSyncCbChanged;
@@ -518,6 +532,7 @@
                 window[MODULE_NAME + '_onRemoveDocumentsFromRemoteDB'] = _removeDocumentsFromRemoteDB;
                 window[MODULE_NAME + '_onDestroyLocalDB'] = _destroyLocalDB;
                 window[MODULE_NAME + '_onDestroyRemoteDB'] = _destroyRemoteDB;
+                window[MODULE_NAME + '_onCompactLocalDB'] = _compactLocalDB;
             }
 
             _refreshLocalDBInfo();
