@@ -20,6 +20,7 @@
     }
 
     // The actual PourchDB tester
+    var LOCAL_DB_SIZE = 500;
     var LOCAL_ACTION_DOC_COUNT = 100;
     var REMOTE_ACTION_DOC_COUNT = 10;
 
@@ -77,7 +78,10 @@
     // Create DBs
 
     function _getLocalDB() {
-        return new _PouchDB(_localDBPath, { auto_compaction: false });
+        return new _PouchDB(_localDBPath, {
+            auto_compaction: false,
+            size: LOCAL_DB_SIZE
+        });
     }
 
     function _getRemoteDB() {
