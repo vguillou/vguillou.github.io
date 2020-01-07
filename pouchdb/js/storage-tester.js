@@ -64,11 +64,11 @@
          */
         start: function(hostHtmlElement, refreshInterval) {
             if (!_isModule && hostHtmlElement) {
-                hostHtmlElement.innerHTML = '<h3><u>Storage tester:</u></h3>\n' +
+                hostHtmlElement.innerHTML = '<h3>Storage tester:</h3>\n' +
                     '<ul>\n' +
-                        '<li style="margin-bottom: 10px;">Persistent : <b id="' + MODULE_NAME + '_persistent">Not available</b></li>\n' +
-                        '<li style="margin-bottom: 10px;">Estimate : <b id="' + MODULE_NAME + '_estimate">Not available</b>\n' +
-                            '<p id="' + MODULE_NAME + '_details"></p>\n'
+                        '<li>Persistent : <b id="' + MODULE_NAME + '_persistent">Not available</b></li>\n' +
+                        '<li>Estimate : <b id="' + MODULE_NAME + '_estimate">Not available</b>\n' +
+                            '<div id="' + MODULE_NAME + '_details"></div>\n'
                         '</li>\n' +
                     '</ul>';
             }

@@ -21,10 +21,10 @@
          */
         start: function(hostHtmlElement) {
             if (!_isModule && hostHtmlElement) {
-                hostHtmlElement.innerHTML = '<h3><u>Standalone tester:</u></h3>\n' +
+                hostHtmlElement.innerHTML = '<h3>Standalone tester:</h3>\n' +
                     '<ul>\n' +
-                        '<li style="margin-bottom: 10px;">iOS standalone mode: <b id="' + MODULE_NAME + '_ios">OFF</b></li>\n' +
-                        '<li style="margin-bottom: 10px;">W3C standalone mode: <b id="' + MODULE_NAME + '_manifest">OFF</b></li>\n' +
+                        '<li>iOS standalone mode: <b id="' + MODULE_NAME + '_ios">OFF</b></li>\n' +
+                        '<li>W3C standalone mode: <b id="' + MODULE_NAME + '_manifest">OFF</b></li>\n' +
                     '</ul>';
             }
 

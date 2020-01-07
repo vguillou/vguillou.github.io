@@ -56,14 +56,9 @@
   <body>
 
     <h1>PouchDB test</h1>
-
-    <ul>
-      <li id="StandaloneTesterHost"></li>
-      
-      <li id="StorageTesterHost"></li>
-      
-      <li id="PouchDBTesterHost"></li>
-    </ul>
+    <div id="StandaloneTesterHost"></div>
+    <div id="StorageTesterHost"></div>
+    <div id="PouchDBTesterHost"></div>
 
     <script type="text/javascript">
       // Standalone
@@ -80,12 +75,12 @@
       var remoteDBPath = 'https://68f4937c-cf60-483d-bb7c-f534b0ceb44b-bluemix.cloudantnosqldb.appdomain.cloud/' + localDBPath;
       var remoteDBOptions = {
         auth: {
-          username: 'iedsingettenteduatlyforg',
-          password: '7505a544e9d16f6d509b79a90544ab8a32296184'
+          username: 'ablyindrimmeentlyzintold',
+          password: 'e689dd3ffc069d298142fe98762ca733c775fc1a'
         }
       }
       var pouchdbTesterHostHtmlElement = document.getElementById('PouchDBTesterHost');
-      PouchDBTester.start(localDBPath, remoteDBPath, remoteDBOptions, pouchdbTesterHostHtmlElement, 5);
+      PouchDBTester.start(localDBPath, remoteDBPath, remoteDBOptions, pouchdbTesterHostHtmlElement, 10);
     </script>
 
   </body>
