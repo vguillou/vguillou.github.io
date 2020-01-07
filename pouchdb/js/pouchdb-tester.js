@@ -470,12 +470,12 @@
                     '       <tr>\n' +
                     '               <td>\n' +
                     '                   <span style="font-size: small;">1st doc:</span>\n' +
-                    '                   <input id="' + MODULE_NAME + '_modifyFirstDocOnLocalDBTxt" type="text" value="" style="width: 70px;">\n' +
+                    '                   <input id="' + MODULE_NAME + '_modifyFirstDocOnLocalDBTxt" type="text" value="" style="width: 75px;">\n' +
                     '                   <button id="' + MODULE_NAME + '_modifyFirstDocOnLocalDBBtn" onclick="' + MODULE_NAME + '_onModifyFirstDocOnLocalDB()" title="Modify 1st document on Local">✏️</button>\n' +
                     '               </td>\n' +
                     (_remoteDB ? '  <td>\n' : '') +
                     (_remoteDB ? '      <span style="font-size: small;">1st doc:</span>\n' : '') +
-                    (_remoteDB ? '      <input id="' + MODULE_NAME + '_modifyFirstDocOnRemoteDBTxt" type="text" value="" style="width: 70px;">\n' : '') +
+                    (_remoteDB ? '      <input id="' + MODULE_NAME + '_modifyFirstDocOnRemoteDBTxt" type="text" value="" style="width: 75px;">\n' : '') +
                     (_remoteDB ? '      <button id="' + MODULE_NAME + '_modifyFirstDocOnRemoteDBBtn" onclick="' + MODULE_NAME + '_onModifyFirstDocOnRemoteDB()" title="Modify 1st document on Remote">✏️</button>\n' : '') +
                     (_remoteDB ? '  </td>\n' : '') +
                     '       </tr>\n' +
