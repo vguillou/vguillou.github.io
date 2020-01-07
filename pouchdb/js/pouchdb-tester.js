@@ -525,7 +525,7 @@
                 window[MODULE_NAME + '_onSyncReplicateLocalToRemoteDBBtn'] = _syncReplicationLocalToRemoteDB;
                 window[MODULE_NAME + '_onLiveSyncCbChanged'] = _onLiveSyncCbChanged;
                 window[MODULE_NAME + '_onModifyFirstDocOnLocalDB'] = _modifyFirstDocOnLocalDB;
-                window[MODULE_NAME + '_onModifyFirstDocOnRemoteDB'] = _modifyFirstDocOnLocalDB;
+                window[MODULE_NAME + '_onModifyFirstDocOnRemoteDB'] = _modifyFirstDocOnRemoteDB;
                 window[MODULE_NAME + '_onAddDocumentsToLocalDB'] = _addDocumentsToLocalDB;
                 window[MODULE_NAME + '_onAddDocumentsToRemoteDB'] = _addDocumentsToRemoteDB;
                 window[MODULE_NAME + '_onRemoveDocumentsFromLocalDB'] = _removeDocumentsFromLocalDB;
