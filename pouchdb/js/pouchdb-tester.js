@@ -480,12 +480,12 @@
                     (_remoteDB ? '  </td>\n' : '') +
                     '       </tr>\n' +
                     '       <tr>\n' +
-                    '               <td><button id="' + MODULE_NAME + '_addDocumentsToLocalDBBtn" onclick="' + MODULE_NAME + '_onAddDocumentsToLocalDB(' + LOCAL_ACTION_DOC_COUNT + ')">➕ Add ' + LOCAL_ACTION_DOC_COUNT + ' docs to Local</button></td>\n' +
-                    (_remoteDB ? '  <td><button id="' + MODULE_NAME + '_addDocumentsToRemoteDBBtn" onclick="' + MODULE_NAME + '_onAddDocumentsToRemoteDB(' + REMOTE_ACTION_DOC_COUNT + ')">➕ Add ' + REMOTE_ACTION_DOC_COUNT + ' docs to Remote</button></td>\n' : '') +
+                    '               <td><button id="' + MODULE_NAME + '_addDocumentsToLocalDBBtn" onclick="' + MODULE_NAME + '_onAddDocumentsToLocalDB(' + LOCAL_ACTION_DOC_COUNT + ')">➕ ' + LOCAL_ACTION_DOC_COUNT + ' docs to Local</button></td>\n' +
+                    (_remoteDB ? '  <td><button id="' + MODULE_NAME + '_addDocumentsToRemoteDBBtn" onclick="' + MODULE_NAME + '_onAddDocumentsToRemoteDB(' + REMOTE_ACTION_DOC_COUNT + ')">➕ ' + REMOTE_ACTION_DOC_COUNT + ' docs to Remote</button></td>\n' : '') +
                     '       </tr>\n' +
                     '       <tr>\n' +
-                    '               <td><button id="' + MODULE_NAME + '_removeDocumentsFromLocalDBBtn" onclick="' + MODULE_NAME + '_onRemoveDocumentsFromLocalDB(' + LOCAL_ACTION_DOC_COUNT + ')">❌ Remove ' + LOCAL_ACTION_DOC_COUNT + ' docs from Local</button></td>\n' +
-                    (_remoteDB ? '  <td><button id="' + MODULE_NAME + '_removeDocumentsFromRemoteDBBtn" onclick="' + MODULE_NAME + '_onRemoveDocumentsFromRemoteDB(' + REMOTE_ACTION_DOC_COUNT + ')">❌ Remove ' + REMOTE_ACTION_DOC_COUNT + ' docs from Remote</button></td>\n' : '') +
+                    '               <td><button id="' + MODULE_NAME + '_removeDocumentsFromLocalDBBtn" onclick="' + MODULE_NAME + '_onRemoveDocumentsFromLocalDB(' + LOCAL_ACTION_DOC_COUNT + ')">❌ ' + LOCAL_ACTION_DOC_COUNT + ' docs from Local</button></td>\n' +
+                    (_remoteDB ? '  <td><button id="' + MODULE_NAME + '_removeDocumentsFromRemoteDBBtn" onclick="' + MODULE_NAME + '_onRemoveDocumentsFromRemoteDB(' + REMOTE_ACTION_DOC_COUNT + ')">❌ ' + REMOTE_ACTION_DOC_COUNT + ' docs from Remote</button></td>\n' : '') +
                     '       </tr>\n' +
                     '       <tr>\n' +
                     '               <td><button id="' + MODULE_NAME + '_destroyLocalDBBtn" onclick="' + MODULE_NAME + '_onDestroyLocalDB()">🗑 Destroy Local</button></td>\n' +
