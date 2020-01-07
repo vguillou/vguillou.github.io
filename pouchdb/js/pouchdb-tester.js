@@ -109,7 +109,11 @@
         _refreshDBInfo(_localDB, MODULE_NAME + '_local_info')
             .then(function(firstDoc) {
                 _localDBFirstDoc = firstDoc;
-                _modifyFirstDocOnLocalDBTxt.value = _localDBFirstDoc ? _localDBFirstDoc.text : '';
+                if (!_localDBFirstDoc && _modifyFirstDocOnLocalDBTxt.text !== '') {
+                    _modifyFirstDocOnLocalDBTxt.value = '';
+                } else if (_modifyFirstDocOnLocalDBTxt.value !== _localDBFirstDoc.text) {
+                    _modifyFirstDocOnLocalDBTxt.value = _localDBFirstDoc.text;
+                }
             });
     };
 
@@ -118,7 +122,11 @@
         if (_remoteDB) _refreshDBInfo(_remoteDB, MODULE_NAME + '_remote_info')
             .then(function(firstDoc) {
                 _remoteDBFirstDoc = firstDoc;
-                _modifyFirstDocOnRemoteDBTxt.value = _remoteDBFirstDoc ? _remoteDBFirstDoc.text : '';
+                if (!_remoteDBFirstDoc && _modifyFirstDocOnRemoteDBTxt.text !== '') {
+                    _modifyFirstDocOnRemoteDBTxt.value = '';
+                } else if (_modifyFirstDocOnRemoteDBTxt.value !== _remoteDBFirstDoc.text) {
+                    _modifyFirstDocOnRemoteDBTxt.value = _remoteDBFirstDoc.text;
+                }
             });
     }
 
@@ -254,7 +262,9 @@
     // Update documents
 
     function _enableUpdateAddRemoveDocumentsButtons(enable) {
+        _modifyFirstDocOnLocalDBTxt.disabled = !enable;
         _modifyFirstDocOnLocalDBBtn.disabled = !enable;
+        if (_modifyFirstDocOnRemoteDBTxt) _modifyFirstDocOnRemoteDBTxt.disabled = !enable;
         if (_modifyFirstDocOnRemoteDBBtn) _modifyFirstDocOnRemoteDBBtn.disabled = !enable;
         _addDocumentsToLocalDBBtn.disabled = !enable;
         if (_addDocumentsToRemoteDBBtn) _addDocumentsToRemoteDBBtn.disabled = !enable;
@@ -441,7 +451,7 @@
                         '       <tr>\n' +
                         '            <th colspan="2" style="background-color: #333; color: #fff;">\n' +
                         '               <div id="' + MODULE_NAME + '_syncStatusEl">No Sync event</div>\n' +
-                        '               <div style="margin: 5px;"><span style="margin: 5px; font-size: smaller;">Live Sync</span><input id="' + MODULE_NAME + '_syncReplicateLocalToRemoteDBCb" type="checkbox" onchange="' + MODULE_NAME + '_onLiveSyncCbChanged(event)"/></div>\n' +
+                        '               <div style="margin-top: 5px;"><span style="margin: 5px; font-size: smaller;">Live Sync</span><input id="' + MODULE_NAME + '_syncReplicateLocalToRemoteDBCb" type="checkbox" onchange="' + MODULE_NAME + '_onLiveSyncCbChanged(event)"/></div>\n' +
                         '           </th>\n' +
                         '       </tr>\n';
                         '       </tr>\n';
@@ -454,8 +464,8 @@
                     (_remoteDB ? '  <td style="font-weight: bolder; font-size: larger; color: red;">Remote</td>\n' : '') +
                     '       </tr>\n' +
                     '       <tr>\n' +
-                    '               <td style="padding: 10px;"><span id="' + MODULE_NAME + '_local_info" style="font-weight: bold;">Unknown</span></td>\n' +
-                    (_remoteDB ? '  <td style="padding: 10px;"><span id="' + MODULE_NAME + '_remote_info" style="font-weight: bold;">Unknown</span></td>\n' : '') +
+                    '               <td><span id="' + MODULE_NAME + '_local_info" style="font-weight: bold;">Unknown</span></td>\n' +
+                    (_remoteDB ? '  <td><span id="' + MODULE_NAME + '_remote_info" style="font-weight: bold;">Unknown</span></td>\n' : '') +
                     '       </tr>\n' +
                     '       <tr>\n' +
                     (_remoteDB ? '  <td><button id="' + MODULE_NAME + '_syncReplicateLocalToRemoteDBBtn" onclick="' + MODULE_NAME + '_onSyncReplicateLocalToRemoteDBBtn()">Sync Local ➡️ Remote</button></td>\n' : '') +
