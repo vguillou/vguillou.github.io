@@ -20,8 +20,8 @@
     }
 
     // The actual PourchDB tester
-    var LOCAL_ACTION_DOC_COUNT = 100;
-    var REMOTE_ACTION_DOC_COUNT = 10;
+    var LOCAL_ACTION_DOC_COUNT = 1000;
+    var REMOTE_ACTION_DOC_COUNT = 100;
 
     var _localDBPath;
     var _remoteDBPath;
