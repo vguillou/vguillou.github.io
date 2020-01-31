@@ -212,15 +212,20 @@
       (function() {
         var result = new UAParser().getResult();
         if (result.browser.name === 'IE') { // Unsupported browsers
+        // if (isIE()) { // Unsupported browsers
           document.getElementById('cv').style.display = 'none';
           document.getElementById('error').style.display = 'block';
         }
-        if (result.browser.name !== 'Safari' && !result.device.type) { // Problematic print
+        if (/* result.browser.name !== 'Safari' && !result.device.type */ true) { // Problematic print
           document.getElementById('btnPrint').style.display = 'block';
         }
         document.getElementById('btnPrint').onclick = function() {
           window.print();
         };
+
+        /* function isIE() {
+          return window.navigator.userAgent.indexOf("MSIE ") > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./);
+        } */
       })();
     </script>
   </body>

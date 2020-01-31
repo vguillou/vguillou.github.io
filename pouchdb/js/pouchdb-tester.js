@@ -480,6 +480,7 @@
                     '<div id="' + MODULE_NAME + '_testerStartFormEl" style="text-align: center;">\n' +
                     '    <span>Local DB size request:</span>\n' +
                     '    <select id="' + MODULE_NAME + '_localDBSizeSelect">\n' +
+                    '        <option value="1000">1 GB</option>\n' +
                     '        <option value="500">500 MB</option>\n' +
                     '        <option value="100">100 MB</option>\n' +
                     '        <option value="50">50 MB</option>\n' +
