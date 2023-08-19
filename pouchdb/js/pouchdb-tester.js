@@ -20,8 +20,8 @@
     }
 
     // The actual PourchDB tester
-    var LOCAL_ACTION_DOC_COUNT = 1000;
-    var REMOTE_ACTION_DOC_COUNT = 100;
+    var ADD_DOC_COUNT = 100;
+    var REMOVE_DOC_COUNT = 1000;
 
     var _localDBPath;
     var _remoteDBPath;
@@ -527,12 +527,12 @@
                     (_remoteDBPath ? '  </td>\n' : '') +
                     '       </tr>\n' +
                     '       <tr>\n' +
-                    '                   <td><button id="' + MODULE_NAME + '_addDocumentsToLocalDBBtn" onclick="' + MODULE_NAME + '_onAddDocumentsToLocalDB(' + LOCAL_ACTION_DOC_COUNT + ')" style="min-width: 144px;">➕ ' + LOCAL_ACTION_DOC_COUNT + ' docs to Local</button></td>\n' +
-                    (_remoteDBPath ? '  <td><button id="' + MODULE_NAME + '_addDocumentsToRemoteDBBtn" onclick="' + MODULE_NAME + '_onAddDocumentsToRemoteDB(' + REMOTE_ACTION_DOC_COUNT + ')" style="min-width: 144px;">➕ ' + REMOTE_ACTION_DOC_COUNT + ' docs to Remote</button></td>\n' : '') +
+                    '                   <td><button id="' + MODULE_NAME + '_addDocumentsToLocalDBBtn" onclick="' + MODULE_NAME + '_onAddDocumentsToLocalDB(' + ADD_DOC_COUNT + ')" style="min-width: 144px;">➕ ' + ADD_DOC_COUNT + ' docs to Local</button></td>\n' +
+                    (_remoteDBPath ? '  <td><button id="' + MODULE_NAME + '_addDocumentsToRemoteDBBtn" onclick="' + MODULE_NAME + '_onAddDocumentsToRemoteDB(' + ADD_DOC_COUNT + ')" style="min-width: 144px;">➕ ' + ADD_DOC_COUNT + ' docs to Remote</button></td>\n' : '') +
                     '       </tr>\n' +
                     '       <tr>\n' +
-                    '                   <td><button id="' + MODULE_NAME + '_removeDocumentsFromLocalDBBtn" onclick="' + MODULE_NAME + '_onRemoveDocumentsFromLocalDB(' + LOCAL_ACTION_DOC_COUNT + ')" style="min-width: 144px;">❌ ' + LOCAL_ACTION_DOC_COUNT + ' docs from Local</button></td>\n' +
-                    (_remoteDBPath ? '  <td><button id="' + MODULE_NAME + '_removeDocumentsFromRemoteDBBtn" onclick="' + MODULE_NAME + '_onRemoveDocumentsFromRemoteDB(' + REMOTE_ACTION_DOC_COUNT + ')" style="min-width: 144px;">❌ ' + REMOTE_ACTION_DOC_COUNT + ' docs from Remote</button></td>\n' : '') +
+                    '                   <td><button id="' + MODULE_NAME + '_removeDocumentsFromLocalDBBtn" onclick="' + MODULE_NAME + '_onRemoveDocumentsFromLocalDB(' + REMOVE_DOC_COUNT + ')" style="min-width: 144px;">❌ ' + REMOVE_DOC_COUNT + ' docs from Local</button></td>\n' +
+                    (_remoteDBPath ? '  <td><button id="' + MODULE_NAME + '_removeDocumentsFromRemoteDBBtn" onclick="' + MODULE_NAME + '_onRemoveDocumentsFromRemoteDB(' + REMOVE_DOC_COUNT + ')" style="min-width: 144px;">❌ ' + REMOVE_DOC_COUNT + ' docs from Remote</button></td>\n' : '') +
                     '       </tr>\n' +
                     '       <tr>\n' +
                     '                   <td><button id="' + MODULE_NAME + '_destroyLocalDBBtn" onclick="' + MODULE_NAME + '_onDestroyLocalDB()" style="min-width: 144px;">🗑 Destroy Local</button></td>\n' +
